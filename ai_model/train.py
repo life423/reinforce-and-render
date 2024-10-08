@@ -42,3 +42,7 @@ for epoch in range(epochs):  # Loop through each epoch
     # Print the loss every 100 epochs
     if (epoch + 1) % 100 == 0:
         print(f'Epoch [{epoch+1}/{epochs}], Loss: {loss.item()}')  # Print the epoch number and current loss value
+
+# Set the enemy block speed to be slightly slower than the player block
+player_speed = 5  # Example player speed value
+enemy_speed = player_speed * 0.8  # Set enemy speed to 80% of the player speed
