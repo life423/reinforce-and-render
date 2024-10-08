@@ -84,6 +84,32 @@ class Game:
 
         # Increment movement counter
         self.player_movement_counter += 1
+    
+    def handle_player_movement_manual(self) -> None:
+        """
+        Continuously update the player's position based on pressed keys.
+        The movement is restricted to ensure the player does not move off-screen.
+        """
+        keys = pygame.key.get_pressed()
+        movement_directions = {
+            pygame.K_LEFT: (-self.PLAYER_STEP, 0),
+            pygame.K_a: (-self.PLAYER_STEP, 0),
+            pygame.K_RIGHT: (self.PLAYER_STEP, 0),
+            pygame.K_d: (self.PLAYER_STEP, 0),
+            pygame.K_UP: (0, -self.PLAYER_STEP),
+            pygame.K_w: (0, -self.PLAYER_STEP),
+            pygame.K_DOWN: (0, self.PLAYER_STEP),
+            pygame.K_s: (0, self.PLAYER_STEP)
+        }
+
+        for key, (dx, dy) in movement_directions.items():
+            if keys[key]:
+                new_x = self.player_pos['x'] + dx
+                new_y = self.player_pos['y'] + dy
+                # Ensure the player does not move off-screen
+                self.player_pos['x'] = max(0, min(self.SCREEN_WIDTH - self.PLAYER_SIZE, new_x))
+                self.player_pos['y'] = max(0, min(self.SCREEN_HEIGHT - self.PLAYER_SIZE, new_y))
+
 
     def log_game_state(self) -> None:
         """

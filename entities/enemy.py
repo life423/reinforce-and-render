@@ -1,71 +1,43 @@
-import torch
+import pygame
 import random
-import pygame  # Added to enable drawing functionality
-from ai_model.model import EnemyAIModel  # Import the AI model
 
 class Enemy:
-    def __init__(self, start_x: int, start_y: int, screen_width: int, screen_height: int, model_path: str = None) -> None:
+    def __init__(self, start_x: int, start_y: int, screen_width: int, screen_height: int) -> None:
         """
         Initialize the enemy with a starting position and screen constraints.
         """
         self.pos = {'x': start_x, 'y': start_y}
         self.size = 100  # Size of the enemy block
         self.color = (255, 69, 0)  # Orange-Red color for the enemy
-        self.speed = 5  # Default speed, can be adjusted
+        self.speed = max(1, screen_width // 500)  # Speed of enemy movement
         self.screen_width = screen_width
         self.screen_height = screen_height
-        self.model = None
-
-        if model_path:
-            # Load the trained AI model if path is provided
-            input_size = 4  # Player (x, y) and Enemy (x, y)
-            hidden_size = 64
-            output_size = 1
-
-            self.model = EnemyAIModel(input_size, hidden_size, output_size)
-            self.model.load_state_dict(torch.load(model_path))
-            self.model.eval()
+        self.movement_counter = 0
+        self.current_direction = random.choice([(-self.speed, 0), (self.speed, 0), (0, -self.speed), (0, self.speed)])
 
     def update_position(self, player_pos: dict) -> None:
         """
-        Update the position of the enemy based on the player's position using the trained AI model.
+        Update the position of the enemy based on the player's position.
+        The movement is varied to create more dynamic behavior.
 
         Args:
             player_pos (dict): The current position of the player.
         """
-        if self.model:
-            # Convert positions to tensor for the model
-            input_data = torch.tensor([player_pos['x'], player_pos['y'], self.pos['x'], self.pos['y']], dtype=torch.float32)
-            output = self.model(input_data)  # Forward pass through the model
-
-            # The output will determine the movement direction
-            movement_choice = int(output.item()) % 4  # Map the output to one of four directions
-
-            directions = [
-                (-self.speed, 0),  # left
-                (self.speed, 0),   # right
-                (0, -self.speed),  # up
-                (0, self.speed)    # down
-            ]
-
-            dx, dy = directions[movement_choice]
-        else:
-            # Fallback to random movement if no model is provided
-            directions = [
-                (-self.speed, 0),  # left
-                (self.speed, 0),   # right
-                (0, -self.speed),  # up
-                (0, self.speed)    # down
-            ]
-            dx, dy = random.choice(directions)
-
-        # Update the enemy position
+        # Change direction every 20 frames to make movement more varied
+        if self.movement_counter % 20 == 0:
+            self.current_direction = random.choice([(-self.speed, 0), (self.speed, 0), (0, -self.speed), (0, self.speed)])
+        
+        dx, dy = self.current_direction
+        
         new_x = self.pos['x'] + dx
         new_y = self.pos['y'] + dy
 
         # Ensure the enemy does not move off-screen
         self.pos['x'] = max(0, min(self.screen_width - self.size, new_x))
         self.pos['y'] = max(0, min(self.screen_height - self.size, new_y))
+
+        # Increment movement counter
+        self.movement_counter += 1
 
     def draw(self, screen) -> None:
         """
