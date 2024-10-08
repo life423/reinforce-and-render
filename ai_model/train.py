@@ -1,7 +1,12 @@
-import torch  # Import the PyTorch library for tensor operations and neural network training
-import torch.optim as optim  # Import optimization algorithms, specifically Adam in this case
-import json  # Import the json module to read JSON data from a file
-from ai_model.model import EnemyAIModel  # Import the custom enemy AI model from the ai_model package
+import sys
+import os
+import json  # Import json to handle JSON data
+import torch  # Import torch for PyTorch functionality
+import torch.optim as optim  # Import optim for optimization algorithms
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+from ai_model.model import EnemyAIModel
 
 # Load collision data from a JSON file
 with open("collision_data.json", "r") as f:
@@ -14,12 +19,14 @@ outputs = []  # Initialize an empty list to store the expected outputs
 
 # Iterate over each entry in the loaded data
 for entry in data:
-    inputs.append(entry['player_position'] + entry['enemy_position'])  # Concatenate player and enemy positions as input features
+    player_position = list(entry['player_position'].values())  # Convert the player position dictionary to a list of values
+    enemy_position = list(entry['enemy_position'].values())  # Convert the enemy position dictionary to a list of values
+    inputs.append(player_position + enemy_position)  # Concatenate player and enemy positions as input features
     outputs.append(entry['distance'])  # Use distance between player and enemy as the output label
 
 # Convert input and output lists to PyTorch tensors
 inputs_tensor = torch.tensor(inputs, dtype=torch.float32)  # Convert input features to a tensor of type float32
-outputs_tensor = torch.tensor(outputs, dtype=torch.float32)  # Convert output labels to a tensor of type float32
+outputs_tensor = torch.tensor(outputs, dtype=torch.float32).view(-1, 1)  # Convert output labels to a tensor of type float32 and reshape to match model output size
 
 # Define model, loss function, and optimizer
 input_size = len(inputs[0])  # Determine the size of the input layer based on the length of the first input
