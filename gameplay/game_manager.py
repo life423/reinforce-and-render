@@ -3,6 +3,8 @@ import json
 import os
 import random
 from core.config import Config
+
+
 from entities.enemy import Enemy
 
 class Game:
