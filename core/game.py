@@ -79,6 +79,21 @@ class Game:
         self.player_pos['x'] = max(0, min(self.SCREEN_WIDTH - self.PLAYER_SIZE, new_x))
         self.player_pos['y'] = max(0, min(self.SCREEN_HEIGHT - self.PLAYER_SIZE, new_y))
 
+    def log_game_state(self) -> None:
+        """
+        Log the current game state to be used for training.
+        """
+        self.collision_data.append({
+            'player_position': self.player_pos.copy(),
+            'enemy_position': self.enemy.pos.copy(),
+            'time': pygame.time.get_ticks(),
+            'distance': ((self.player_pos['x'] - self.enemy.pos['x'])**2 + (self.player_pos['y'] - self.enemy.pos['y'])**2) ** 0.5
+        })
+        
+        # Save every 100 frames to avoid performance hit
+        if len(self.collision_data) % 100 == 0:
+            self.save_collision_data()
+
     def check_collision(self) -> bool:
         """
         Check for collision between the player and the enemy.
@@ -109,15 +124,13 @@ class Game:
             self.handle_player_movement_random()  # Use random movement for the player
             self.enemy.update_position(self.player_pos)
 
+            # Log game state for training purposes
+            self.log_game_state()
+
             # Check collision
             if self.check_collision():
                 print("Collision Detected! Logging data...")
-                self.collision_data.append({
-                    'player_position': self.player_pos.copy(),
-                    'enemy_position': self.enemy.pos.copy(),
-                    'time': pygame.time.get_ticks()
-                })
-                self.save_collision_data()
+                self.log_game_state()
                 # Instead of stopping the game, continue running
 
             # Draw everything
