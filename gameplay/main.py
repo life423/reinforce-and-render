@@ -10,5 +10,6 @@ from gameplay.game_manager import Game
 
 if __name__ == "__main__":
     from core.config import Config
+
     game = Game(config=Config())
-    game.run()
+    game.run("play")
