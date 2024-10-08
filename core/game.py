@@ -21,7 +21,7 @@ class Game:
         self.SCREEN_HEIGHT = self.screen.get_height()
 
         # Enemy instance
-        self.enemy = Enemy(start_x=100, start_y=300, screen_width=self.SCREEN_WIDTH)
+        self.enemy = Enemy(start_x=100, start_y=300, screen_width=self.SCREEN_WIDTH, screen_height=self.SCREEN_HEIGHT)
 
         self.PLAYER_STEP = Config.PLAYER_STEP
         self.player_pos = {'x': self.SCREEN_WIDTH // 2, 'y': self.SCREEN_HEIGHT // 2}
@@ -115,7 +115,7 @@ class Game:
             delta_time = clock.tick(60) / 1000.0  # Calculate delta time in seconds
             self.handle_events()
             self.handle_player_movement_continuous(delta_time)
-            self.enemy.update_position()
+            self.enemy.update_position(self.player_pos)
 
             # Check collision
             if self.check_collision():
