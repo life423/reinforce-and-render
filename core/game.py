@@ -15,7 +15,7 @@ class Game:
         self.BACKGROUND_COLOR = Config.BACKGROUND_COLOR
         self.PLAYER_COLOR = Config.PLAYER_COLOR
         self.PLAYER_SIZE = Config.PLAYER_SIZE
-        
+
         # Initialize Pygame and set up player position
         self.screen = self.initialize_pygame()
         self.SCREEN_WIDTH = self.screen.get_width()
@@ -34,6 +34,10 @@ class Game:
         # Clear previous collision data file if it exists
         if os.path.exists("collision_data.json"):
             os.remove("collision_data.json")
+
+        # Frame counter for player movement
+        self.player_movement_counter = 0
+        self.player_current_direction = random.choice([(self.PLAYER_STEP, 0), (-self.PLAYER_STEP, 0), (0, self.PLAYER_STEP), (0, -self.PLAYER_STEP)])
     
     def initialize_pygame(self) -> pygame.Surface:
         """
@@ -61,23 +65,25 @@ class Game:
 
     def handle_player_movement_random(self) -> None:
         """
-        Update the player's position randomly.
-        The movement is restricted to ensure the player does not move off-screen.
+        Update the player's position in a more varied, dynamic manner.
         """
-        directions = [
-            (-self.PLAYER_STEP, 0),  # left
-            (self.PLAYER_STEP, 0),   # right
-            (0, -self.PLAYER_STEP),  # up
-            (0, self.PLAYER_STEP)    # down
-        ]
-        dx, dy = random.choice(directions)
-
+        # Change direction every 20 frames
+        if self.player_movement_counter % 20 == 0:
+            self.player_current_direction = random.choice([
+                (self.PLAYER_STEP, 0), (-self.PLAYER_STEP, 0), (0, self.PLAYER_STEP), (0, -self.PLAYER_STEP)
+            ])
+    
+        # Apply the movement
+        dx, dy = self.player_current_direction
         new_x = self.player_pos['x'] + dx
         new_y = self.player_pos['y'] + dy
 
         # Ensure the player does not move off-screen
         self.player_pos['x'] = max(0, min(self.SCREEN_WIDTH - self.PLAYER_SIZE, new_x))
         self.player_pos['y'] = max(0, min(self.SCREEN_HEIGHT - self.PLAYER_SIZE, new_y))
+
+        # Increment movement counter
+        self.player_movement_counter += 1
 
     def log_game_state(self) -> None:
         """

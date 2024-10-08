@@ -12,29 +12,32 @@ class Enemy:
         self.speed = max(1, screen_width // 500)  # Speed of enemy movement
         self.screen_width = screen_width
         self.screen_height = screen_height
+        self.movement_counter = 0
+        self.current_direction = random.choice([(-self.speed, 0), (self.speed, 0), (0, -self.speed), (0, self.speed)])
 
     def update_position(self, player_pos: dict) -> None:
         """
         Update the position of the enemy based on the player's position.
-        For now, this is just random movement.
+        The movement is varied to create more dynamic behavior.
 
         Args:
             player_pos (dict): The current position of the player.
         """
-        directions = [
-            (-self.speed, 0),  # left
-            (self.speed, 0),   # right
-            (0, -self.speed),  # up
-            (0, self.speed)    # down
-        ]
-        dx, dy = random.choice(directions)
-
+        # Change direction every 20 frames to make movement more varied
+        if self.movement_counter % 20 == 0:
+            self.current_direction = random.choice([(-self.speed, 0), (self.speed, 0), (0, -self.speed), (0, self.speed)])
+        
+        dx, dy = self.current_direction
+        
         new_x = self.pos['x'] + dx
         new_y = self.pos['y'] + dy
 
         # Ensure the enemy does not move off-screen
         self.pos['x'] = max(0, min(self.screen_width - self.size, new_x))
         self.pos['y'] = max(0, min(self.screen_height - self.size, new_y))
+
+        # Increment movement counter
+        self.movement_counter += 1
 
     def draw(self, screen) -> None:
         """
