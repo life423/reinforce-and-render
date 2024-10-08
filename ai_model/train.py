@@ -53,3 +53,7 @@ for epoch in range(epochs):  # Loop through each epoch
 # Set the enemy block speed to be slightly slower than the player block
 player_speed = 5  # Example player speed value
 enemy_speed = player_speed * 0.8  # Set enemy speed to 80% of the player speed
+
+# Example change in train.py and model.py
+torch.save(model.state_dict(), "ai_model/saved_models/enemy_ai_model.pth")
+
