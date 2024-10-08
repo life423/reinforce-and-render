@@ -1,38 +1,46 @@
 import pygame
-from core.config import Config
+import random
 
 class Enemy:
-    def __init__(self, start_x: int, start_y: int, screen_width: int) -> None:
+    def __init__(self, start_x: int, start_y: int, screen_width: int, screen_height: int) -> None:
         """
-        Initialize the enemy with position, size, color, and movement settings.
-
-        Args:
-            start_x (int): Initial x position of the enemy.
-            start_y (int): Initial y position of the enemy.
-            screen_width (int): The width of the screen for restricting movement.
+        Initialize the enemy with a starting position and screen constraints.
         """
         self.pos = {'x': start_x, 'y': start_y}
-        self.size = Config.ENEMY_SIZE
-        self.color = Config.ENEMY_COLOR
-        self.speed = max(1, screen_width // 500)  # Dynamic speed based on screen width
-        self.direction = 1  # 1 for right, -1 for left
+        self.size = 100  # Size of the enemy block
+        self.color = (255, 69, 0)  # Orange-Red color for the enemy
+        self.speed = max(1, screen_width // 500)  # Speed of enemy movement
         self.screen_width = screen_width
+        self.screen_height = screen_height
+        self.movement_counter = 0
+        self.current_direction = random.choice([(-self.speed, 0), (self.speed, 0), (0, -self.speed), (0, self.speed)])
 
-    def update_position(self) -> None:
+    def update_position(self, player_pos: dict) -> None:
         """
-        Update the enemy's position, making it patrol back and forth horizontally.
-        The movement is restricted to ensure the enemy does not move off-screen.
-        """
-        self.pos['x'] += self.speed * self.direction
-        # Reverse direction if the enemy hits the edge of the screen
-        if self.pos['x'] <= 0 or self.pos['x'] + self.size >= self.screen_width:
-            self.direction *= -1
-
-    def draw(self, screen: pygame.Surface) -> None:
-        """
-        Draw the enemy at the current position on the screen.
+        Update the position of the enemy based on the player's position.
+        The movement is varied to create more dynamic behavior.
 
         Args:
-            screen (pygame.Surface): The screen to draw on.
+            player_pos (dict): The current position of the player.
+        """
+        # Change direction every 20 frames to make movement more varied
+        if self.movement_counter % 20 == 0:
+            self.current_direction = random.choice([(-self.speed, 0), (self.speed, 0), (0, -self.speed), (0, self.speed)])
+        
+        dx, dy = self.current_direction
+        
+        new_x = self.pos['x'] + dx
+        new_y = self.pos['y'] + dy
+
+        # Ensure the enemy does not move off-screen
+        self.pos['x'] = max(0, min(self.screen_width - self.size, new_x))
+        self.pos['y'] = max(0, min(self.screen_height - self.size, new_y))
+
+        # Increment movement counter
+        self.movement_counter += 1
+
+    def draw(self, screen) -> None:
+        """
+        Draw the enemy on the screen.
         """
         pygame.draw.rect(screen, self.color, (self.pos['x'], self.pos['y'], self.size, self.size))
