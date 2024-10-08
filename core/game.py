@@ -1,5 +1,6 @@
 import pygame
 from core.config import Config
+from entities.enemy import Enemy
 
 class Game:
     def __init__(self) -> None:
@@ -11,16 +12,16 @@ class Game:
         self.BACKGROUND_COLOR = Config.BACKGROUND_COLOR
         self.PLAYER_COLOR = Config.PLAYER_COLOR
         self.PLAYER_SIZE = Config.PLAYER_SIZE
-        self.ENEMY_COLOR = Config.ENEMY_COLOR
-        self.ENEMY_SIZE = Config.ENEMY_SIZE
         
         # Initialize Pygame and set up player position
         self.screen = self.initialize_pygame()
         self.SCREEN_WIDTH = self.screen.get_width()
         self.SCREEN_HEIGHT = self.screen.get_height()
-        self.ENEMY_SPEED = max(1, self.SCREEN_WIDTH // 500)
-        self.enemy_pos = {'x': 100, 'y': 300}
-        self.enemy_direction = 1
+
+        # Enemy instance
+        self.enemy = Enemy(start_x=100, start_y=300, screen_width=self.SCREEN_WIDTH)
+
+
         self.PLAYER_STEP = Config.PLAYER_STEP
         self.player_pos = {'x': self.SCREEN_WIDTH // 2, 'y': self.SCREEN_HEIGHT // 2}
         self.running = True
@@ -78,29 +79,16 @@ class Game:
                 self.player_pos['x'] = max(0, min(self.SCREEN_WIDTH - self.PLAYER_SIZE, new_x))
                 self.player_pos['y'] = max(0, min(self.SCREEN_HEIGHT - self.PLAYER_SIZE, new_y))
 
-    def update_enemy_position(self) -> None:
+    def check_collision(self) -> bool:
         """
-        Update the enemy's position, making it patrol back and forth horizontally.
-        The movement is restricted to ensure the enemy does not move off-screen.
-        """
-        self.enemy_pos['x'] += self.ENEMY_SPEED * self.enemy_direction
-        # Reverse direction if the enemy hits the edge of the screen
-        if self.enemy_pos['x'] <= 0 or self.enemy_pos['x'] + self.ENEMY_SIZE >= self.SCREEN_WIDTH:
-            self.enemy_direction *= -1
+        Check for collision between the player and the enemy.
 
-    def draw_player(self) -> None:
+        Returns:
+            bool: True if a collision is detected, otherwise False.
         """
-        Draw the player at the current position on the screen.
-        The player is represented as a rectangle.
-        """
-        pygame.draw.rect(self.screen, self.PLAYER_COLOR, (self.player_pos['x'], self.player_pos['y'], self.PLAYER_SIZE, self.PLAYER_SIZE))
-
-    def draw_enemy(self) -> None:
-        """
-        Draw the enemy at the current position on the screen.
-        The enemy is represented as a rectangle.
-        """
-        pygame.draw.rect(self.screen, self.ENEMY_COLOR, (self.enemy_pos['x'], self.enemy_pos['y'], self.ENEMY_SIZE, self.ENEMY_SIZE))
+        player_rect = pygame.Rect(self.player_pos['x'], self.player_pos['y'], self.PLAYER_SIZE, self.PLAYER_SIZE)
+        enemy_rect = pygame.Rect(self.enemy.pos['x'], self.enemy.pos['y'], self.enemy.size, self.enemy.size)
+        return player_rect.colliderect(enemy_rect)
 
     def run(self) -> None:
         """
@@ -112,9 +100,23 @@ class Game:
             delta_time = clock.tick(60) / 1000.0  # Calculate delta time in seconds
             self.handle_events()
             self.handle_player_movement_continuous(delta_time)
-            self.update_enemy_position()
+            self.enemy.update_position()
+
+            # Check collision
+            if self.check_collision():
+                print("Collision Detected! Game Over.")
+                self.running = False
+
+            # Draw everything
             self.screen.fill(self.BACKGROUND_COLOR)
             self.draw_player()
-            self.draw_enemy()
+            self.enemy.draw(self.screen)
             pygame.display.flip()
         pygame.quit()
+
+    def draw_player(self) -> None:
+        """
+        Draw the player at the current position on the screen.
+        The player is represented as a rectangle.
+        """
+        pygame.draw.rect(self.screen, self.PLAYER_COLOR, (self.player_pos['x'], self.player_pos['y'], self.PLAYER_SIZE, self.PLAYER_SIZE))
