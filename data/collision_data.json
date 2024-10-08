@@ -1,2918 +1,1394 @@
 [
     {
         "player_position": {
-            "x": 960,
+            "x": 955,
             "y": 600
         },
         "enemy_position": {
-            "x": 103,
+            "x": 97,
             "y": 300
         },
-        "time": 441,
-        "distance": 907.9917400505359
+        "time": 464,
+        "distance": 908.9356412860044
     },
     {
         "player_position": {
-            "x": 960,
+            "x": 950,
             "y": 600
         },
         "enemy_position": {
-            "x": 106,
+            "x": 94,
             "y": 300
         },
-        "time": 456,
+        "time": 476,
+        "distance": 907.0479590407555
+    },
+    {
+        "player_position": {
+            "x": 945,
+            "y": 600
+        },
+        "enemy_position": {
+            "x": 91,
+            "y": 300
+        },
+        "time": 492,
         "distance": 905.1607592024745
     },
     {
         "player_position": {
-            "x": 960,
+            "x": 940,
             "y": 600
         },
         "enemy_position": {
-            "x": 109,
+            "x": 88,
             "y": 300
         },
-        "time": 472,
-        "distance": 902.3308705790797
+        "time": 508,
+        "distance": 903.274044794823
     },
     {
         "player_position": {
-            "x": 960,
+            "x": 935,
             "y": 600
         },
         "enemy_position": {
-            "x": 112,
+            "x": 85,
             "y": 300
         },
-        "time": 490,
+        "time": 524,
+        "distance": 901.3878188659974
+    },
+    {
+        "player_position": {
+            "x": 930,
+            "y": 600
+        },
+        "enemy_position": {
+            "x": 82,
+            "y": 300
+        },
+        "time": 541,
         "distance": 899.5020844889688
     },
     {
         "player_position": {
-            "x": 960,
+            "x": 925,
             "y": 600
         },
         "enemy_position": {
-            "x": 115,
+            "x": 79,
             "y": 300
         },
-        "time": 505,
-        "distance": 896.6744113668016
+        "time": 558,
+        "distance": 897.616844761728
     },
     {
         "player_position": {
-            "x": 960,
+            "x": 920,
             "y": 600
         },
         "enemy_position": {
-            "x": 118,
+            "x": 76,
             "y": 300
         },
-        "time": 523,
+        "time": 574,
+        "distance": 895.7321028075303
+    },
+    {
+        "player_position": {
+            "x": 915,
+            "y": 600
+        },
+        "enemy_position": {
+            "x": 73,
+            "y": 300
+        },
+        "time": 591,
         "distance": 893.8478617751457
     },
     {
         "player_position": {
-            "x": 960,
+            "x": 910,
             "y": 600
         },
         "enemy_position": {
-            "x": 121,
+            "x": 70,
             "y": 300
         },
-        "time": 539,
-        "distance": 891.0224464063742
+        "time": 607,
+        "distance": 891.9641248391104
     },
     {
         "player_position": {
-            "x": 960,
+            "x": 905,
             "y": 600
         },
         "enemy_position": {
-            "x": 124,
+            "x": 67,
             "y": 300
         },
-        "time": 555,
+        "time": 625,
+        "distance": 890.0808951999812
+    },
+    {
+        "player_position": {
+            "x": 900,
+            "y": 600
+        },
+        "enemy_position": {
+            "x": 64,
+            "y": 300
+        },
+        "time": 641,
         "distance": 888.1981760845944
     },
     {
         "player_position": {
-            "x": 960,
+            "x": 895,
             "y": 600
         },
         "enemy_position": {
-            "x": 127,
+            "x": 61,
             "y": 300
         },
-        "time": 572,
-        "distance": 885.3750617676104
+        "time": 657,
+        "distance": 886.3159707463248
     },
     {
         "player_position": {
-            "x": 960,
+            "x": 890,
             "y": 600
         },
         "enemy_position": {
-            "x": 130,
+            "x": 58,
             "y": 300
         },
-        "time": 588,
+        "time": 673,
+        "distance": 884.4342824653509
+    },
+    {
+        "player_position": {
+            "x": 885,
+            "y": 600
+        },
+        "enemy_position": {
+            "x": 55,
+            "y": 300
+        },
+        "time": 689,
         "distance": 882.5531145489205
     },
     {
         "player_position": {
-            "x": 960,
+            "x": 880,
             "y": 600
         },
         "enemy_position": {
-            "x": 133,
+            "x": 52,
             "y": 300
         },
-        "time": 605,
-        "distance": 879.7323456597467
+        "time": 705,
+        "distance": 880.6724703316211
     },
     {
         "player_position": {
-            "x": 960,
+            "x": 875,
             "y": 600
         },
         "enemy_position": {
-            "x": 136,
+            "x": 49,
             "y": 300
         },
-        "time": 621,
+        "time": 722,
+        "distance": 878.7923531756521
+    },
+    {
+        "player_position": {
+            "x": 870,
+            "y": 600
+        },
+        "enemy_position": {
+            "x": 46,
+            "y": 300
+        },
+        "time": 738,
         "distance": 876.9127664711011
     },
     {
         "player_position": {
-            "x": 960,
+            "x": 865,
             "y": 600
         },
         "enemy_position": {
-            "x": 139,
+            "x": 43,
             "y": 300
         },
-        "time": 638,
-        "distance": 874.0943884958878
+        "time": 754,
+        "distance": 875.0337136362233
     },
     {
         "player_position": {
-            "x": 960,
+            "x": 860,
             "y": 600
         },
         "enemy_position": {
-            "x": 142,
+            "x": 40,
             "y": 300
         },
-        "time": 654,
-        "distance": 871.2772233910399
+        "time": 771,
+        "distance": 873.155198117723
     },
     {
         "player_position": {
-            "x": 960,
-            "y": 600
+            "x": 860,
+            "y": 605
         },
         "enemy_position": {
-            "x": 145,
-            "y": 300
+            "x": 40,
+            "y": 303
         },
-        "time": 670,
-        "distance": 868.4612829596954
+        "time": 787,
+        "distance": 873.8443797381774
     },
     {
         "player_position": {
-            "x": 960,
-            "y": 600
+            "x": 860,
+            "y": 610
         },
         "enemy_position": {
-            "x": 148,
-            "y": 300
+            "x": 40,
+            "y": 306
         },
-        "time": 686,
-        "distance": 865.6465791534094
+        "time": 803,
+        "distance": 874.5375921022492
     },
     {
         "player_position": {
-            "x": 960,
-            "y": 600
+            "x": 860,
+            "y": 615
         },
         "enemy_position": {
-            "x": 151,
-            "y": 300
+            "x": 40,
+            "y": 309
         },
-        "time": 702,
-        "distance": 862.8331240744064
+        "time": 819,
+        "distance": 875.2348256325271
     },
     {
         "player_position": {
-            "x": 960,
-            "y": 600
+            "x": 860,
+            "y": 620
         },
         "enemy_position": {
-            "x": 154,
-            "y": 300
+            "x": 40,
+            "y": 312
         },
-        "time": 718,
-        "distance": 860.0209299778697
+        "time": 835,
+        "distance": 875.9360707266255
     },
     {
         "player_position": {
-            "x": 960,
-            "y": 600
+            "x": 860,
+            "y": 625
         },
         "enemy_position": {
-            "x": 157,
-            "y": 300
+            "x": 40,
+            "y": 315
         },
-        "time": 734,
-        "distance": 857.2100092742735
+        "time": 852,
+        "distance": 876.6413177577247
     },
     {
         "player_position": {
-            "x": 960,
-            "y": 600
+            "x": 860,
+            "y": 630
         },
         "enemy_position": {
-            "x": 160,
-            "y": 300
+            "x": 40,
+            "y": 318
         },
-        "time": 750,
-        "distance": 854.4003745317531
+        "time": 869,
+        "distance": 877.3505570751066
     },
     {
         "player_position": {
-            "x": 960,
-            "y": 600
+            "x": 860,
+            "y": 635
         },
         "enemy_position": {
-            "x": 157,
-            "y": 300
+            "x": 40,
+            "y": 321
         },
-        "time": 766,
-        "distance": 857.2100092742735
+        "time": 885,
+        "distance": 878.0637790046917
     },
     {
         "player_position": {
-            "x": 960,
-            "y": 600
+            "x": 860,
+            "y": 640
         },
         "enemy_position": {
-            "x": 154,
-            "y": 300
+            "x": 40,
+            "y": 324
         },
-        "time": 782,
-        "distance": 860.0209299778697
+        "time": 901,
+        "distance": 878.7809738495707
     },
     {
         "player_position": {
-            "x": 960,
-            "y": 600
+            "x": 860,
+            "y": 645
         },
         "enemy_position": {
-            "x": 151,
-            "y": 300
+            "x": 40,
+            "y": 327
         },
-        "time": 799,
-        "distance": 862.8331240744064
+        "time": 918,
+        "distance": 879.5021318905373
     },
     {
         "player_position": {
-            "x": 960,
-            "y": 600
+            "x": 860,
+            "y": 650
         },
         "enemy_position": {
-            "x": 148,
-            "y": 300
+            "x": 40,
+            "y": 330
         },
-        "time": 816,
-        "distance": 865.6465791534094
+        "time": 934,
+        "distance": 880.2272433866154
     },
     {
         "player_position": {
-            "x": 960,
-            "y": 600
+            "x": 860,
+            "y": 655
         },
         "enemy_position": {
-            "x": 145,
-            "y": 300
+            "x": 40,
+            "y": 333
         },
-        "time": 832,
-        "distance": 868.4612829596954
+        "time": 951,
+        "distance": 880.9562985755877
     },
     {
         "player_position": {
-            "x": 960,
-            "y": 600
+            "x": 860,
+            "y": 660
         },
         "enemy_position": {
-            "x": 142,
-            "y": 300
-        },
-        "time": 848,
-        "distance": 871.2772233910399
-    },
-    {
-        "player_position": {
-            "x": 960,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 139,
-            "y": 300
-        },
-        "time": 866,
-        "distance": 874.0943884958878
-    },
-    {
-        "player_position": {
-            "x": 960,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 136,
-            "y": 300
-        },
-        "time": 883,
-        "distance": 876.9127664711011
-    },
-    {
-        "player_position": {
-            "x": 960,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 133,
-            "y": 300
-        },
-        "time": 899,
-        "distance": 879.7323456597467
-    },
-    {
-        "player_position": {
-            "x": 960,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 130,
-            "y": 300
-        },
-        "time": 916,
-        "distance": 882.5531145489205
-    },
-    {
-        "player_position": {
-            "x": 960,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 127,
-            "y": 300
-        },
-        "time": 933,
-        "distance": 885.3750617676104
-    },
-    {
-        "player_position": {
-            "x": 960,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 124,
-            "y": 300
-        },
-        "time": 950,
-        "distance": 888.1981760845944
-    },
-    {
-        "player_position": {
-            "x": 960,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 121,
-            "y": 300
+            "x": 40,
+            "y": 336
         },
         "time": 966,
-        "distance": 891.0224464063742
+        "distance": 881.6892876745186
     },
     {
         "player_position": {
-            "x": 960,
-            "y": 600
+            "x": 860,
+            "y": 665
         },
         "enemy_position": {
-            "x": 118,
-            "y": 300
+            "x": 40,
+            "y": 339
         },
-        "time": 983,
-        "distance": 893.8478617751457
+        "time": 982,
+        "distance": 882.4262008802776
     },
     {
         "player_position": {
-            "x": 960,
-            "y": 600
+            "x": 860,
+            "y": 670
         },
         "enemy_position": {
-            "x": 115,
-            "y": 300
+            "x": 40,
+            "y": 342
         },
-        "time": 999,
-        "distance": 896.6744113668016
+        "time": 998,
+        "distance": 883.1670283700587
     },
     {
         "player_position": {
-            "x": 960,
-            "y": 600
+            "x": 860,
+            "y": 675
         },
         "enemy_position": {
-            "x": 112,
-            "y": 300
+            "x": 40,
+            "y": 345
         },
-        "time": 1016,
-        "distance": 899.5020844889688
+        "time": 1015,
+        "distance": 883.911760301898
     },
     {
         "player_position": {
-            "x": 960,
-            "y": 600
+            "x": 860,
+            "y": 680
         },
         "enemy_position": {
-            "x": 109,
-            "y": 300
+            "x": 40,
+            "y": 348
         },
         "time": 1032,
-        "distance": 902.3308705790797
+        "distance": 884.6603868151891
     },
     {
         "player_position": {
-            "x": 960,
-            "y": 600
+            "x": 860,
+            "y": 685
         },
         "enemy_position": {
-            "x": 106,
-            "y": 300
+            "x": 40,
+            "y": 351
         },
         "time": 1048,
-        "distance": 905.1607592024745
+        "distance": 885.4128980311954
     },
     {
         "player_position": {
-            "x": 960,
-            "y": 600
+            "x": 860,
+            "y": 690
         },
         "enemy_position": {
-            "x": 103,
-            "y": 300
+            "x": 40,
+            "y": 354
         },
         "time": 1064,
-        "distance": 907.9917400505359
+        "distance": 886.1692840535605
     },
     {
         "player_position": {
-            "x": 960,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 100,
-            "y": 300
-        },
-        "time": 1081,
-        "distance": 910.823802938856
-    },
-    {
-        "player_position": {
-            "x": 960,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 97,
-            "y": 300
-        },
-        "time": 1098,
-        "distance": 913.6569378054326
-    },
-    {
-        "player_position": {
-            "x": 960,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 94,
-            "y": 300
-        },
-        "time": 1114,
-        "distance": 916.4911347088961
-    },
-    {
-        "player_position": {
-            "x": 960,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 91,
-            "y": 300
-        },
-        "time": 1131,
-        "distance": 919.3263838267669
-    },
-    {
-        "player_position": {
-            "x": 960,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 88,
-            "y": 300
-        },
-        "time": 1147,
-        "distance": 922.1626754537401
-    },
-    {
-        "player_position": {
-            "x": 965,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 85,
-            "y": 300
-        },
-        "time": 1165,
-        "distance": 929.7311439335567
-    },
-    {
-        "player_position": {
-            "x": 970,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 82,
-            "y": 300
-        },
-        "time": 1180,
-        "distance": 937.3067800885684
-    },
-    {
-        "player_position": {
-            "x": 975,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 79,
-            "y": 300
-        },
-        "time": 1198,
-        "distance": 944.8894115186179
-    },
-    {
-        "player_position": {
-            "x": 980,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 76,
-            "y": 300
-        },
-        "time": 1215,
-        "distance": 952.4788711567307
-    },
-    {
-        "player_position": {
-            "x": 985,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 73,
-            "y": 300
-        },
-        "time": 1230,
-        "distance": 960.0749970705414
-    },
-    {
-        "player_position": {
-            "x": 990,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 70,
-            "y": 300
-        },
-        "time": 1246,
-        "distance": 967.6776322722355
-    },
-    {
-        "player_position": {
-            "x": 995,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 67,
-            "y": 300
-        },
-        "time": 1264,
-        "distance": 975.2866245366025
-    },
-    {
-        "player_position": {
-            "x": 1000,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 64,
-            "y": 300
-        },
-        "time": 1279,
-        "distance": 982.901826226811
-    },
-    {
-        "player_position": {
-            "x": 1005,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 61,
-            "y": 300
-        },
-        "time": 1295,
-        "distance": 990.5230941275423
-    },
-    {
-        "player_position": {
-            "x": 1005,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 58,
-            "y": 300
-        },
-        "time": 1312,
-        "distance": 993.3826050419848
-    },
-    {
-        "player_position": {
-            "x": 1005,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 55,
-            "y": 300
-        },
-        "time": 1327,
-        "distance": 996.2429422585637
-    },
-    {
-        "player_position": {
-            "x": 1005,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 52,
-            "y": 300
-        },
-        "time": 1343,
-        "distance": 999.1040986804128
-    },
-    {
-        "player_position": {
-            "x": 1005,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 49,
-            "y": 300
-        },
-        "time": 1359,
-        "distance": 1001.9660672897062
-    },
-    {
-        "player_position": {
-            "x": 1005,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 46,
-            "y": 300
-        },
-        "time": 1376,
-        "distance": 1004.8288411465905
-    },
-    {
-        "player_position": {
-            "x": 1005,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 43,
-            "y": 300
-        },
-        "time": 1392,
-        "distance": 1007.692413388133
-    },
-    {
-        "player_position": {
-            "x": 1005,
-            "y": 600
+            "x": 860,
+            "y": 695
         },
         "enemy_position": {
             "x": 40,
-            "y": 300
+            "y": 357
         },
-        "time": 1408,
-        "distance": 1010.5567772272867
+        "time": 1080,
+        "distance": 886.9295349688159
     },
     {
         "player_position": {
-            "x": 1005,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 43,
-            "y": 300
-        },
-        "time": 1424,
-        "distance": 1007.692413388133
-    },
-    {
-        "player_position": {
-            "x": 1005,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 46,
-            "y": 300
-        },
-        "time": 1440,
-        "distance": 1004.8288411465905
-    },
-    {
-        "player_position": {
-            "x": 1005,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 49,
-            "y": 300
-        },
-        "time": 1456,
-        "distance": 1001.9660672897062
-    },
-    {
-        "player_position": {
-            "x": 1005,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 52,
-            "y": 300
-        },
-        "time": 1473,
-        "distance": 999.1040986804128
-    },
-    {
-        "player_position": {
-            "x": 1010,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 55,
-            "y": 300
-        },
-        "time": 1489,
-        "distance": 1001.0119879402044
-    },
-    {
-        "player_position": {
-            "x": 1015,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 58,
-            "y": 300
-        },
-        "time": 1506,
-        "distance": 1002.9202361105293
-    },
-    {
-        "player_position": {
-            "x": 1020,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 61,
-            "y": 300
-        },
-        "time": 1522,
-        "distance": 1004.8288411465905
-    },
-    {
-        "player_position": {
-            "x": 1025,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 64,
-            "y": 300
-        },
-        "time": 1538,
-        "distance": 1006.7378010187161
-    },
-    {
-        "player_position": {
-            "x": 1030,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 67,
-            "y": 300
-        },
-        "time": 1556,
-        "distance": 1008.6471137122239
-    },
-    {
-        "player_position": {
-            "x": 1035,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 70,
-            "y": 300
-        },
-        "time": 1573,
-        "distance": 1010.5567772272867
-    },
-    {
-        "player_position": {
-            "x": 1040,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 73,
-            "y": 300
-        },
-        "time": 1589,
-        "distance": 1012.466789578799
-    },
-    {
-        "player_position": {
-            "x": 1045,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 76,
-            "y": 300
-        },
-        "time": 1605,
-        "distance": 1012.9096702075659
-    },
-    {
-        "player_position": {
-            "x": 1050,
-            "y": 590
-        },
-        "enemy_position": {
-            "x": 79,
-            "y": 300
-        },
-        "time": 1621,
-        "distance": 1013.3809747572726
-    },
-    {
-        "player_position": {
-            "x": 1055,
-            "y": 585
-        },
-        "enemy_position": {
-            "x": 82,
-            "y": 300
-        },
-        "time": 1637,
-        "distance": 1013.8806635891623
-    },
-    {
-        "player_position": {
-            "x": 1060,
-            "y": 580
-        },
-        "enemy_position": {
-            "x": 85,
-            "y": 300
-        },
-        "time": 1654,
-        "distance": 1014.4086947576899
-    },
-    {
-        "player_position": {
-            "x": 1060,
-            "y": 575
-        },
-        "enemy_position": {
-            "x": 88,
-            "y": 300
-        },
-        "time": 1671,
-        "distance": 1010.1529587146691
-    },
-    {
-        "player_position": {
-            "x": 1060,
-            "y": 570
-        },
-        "enemy_position": {
-            "x": 91,
-            "y": 300
-        },
-        "time": 1687,
-        "distance": 1005.9130181084247
-    },
-    {
-        "player_position": {
-            "x": 1060,
-            "y": 565
-        },
-        "enemy_position": {
-            "x": 94,
-            "y": 300
-        },
-        "time": 1704,
-        "distance": 1001.6890735153299
-    },
-    {
-        "player_position": {
-            "x": 1060,
-            "y": 565
-        },
-        "enemy_position": {
-            "x": 97,
-            "y": 300
-        },
-        "time": 1721,
-        "distance": 998.7962755236925
-    },
-    {
-        "player_position": {
-            "x": 1060,
-            "y": 565
-        },
-        "enemy_position": {
-            "x": 100,
-            "y": 300
-        },
-        "time": 1736,
-        "distance": 995.9041118501319
-    },
-    {
-        "player_position": {
-            "x": 1060,
-            "y": 565
-        },
-        "enemy_position": {
-            "x": 97,
-            "y": 300
-        },
-        "time": 1752,
-        "distance": 998.7962755236925
-    },
-    {
-        "player_position": {
-            "x": 1060,
-            "y": 565
-        },
-        "enemy_position": {
-            "x": 94,
-            "y": 300
-        },
-        "time": 1768,
-        "distance": 1001.6890735153299
-    },
-    {
-        "player_position": {
-            "x": 1060,
-            "y": 565
-        },
-        "enemy_position": {
-            "x": 91,
-            "y": 300
-        },
-        "time": 1785,
-        "distance": 1004.5825003452927
-    },
-    {
-        "player_position": {
-            "x": 1060,
-            "y": 565
-        },
-        "enemy_position": {
-            "x": 88,
-            "y": 300
-        },
-        "time": 1802,
-        "distance": 1007.4765505955958
-    },
-    {
-        "player_position": {
-            "x": 1060,
-            "y": 565
-        },
-        "enemy_position": {
-            "x": 85,
-            "y": 300
-        },
-        "time": 1819,
-        "distance": 1010.3712189091691
-    },
-    {
-        "player_position": {
-            "x": 1060,
-            "y": 565
-        },
-        "enemy_position": {
-            "x": 82,
-            "y": 300
-        },
-        "time": 1836,
-        "distance": 1013.2664999890206
-    },
-    {
-        "player_position": {
-            "x": 1060,
-            "y": 565
-        },
-        "enemy_position": {
-            "x": 79,
-            "y": 300
-        },
-        "time": 1852,
-        "distance": 1016.1623885974132
-    },
-    {
-        "player_position": {
-            "x": 1060,
-            "y": 565
-        },
-        "enemy_position": {
-            "x": 76,
-            "y": 300
-        },
-        "time": 1868,
-        "distance": 1019.058879555053
-    },
-    {
-        "player_position": {
-            "x": 1060,
-            "y": 565
-        },
-        "enemy_position": {
-            "x": 73,
-            "y": 300
-        },
-        "time": 1884,
-        "distance": 1021.9559677402935
-    },
-    {
-        "player_position": {
-            "x": 1060,
-            "y": 565
-        },
-        "enemy_position": {
-            "x": 70,
-            "y": 300
-        },
-        "time": 1901,
-        "distance": 1024.8536480883502
-    },
-    {
-        "player_position": {
-            "x": 1065,
-            "y": 565
-        },
-        "enemy_position": {
-            "x": 67,
-            "y": 300
-        },
-        "time": 1917,
-        "distance": 1032.5836527855745
-    },
-    {
-        "player_position": {
-            "x": 1070,
-            "y": 565
-        },
-        "enemy_position": {
-            "x": 64,
-            "y": 300
-        },
-        "time": 1933,
-        "distance": 1040.3177399237215
-    },
-    {
-        "player_position": {
-            "x": 1075,
-            "y": 565
-        },
-        "enemy_position": {
-            "x": 61,
-            "y": 300
-        },
-        "time": 1949,
-        "distance": 1048.0558191241532
-    },
-    {
-        "player_position": {
-            "x": 1080,
-            "y": 565
-        },
-        "enemy_position": {
-            "x": 58,
-            "y": 300
-        },
-        "time": 1965,
-        "distance": 1055.7978026118449
-    },
-    {
-        "player_position": {
-            "x": 1085,
-            "y": 565
-        },
-        "enemy_position": {
-            "x": 55,
-            "y": 300
-        },
-        "time": 1981,
-        "distance": 1063.5436051239271
-    },
-    {
-        "player_position": {
-            "x": 1090,
-            "y": 565
-        },
-        "enemy_position": {
-            "x": 52,
-            "y": 300
-        },
-        "time": 1997,
-        "distance": 1071.2931438219887
-    },
-    {
-        "player_position": {
-            "x": 1095,
-            "y": 565
-        },
-        "enemy_position": {
-            "x": 49,
-            "y": 300
-        },
-        "time": 2013,
-        "distance": 1079.0463382079568
-    },
-    {
-        "player_position": {
-            "x": 1100,
-            "y": 565
-        },
-        "enemy_position": {
-            "x": 46,
-            "y": 300
-        },
-        "time": 2029,
-        "distance": 1086.803110043397
-    },
-    {
-        "player_position": {
-            "x": 1105,
-            "y": 565
-        },
-        "enemy_position": {
-            "x": 43,
-            "y": 300
-        },
-        "time": 2045,
-        "distance": 1094.5633832720698
-    },
-    {
-        "player_position": {
-            "x": 1110,
-            "y": 565
+            "x": 860,
+            "y": 700
         },
         "enemy_position": {
             "x": 40,
-            "y": 300
+            "y": 360
         },
-        "time": 2061,
-        "distance": 1102.3270839455956
+        "time": 1097,
+        "distance": 887.6936408468858
     },
     {
         "player_position": {
-            "x": 1115,
-            "y": 570
+            "x": 860,
+            "y": 705
         },
         "enemy_position": {
             "x": 37,
-            "y": 300
+            "y": 360
         },
-        "time": 2077,
-        "distance": 1111.298339780997
+        "time": 1113,
+        "distance": 892.3866874847473
     },
     {
         "player_position": {
-            "x": 1120,
-            "y": 575
+            "x": 860,
+            "y": 710
         },
         "enemy_position": {
             "x": 34,
-            "y": 300
+            "y": 360
         },
-        "time": 2094,
-        "distance": 1120.2771978398919
+        "time": 1131,
+        "distance": 897.0930832416444
     },
     {
         "player_position": {
-            "x": 1125,
-            "y": 580
+            "x": 860,
+            "y": 715
         },
         "enemy_position": {
             "x": 31,
-            "y": 300
+            "y": 360
         },
-        "time": 2111,
-        "distance": 1129.263476784758
+        "time": 1148,
+        "distance": 901.8126191177411
     },
     {
         "player_position": {
-            "x": 1125,
-            "y": 585
+            "x": 860,
+            "y": 720
         },
         "enemy_position": {
             "x": 28,
-            "y": 300
+            "y": 360
         },
-        "time": 2127,
-        "distance": 1133.4169576991515
+        "time": 1165,
+        "distance": 906.5450898879768
     },
     {
         "player_position": {
-            "x": 1125,
-            "y": 590
+            "x": 860,
+            "y": 725
         },
         "enemy_position": {
             "x": 25,
-            "y": 300
+            "y": 360
         },
-        "time": 2144,
-        "distance": 1137.58516164725
+        "time": 1181,
+        "distance": 911.290294033685
     },
     {
         "player_position": {
-            "x": 1125,
-            "y": 595
+            "x": 860,
+            "y": 730
         },
         "enemy_position": {
             "x": 22,
-            "y": 300
+            "y": 360
         },
-        "time": 2160,
-        "distance": 1141.7679273827935
+        "time": 1198,
+        "distance": 916.0480336750907
     },
     {
         "player_position": {
-            "x": 1125,
-            "y": 600
+            "x": 860,
+            "y": 735
         },
         "enemy_position": {
             "x": 19,
-            "y": 300
+            "y": 360
         },
-        "time": 2176,
-        "distance": 1145.965095454482
+        "time": 1213,
+        "distance": 920.818114504705
     },
     {
         "player_position": {
-            "x": 1125,
-            "y": 600
+            "x": 860,
+            "y": 740
         },
         "enemy_position": {
             "x": 16,
-            "y": 300
+            "y": 360
         },
-        "time": 2193,
-        "distance": 1148.8607400377123
+        "time": 1230,
+        "distance": 925.6003457216294
     },
     {
         "player_position": {
-            "x": 1125,
-            "y": 600
+            "x": 860,
+            "y": 745
         },
         "enemy_position": {
             "x": 13,
-            "y": 300
+            "y": 360
         },
-        "time": 2208,
-        "distance": 1151.7569187984068
+        "time": 1247,
+        "distance": 930.3945399667821
     },
     {
         "player_position": {
-            "x": 1125,
-            "y": 600
+            "x": 860,
+            "y": 750
         },
         "enemy_position": {
             "x": 10,
-            "y": 300
+            "y": 360
         },
-        "time": 2224,
-        "distance": 1154.6536277169878
+        "time": 1263,
+        "distance": 935.200513259055
     },
     {
         "player_position": {
-            "x": 1125,
-            "y": 600
+            "x": 860,
+            "y": 755
         },
         "enemy_position": {
             "x": 7,
-            "y": 300
+            "y": 360
         },
-        "time": 2240,
-        "distance": 1157.5508628133798
+        "time": 1281,
+        "distance": 940.0180849324123
     },
     {
         "player_position": {
-            "x": 1125,
-            "y": 600
+            "x": 860,
+            "y": 760
         },
         "enemy_position": {
             "x": 4,
-            "y": 300
+            "y": 360
         },
-        "time": 2257,
-        "distance": 1160.4486201465363
+        "time": 1298,
+        "distance": 944.8470775739321
     },
     {
         "player_position": {
-            "x": 1125,
-            "y": 600
+            "x": 860,
+            "y": 765
         },
         "enemy_position": {
             "x": 1,
-            "y": 300
-        },
-        "time": 2273,
-        "distance": 1163.34689581397
-    },
-    {
-        "player_position": {
-            "x": 1125,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 0,
-            "y": 300
-        },
-        "time": 2289,
-        "distance": 1164.3131022195018
-    },
-    {
-        "player_position": {
-            "x": 1125,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 0,
-            "y": 300
-        },
-        "time": 2306,
-        "distance": 1164.3131022195018
-    },
-    {
-        "player_position": {
-            "x": 1120,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 0,
-            "y": 300
-        },
-        "time": 2323,
-        "distance": 1159.4826432508596
-    },
-    {
-        "player_position": {
-            "x": 1115,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 0,
-            "y": 300
-        },
-        "time": 2338,
-        "distance": 1154.6536277169878
-    },
-    {
-        "player_position": {
-            "x": 1110,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 0,
-            "y": 300
-        },
-        "time": 2354,
-        "distance": 1149.826073804208
-    },
-    {
-        "player_position": {
-            "x": 1105,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 0,
-            "y": 300
-        },
-        "time": 2371,
-        "distance": 1145.0
-    },
-    {
-        "player_position": {
-            "x": 1100,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 0,
-            "y": 300
-        },
-        "time": 2387,
-        "distance": 1140.175425099138
-    },
-    {
-        "player_position": {
-            "x": 1095,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 3,
-            "y": 300
-        },
-        "time": 2403,
-        "distance": 1132.4592707907866
-    },
-    {
-        "player_position": {
-            "x": 1090,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 6,
-            "y": 300
-        },
-        "time": 2419,
-        "distance": 1124.7470826812578
-    },
-    {
-        "player_position": {
-            "x": 1085,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 9,
-            "y": 300
-        },
-        "time": 2435,
-        "distance": 1117.0389429200757
-    },
-    {
-        "player_position": {
-            "x": 1080,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 12,
-            "y": 300
-        },
-        "time": 2451,
-        "distance": 1109.3349358962782
-    },
-    {
-        "player_position": {
-            "x": 1075,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 15,
-            "y": 300
-        },
-        "time": 2467,
-        "distance": 1101.635148313633
-    },
-    {
-        "player_position": {
-            "x": 1070,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 18,
-            "y": 300
-        },
-        "time": 2483,
-        "distance": 1093.9396692688313
-    },
-    {
-        "player_position": {
-            "x": 1065,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 21,
-            "y": 300
-        },
-        "time": 2500,
-        "distance": 1086.2485903328022
-    },
-    {
-        "player_position": {
-            "x": 1060,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 24,
-            "y": 300
-        },
-        "time": 2516,
-        "distance": 1078.5620056352811
-    },
-    {
-        "player_position": {
-            "x": 1055,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 27,
-            "y": 300
-        },
-        "time": 2533,
-        "distance": 1070.8800119527864
-    },
-    {
-        "player_position": {
-            "x": 1050,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 30,
-            "y": 300
-        },
-        "time": 2548,
-        "distance": 1063.202708800161
-    },
-    {
-        "player_position": {
-            "x": 1045,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 33,
-            "y": 300
-        },
-        "time": 2564,
-        "distance": 1055.5301985258404
-    },
-    {
-        "player_position": {
-            "x": 1045,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 36,
-            "y": 300
-        },
-        "time": 2580,
-        "distance": 1052.6542642292388
-    },
-    {
-        "player_position": {
-            "x": 1045,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 39,
-            "y": 300
-        },
-        "time": 2598,
-        "distance": 1049.7790243665568
-    },
-    {
-        "player_position": {
-            "x": 1045,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 42,
-            "y": 300
-        },
-        "time": 2612,
-        "distance": 1046.9044846594172
-    },
-    {
-        "player_position": {
-            "x": 1045,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 45,
-            "y": 300
-        },
-        "time": 2628,
-        "distance": 1044.030650891055
-    },
-    {
-        "player_position": {
-            "x": 1045,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 48,
-            "y": 300
-        },
-        "time": 2644,
-        "distance": 1041.1575289071295
-    },
-    {
-        "player_position": {
-            "x": 1045,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 51,
-            "y": 300
-        },
-        "time": 2661,
-        "distance": 1038.2851246165478
-    },
-    {
-        "player_position": {
-            "x": 1045,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 54,
-            "y": 300
-        },
-        "time": 2677,
-        "distance": 1035.413443992302
-    },
-    {
-        "player_position": {
-            "x": 1045,
-            "y": 605
-        },
-        "enemy_position": {
-            "x": 57,
-            "y": 300
-        },
-        "time": 2693,
-        "distance": 1034.0062862478158
-    },
-    {
-        "player_position": {
-            "x": 1045,
-            "y": 610
-        },
-        "enemy_position": {
-            "x": 60,
-            "y": 300
-        },
-        "time": 2710,
-        "distance": 1032.6301370771628
-    },
-    {
-        "player_position": {
-            "x": 1045,
-            "y": 615
-        },
-        "enemy_position": {
-            "x": 63,
-            "y": 300
-        },
-        "time": 2726,
-        "distance": 1031.2851206140813
-    },
-    {
-        "player_position": {
-            "x": 1045,
-            "y": 620
-        },
-        "enemy_position": {
-            "x": 66,
-            "y": 300
-        },
-        "time": 2743,
-        "distance": 1029.9713588250888
-    },
-    {
-        "player_position": {
-            "x": 1045,
-            "y": 625
-        },
-        "enemy_position": {
-            "x": 69,
-            "y": 300
-        },
-        "time": 2759,
-        "distance": 1028.6889714583315
-    },
-    {
-        "player_position": {
-            "x": 1045,
-            "y": 630
-        },
-        "enemy_position": {
-            "x": 72,
-            "y": 300
-        },
-        "time": 2776,
-        "distance": 1027.4380759929038
-    },
-    {
-        "player_position": {
-            "x": 1045,
-            "y": 635
-        },
-        "enemy_position": {
-            "x": 75,
-            "y": 300
-        },
-        "time": 2791,
-        "distance": 1026.2187875886896
-    },
-    {
-        "player_position": {
-            "x": 1045,
-            "y": 640
-        },
-        "enemy_position": {
-            "x": 78,
-            "y": 300
-        },
-        "time": 2807,
-        "distance": 1025.0312190367667
-    },
-    {
-        "player_position": {
-            "x": 1045,
-            "y": 645
-        },
-        "enemy_position": {
-            "x": 81,
-            "y": 300
-        },
-        "time": 2823,
-        "distance": 1023.8754807104231
-    },
-    {
-        "player_position": {
-            "x": 1045,
-            "y": 650
-        },
-        "enemy_position": {
-            "x": 84,
-            "y": 300
-        },
-        "time": 2840,
-        "distance": 1022.75168051683
-    },
-    {
-        "player_position": {
-            "x": 1045,
-            "y": 655
-        },
-        "enemy_position": {
-            "x": 87,
-            "y": 300
-        },
-        "time": 2856,
-        "distance": 1021.6599238494186
-    },
-    {
-        "player_position": {
-            "x": 1045,
-            "y": 660
-        },
-        "enemy_position": {
-            "x": 90,
-            "y": 300
-        },
-        "time": 2872,
-        "distance": 1020.6003135410061
-    },
-    {
-        "player_position": {
-            "x": 1045,
-            "y": 665
-        },
-        "enemy_position": {
-            "x": 93,
-            "y": 300
-        },
-        "time": 2889,
-        "distance": 1019.5729498177166
-    },
-    {
-        "player_position": {
-            "x": 1045,
-            "y": 670
-        },
-        "enemy_position": {
-            "x": 96,
-            "y": 300
-        },
-        "time": 2905,
-        "distance": 1018.5779302537435
-    },
-    {
-        "player_position": {
-            "x": 1045,
-            "y": 675
-        },
-        "enemy_position": {
-            "x": 99,
-            "y": 300
-        },
-        "time": 2921,
-        "distance": 1017.6153497269978
-    },
-    {
-        "player_position": {
-            "x": 1050,
-            "y": 680
-        },
-        "enemy_position": {
-            "x": 102,
-            "y": 300
-        },
-        "time": 2937,
-        "distance": 1021.3246300760596
-    },
-    {
-        "player_position": {
-            "x": 1055,
-            "y": 685
-        },
-        "enemy_position": {
-            "x": 105,
-            "y": 300
-        },
-        "time": 2953,
-        "distance": 1025.0487793271109
-    },
-    {
-        "player_position": {
-            "x": 1060,
-            "y": 690
-        },
-        "enemy_position": {
-            "x": 108,
-            "y": 300
-        },
-        "time": 2969,
-        "distance": 1028.7876360065763
-    },
-    {
-        "player_position": {
-            "x": 1065,
-            "y": 695
-        },
-        "enemy_position": {
-            "x": 111,
-            "y": 300
-        },
-        "time": 2986,
-        "distance": 1032.541040346581
-    },
-    {
-        "player_position": {
-            "x": 1070,
-            "y": 695
-        },
-        "enemy_position": {
-            "x": 114,
-            "y": 300
-        },
-        "time": 3003,
-        "distance": 1034.3891917455442
-    },
-    {
-        "player_position": {
-            "x": 1075,
-            "y": 695
-        },
-        "enemy_position": {
-            "x": 117,
-            "y": 300
-        },
-        "time": 3019,
-        "distance": 1036.2379070464465
-    },
-    {
-        "player_position": {
-            "x": 1080,
-            "y": 695
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 300
-        },
-        "time": 3034,
-        "distance": 1038.0871832365526
-    },
-    {
-        "player_position": {
-            "x": 1085,
-            "y": 695
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 303
-        },
-        "time": 3050,
-        "distance": 1041.5800497321366
-    },
-    {
-        "player_position": {
-            "x": 1090,
-            "y": 695
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 306
-        },
-        "time": 3066,
-        "distance": 1045.0937756967076
-    },
-    {
-        "player_position": {
-            "x": 1095,
-            "y": 690
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 309
-        },
-        "time": 3082,
-        "distance": 1046.7979747783236
-    },
-    {
-        "player_position": {
-            "x": 1105,
-            "y": 685
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 312
-        },
-        "time": 3099,
-        "distance": 1053.2587526339385
-    },
-    {
-        "player_position": {
-            "x": 1115,
-            "y": 680
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 315
-        },
-        "time": 3115,
-        "distance": 1059.8348928017042
-    },
-    {
-        "player_position": {
-            "x": 1125,
-            "y": 675
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 318
-        },
-        "time": 3131,
-        "distance": 1066.5242613274206
-    },
-    {
-        "player_position": {
-            "x": 1135,
-            "y": 670
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 321
-        },
-        "time": 3148,
-        "distance": 1073.3247411664374
-    },
-    {
-        "player_position": {
-            "x": 1140,
-            "y": 665
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 324
-        },
-        "time": 3165,
-        "distance": 1075.4910506368708
-    },
-    {
-        "player_position": {
-            "x": 1140,
-            "y": 660
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 327
-        },
-        "time": 3181,
-        "distance": 1072.981360509119
-    },
-    {
-        "player_position": {
-            "x": 1140,
-            "y": 655
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 330
-        },
-        "time": 3198,
-        "distance": 1070.5255718571136
-    },
-    {
-        "player_position": {
-            "x": 1140,
-            "y": 655
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 333
-        },
-        "time": 3216,
-        "distance": 1069.6186236224573
-    },
-    {
-        "player_position": {
-            "x": 1140,
-            "y": 655
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 336
-        },
-        "time": 3233,
-        "distance": 1068.7193270452256
-    },
-    {
-        "player_position": {
-            "x": 1140,
-            "y": 655
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 339
-        },
-        "time": 3248,
-        "distance": 1067.8277014574965
-    },
-    {
-        "player_position": {
-            "x": 1140,
-            "y": 655
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 342
-        },
-        "time": 3266,
-        "distance": 1066.9437660907909
-    },
-    {
-        "player_position": {
-            "x": 1140,
-            "y": 655
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 345
-        },
-        "time": 3283,
-        "distance": 1066.0675400742675
-    },
-    {
-        "player_position": {
-            "x": 1140,
-            "y": 650
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 348
-        },
-        "time": 3300,
-        "distance": 1063.76877186727
-    },
-    {
-        "player_position": {
-            "x": 1140,
-            "y": 645
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 351
-        },
-        "time": 3316,
-        "distance": 1061.5253176443791
-    },
-    {
-        "player_position": {
-            "x": 1140,
-            "y": 640
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 354
-        },
-        "time": 3333,
-        "distance": 1059.3375288358286
-    },
-    {
-        "player_position": {
-            "x": 1140,
-            "y": 635
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 357
-        },
-        "time": 3348,
-        "distance": 1057.205751024842
-    },
-    {
-        "player_position": {
-            "x": 1140,
-            "y": 630
-        },
-        "enemy_position": {
-            "x": 120,
             "y": 360
         },
-        "time": 3366,
-        "distance": 1055.1303237041384
-    },
-    {
-        "player_position": {
-            "x": 1140,
-            "y": 625
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 357
-        },
-        "time": 3383,
-        "distance": 1054.6203108228099
-    },
-    {
-        "player_position": {
-            "x": 1140,
-            "y": 620
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 354
-        },
-        "time": 3399,
-        "distance": 1054.1138458439866
-    },
-    {
-        "player_position": {
-            "x": 1140,
-            "y": 615
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 351
-        },
-        "time": 3415,
-        "distance": 1053.6109338840406
-    },
-    {
-        "player_position": {
-            "x": 1140,
-            "y": 610
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 348
-        },
-        "time": 3432,
-        "distance": 1053.111580033189
-    },
-    {
-        "player_position": {
-            "x": 1140,
-            "y": 605
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 345
-        },
-        "time": 3449,
-        "distance": 1052.6157893552613
-    },
-    {
-        "player_position": {
-            "x": 1135,
-            "y": 600
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 342
-        },
-        "time": 3465,
-        "distance": 1047.2769452250918
-    },
-    {
-        "player_position": {
-            "x": 1130,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 339
-        },
-        "time": 3482,
-        "distance": 1041.9385778442029
-    },
-    {
-        "player_position": {
-            "x": 1125,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 336
-        },
-        "time": 3498,
-        "distance": 1037.83717412704
-    },
-    {
-        "player_position": {
-            "x": 1120,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 333
-        },
-        "time": 3515,
-        "distance": 1033.752388147181
-    },
-    {
-        "player_position": {
-            "x": 1115,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 330
-        },
-        "time": 3530,
-        "distance": 1029.684417673687
-    },
-    {
-        "player_position": {
-            "x": 1110,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 327
-        },
-        "time": 3547,
-        "distance": 1025.6334627926294
-    },
-    {
-        "player_position": {
-            "x": 1105,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 324
-        },
-        "time": 3564,
-        "distance": 1021.5997259200885
-    },
-    {
-        "player_position": {
-            "x": 1105,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 321
-        },
-        "time": 3580,
-        "distance": 1022.3996283254411
-    },
-    {
-        "player_position": {
-            "x": 1105,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 318
-        },
-        "time": 3597,
-        "distance": 1023.2077013001808
-    },
-    {
-        "player_position": {
-            "x": 1105,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 315
-        },
-        "time": 3612,
-        "distance": 1024.0239255017434
-    },
-    {
-        "player_position": {
-            "x": 1105,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 312
-        },
-        "time": 3628,
-        "distance": 1024.848281454382
-    },
-    {
-        "player_position": {
-            "x": 1105,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 309
-        },
-        "time": 3645,
-        "distance": 1025.6807495512433
-    },
-    {
-        "player_position": {
-            "x": 1105,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 306
-        },
-        "time": 3661,
-        "distance": 1026.521310056445
-    },
-    {
-        "player_position": {
-            "x": 1105,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 303
-        },
-        "time": 3678,
-        "distance": 1027.3699431071554
-    },
-    {
-        "player_position": {
-            "x": 1105,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 120,
-            "y": 300
-        },
-        "time": 3695,
-        "distance": 1028.2266287156738
-    },
-    {
-        "player_position": {
-            "x": 1105,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 123,
-            "y": 300
-        },
-        "time": 3712,
-        "distance": 1025.3531099089719
-    },
-    {
-        "player_position": {
-            "x": 1105,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 126,
-            "y": 300
-        },
-        "time": 3728,
-        "distance": 1022.4803176589758
-    },
-    {
-        "player_position": {
-            "x": 1105,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 129,
-            "y": 300
-        },
-        "time": 3744,
-        "distance": 1019.6082581070045
-    },
-    {
-        "player_position": {
-            "x": 1105,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 132,
-            "y": 300
-        },
-        "time": 3760,
-        "distance": 1016.7369374621933
-    },
-    {
-        "player_position": {
-            "x": 1110,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 135,
-            "y": 300
-        },
-        "time": 3777,
-        "distance": 1018.6510688160103
-    },
-    {
-        "player_position": {
-            "x": 1115,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 138,
-            "y": 300
-        },
-        "time": 3792,
-        "distance": 1020.5655294982288
-    },
-    {
-        "player_position": {
-            "x": 1120,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 141,
-            "y": 300
-        },
-        "time": 3808,
-        "distance": 1022.4803176589758
-    },
-    {
-        "player_position": {
-            "x": 1125,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 144,
-            "y": 300
-        },
-        "time": 3824,
-        "distance": 1024.395431461894
-    },
-    {
-        "player_position": {
-            "x": 1125,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 147,
-            "y": 300
-        },
-        "time": 3840,
-        "distance": 1021.5228827588738
-    },
-    {
-        "player_position": {
-            "x": 1125,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 150,
-            "y": 300
-        },
-        "time": 3857,
-        "distance": 1018.6510688160103
-    },
-    {
-        "player_position": {
-            "x": 1125,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 153,
-            "y": 300
-        },
-        "time": 3872,
-        "distance": 1015.7799958652464
-    },
-    {
-        "player_position": {
-            "x": 1125,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 156,
-            "y": 300
-        },
-        "time": 3888,
-        "distance": 1012.9096702075659
-    },
-    {
-        "player_position": {
-            "x": 1120,
-            "y": 595
-        },
-        "enemy_position": {
-            "x": 159,
-            "y": 300
-        },
-        "time": 3904,
-        "distance": 1005.2591705624973
-    },
-    {
-        "player_position": {
-            "x": 1115,
-            "y": 590
-        },
-        "enemy_position": {
-            "x": 162,
-            "y": 300
-        },
-        "time": 3920,
-        "distance": 996.1470774940817
-    },
-    {
-        "player_position": {
-            "x": 1110,
-            "y": 585
-        },
-        "enemy_position": {
-            "x": 165,
-            "y": 300
-        },
-        "time": 3936,
-        "distance": 987.0410325817261
-    },
-    {
-        "player_position": {
-            "x": 1105,
-            "y": 580
-        },
-        "enemy_position": {
-            "x": 168,
-            "y": 300
-        },
-        "time": 3952,
-        "distance": 977.941204776647
-    },
-    {
-        "player_position": {
-            "x": 1100,
-            "y": 575
-        },
-        "enemy_position": {
-            "x": 171,
-            "y": 300
-        },
-        "time": 3969,
-        "distance": 968.8477692599596
-    },
-    {
-        "player_position": {
-            "x": 1095,
-            "y": 575
-        },
-        "enemy_position": {
-            "x": 174,
-            "y": 300
-        },
-        "time": 3986,
-        "distance": 961.1794837594069
-    },
-    {
-        "player_position": {
-            "x": 1090,
-            "y": 575
-        },
-        "enemy_position": {
-            "x": 177,
-            "y": 300
-        },
-        "time": 4002,
-        "distance": 953.5166490418508
-    },
-    {
-        "player_position": {
-            "x": 1090,
-            "y": 575
-        },
-        "enemy_position": {
-            "x": 180,
-            "y": 300
-        },
-        "time": 4019,
-        "distance": 950.6445182085678
-    },
-    {
-        "player_position": {
-            "x": 1090,
-            "y": 575
-        },
-        "enemy_position": {
-            "x": 183,
-            "y": 300
-        },
-        "time": 4036,
-        "distance": 947.7731796163046
-    },
-    {
-        "player_position": {
-            "x": 1095,
-            "y": 575
-        },
-        "enemy_position": {
-            "x": 186,
-            "y": 300
-        },
-        "time": 4054,
+        "time": 1314,
         "distance": 949.6873169627991
     },
     {
         "player_position": {
-            "x": 1100,
-            "y": 575
+            "x": 860,
+            "y": 770
         },
         "enemy_position": {
-            "x": 189,
-            "y": 300
+            "x": 0,
+            "y": 360
         },
-        "time": 4070,
-        "distance": 951.6018074804188
+        "time": 1331,
+        "distance": 952.732911156112
     },
     {
         "player_position": {
-            "x": 1105,
-            "y": 575
+            "x": 860,
+            "y": 775
         },
         "enemy_position": {
-            "x": 192,
-            "y": 300
+            "x": 0,
+            "y": 360
         },
-        "time": 4085,
-        "distance": 953.5166490418508
+        "time": 1348,
+        "distance": 954.8952822168512
     },
     {
         "player_position": {
-            "x": 1110,
-            "y": 575
+            "x": 860,
+            "y": 780
         },
         "enemy_position": {
-            "x": 195,
-            "y": 300
+            "x": 0,
+            "y": 360
         },
-        "time": 4101,
-        "distance": 955.4318395364476
+        "time": 1364,
+        "distance": 957.0788891204319
     },
     {
         "player_position": {
-            "x": 1110,
-            "y": 575
+            "x": 860,
+            "y": 785
         },
         "enemy_position": {
-            "x": 198,
-            "y": 300
+            "x": 0,
+            "y": 360
         },
-        "time": 4118,
-        "distance": 952.5591845129625
+        "time": 1380,
+        "distance": 959.2835868501035
     },
     {
         "player_position": {
-            "x": 1110,
-            "y": 575
+            "x": 860,
+            "y": 790
         },
         "enemy_position": {
-            "x": 201,
-            "y": 300
+            "x": 0,
+            "y": 360
         },
-        "time": 4133,
-        "distance": 949.6873169627991
+        "time": 1397,
+        "distance": 961.5092303249096
     },
     {
         "player_position": {
-            "x": 1110,
-            "y": 575
+            "x": 860,
+            "y": 795
         },
         "enemy_position": {
-            "x": 204,
-            "y": 300
+            "x": 0,
+            "y": 360
         },
-        "time": 4150,
-        "distance": 946.8162440516111
+        "time": 1414,
+        "distance": 963.7556744320627
     },
     {
         "player_position": {
-            "x": 1110,
-            "y": 575
+            "x": 860,
+            "y": 800
         },
         "enemy_position": {
-            "x": 207,
-            "y": 300
+            "x": 0,
+            "y": 360
         },
-        "time": 4167,
-        "distance": 943.9459730302365
+        "time": 1430,
+        "distance": 966.0227740586657
     },
     {
         "player_position": {
-            "x": 1110,
-            "y": 575
+            "x": 855,
+            "y": 800
         },
         "enemy_position": {
-            "x": 210,
-            "y": 300
+            "x": 0,
+            "y": 363
         },
-        "time": 4186,
-        "distance": 941.0765112359356
+        "time": 1447,
+        "distance": 960.205186405489
     },
     {
         "player_position": {
-            "x": 1110,
-            "y": 575
+            "x": 850,
+            "y": 800
         },
         "enemy_position": {
-            "x": 213,
-            "y": 300
+            "x": 0,
+            "y": 366
         },
-        "time": 4201,
-        "distance": 938.2078660936498
+        "time": 1463,
+        "distance": 954.3877618662134
     },
     {
         "player_position": {
-            "x": 1110,
-            "y": 575
+            "x": 845,
+            "y": 800
         },
         "enemy_position": {
-            "x": 216,
-            "y": 300
+            "x": 0,
+            "y": 369
         },
-        "time": 4217,
-        "distance": 935.3400451172824
+        "time": 1479,
+        "distance": 948.5705034418896
     },
     {
         "player_position": {
-            "x": 1110,
-            "y": 575
+            "x": 840,
+            "y": 800
         },
         "enemy_position": {
-            "x": 219,
-            "y": 300
+            "x": 0,
+            "y": 372
         },
-        "time": 4233,
-        "distance": 932.4730559110005
+        "time": 1495,
+        "distance": 942.7534142075541
     },
     {
         "player_position": {
-            "x": 1110,
-            "y": 575
+            "x": 835,
+            "y": 800
         },
         "enemy_position": {
-            "x": 222,
-            "y": 300
+            "x": 0,
+            "y": 375
         },
-        "time": 4249,
-        "distance": 929.6069061705598
+        "time": 1511,
+        "distance": 936.9364973145192
     },
     {
         "player_position": {
-            "x": 1110,
-            "y": 575
+            "x": 830,
+            "y": 800
         },
         "enemy_position": {
-            "x": 225,
-            "y": 300
+            "x": 0,
+            "y": 378
         },
-        "time": 4266,
-        "distance": 926.7416036846516
+        "time": 1527,
+        "distance": 931.1197559927509
     },
     {
         "player_position": {
-            "x": 1110,
-            "y": 575
+            "x": 825,
+            "y": 800
         },
         "enemy_position": {
-            "x": 228,
-            "y": 300
+            "x": 0,
+            "y": 381
         },
-        "time": 4282,
-        "distance": 923.877156336274
+        "time": 1543,
+        "distance": 925.3031935533347
     },
     {
         "player_position": {
-            "x": 1110,
-            "y": 575
+            "x": 820,
+            "y": 800
         },
         "enemy_position": {
-            "x": 231,
-            "y": 300
+            "x": 0,
+            "y": 384
         },
-        "time": 4298,
-        "distance": 921.0135721041248
+        "time": 1559,
+        "distance": 919.486813391035
     },
     {
         "player_position": {
-            "x": 1110,
-            "y": 575
+            "x": 815,
+            "y": 800
         },
         "enemy_position": {
-            "x": 234,
-            "y": 300
+            "x": 0,
+            "y": 387
         },
-        "time": 4314,
-        "distance": 918.1508590640211
+        "time": 1575,
+        "distance": 913.670618986952
     },
     {
         "player_position": {
-            "x": 1110,
-            "y": 575
+            "x": 810,
+            "y": 800
         },
         "enemy_position": {
-            "x": 237,
-            "y": 300
+            "x": 0,
+            "y": 390
         },
-        "time": 4331,
-        "distance": 915.2890253903408
+        "time": 1591,
+        "distance": 907.8546139112804
     },
     {
         "player_position": {
-            "x": 1110,
-            "y": 575
+            "x": 805,
+            "y": 800
         },
         "enemy_position": {
-            "x": 240,
-            "y": 300
+            "x": 0,
+            "y": 393
         },
-        "time": 4349,
-        "distance": 912.428079357491
+        "time": 1607,
+        "distance": 902.0388018261742
     },
     {
         "player_position": {
-            "x": 1110,
-            "y": 575
+            "x": 800,
+            "y": 800
         },
         "enemy_position": {
-            "x": 240,
-            "y": 297
+            "x": 0,
+            "y": 396
         },
-        "time": 4364,
-        "distance": 913.3367396530153
+        "time": 1625,
+        "distance": 896.2231864887228
     },
     {
         "player_position": {
-            "x": 1110,
-            "y": 575
+            "x": 795,
+            "y": 800
         },
         "enemy_position": {
-            "x": 240,
-            "y": 294
+            "x": 0,
+            "y": 399
         },
-        "time": 4381,
-        "distance": 914.2543409795767
+        "time": 1641,
+        "distance": 890.407771754043
     },
     {
         "player_position": {
-            "x": 1110,
-            "y": 575
+            "x": 790,
+            "y": 800
         },
         "enemy_position": {
-            "x": 240,
-            "y": 291
+            "x": 0,
+            "y": 402
         },
-        "time": 4398,
-        "distance": 915.1808564431404
+        "time": 1657,
+        "distance": 884.592561578493
+    },
+    {
+        "player_position": {
+            "x": 785,
+            "y": 800
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 405
+        },
+        "time": 1674,
+        "distance": 878.7775600230128
+    },
+    {
+        "player_position": {
+            "x": 780,
+            "y": 800
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 408
+        },
+        "time": 1691,
+        "distance": 872.9627712565983
+    },
+    {
+        "player_position": {
+            "x": 775,
+            "y": 800
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 411
+        },
+        "time": 1707,
+        "distance": 867.1481995599138
+    },
+    {
+        "player_position": {
+            "x": 770,
+            "y": 800
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 414
+        },
+        "time": 1723,
+        "distance": 861.3338493290508
+    },
+    {
+        "player_position": {
+            "x": 765,
+            "y": 800
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 417
+        },
+        "time": 1740,
+        "distance": 855.5197250794397
+    },
+    {
+        "player_position": {
+            "x": 760,
+            "y": 800
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 420
+        },
+        "time": 1757,
+        "distance": 849.7058314499201
+    },
+    {
+        "player_position": {
+            "x": 755,
+            "y": 800
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 417
+        },
+        "time": 1774,
+        "distance": 846.5896290411312
+    },
+    {
+        "player_position": {
+            "x": 750,
+            "y": 800
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 414
+        },
+        "time": 1791,
+        "distance": 843.5022228779246
+    },
+    {
+        "player_position": {
+            "x": 745,
+            "y": 800
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 411
+        },
+        "time": 1807,
+        "distance": 840.4439303130222
+    },
+    {
+        "player_position": {
+            "x": 740,
+            "y": 800
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 408
+        },
+        "time": 1824,
+        "distance": 837.4150703205669
+    },
+    {
+        "player_position": {
+            "x": 735,
+            "y": 800
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 405
+        },
+        "time": 1840,
+        "distance": 834.4159634139318
+    },
+    {
+        "player_position": {
+            "x": 730,
+            "y": 800
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 402
+        },
+        "time": 1856,
+        "distance": 831.4469315596757
+    },
+    {
+        "player_position": {
+            "x": 725,
+            "y": 800
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 399
+        },
+        "time": 1873,
+        "distance": 828.5082980875931
+    },
+    {
+        "player_position": {
+            "x": 720,
+            "y": 800
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 396
+        },
+        "time": 1889,
+        "distance": 825.6003875968082
+    },
+    {
+        "player_position": {
+            "x": 715,
+            "y": 800
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 393
+        },
+        "time": 1905,
+        "distance": 822.7235258578668
+    },
+    {
+        "player_position": {
+            "x": 710,
+            "y": 800
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 390
+        },
+        "time": 1922,
+        "distance": 819.8780397107853
+    },
+    {
+        "player_position": {
+            "x": 705,
+            "y": 800
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 387
+        },
+        "time": 1938,
+        "distance": 817.0642569590228
+    },
+    {
+        "player_position": {
+            "x": 700,
+            "y": 800
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 384
+        },
+        "time": 1954,
+        "distance": 814.2825062593448
+    },
+    {
+        "player_position": {
+            "x": 695,
+            "y": 800
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 381
+        },
+        "time": 1970,
+        "distance": 811.5331170075563
+    },
+    {
+        "player_position": {
+            "x": 690,
+            "y": 800
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 378
+        },
+        "time": 1988,
+        "distance": 808.8164192200849
+    },
+    {
+        "player_position": {
+            "x": 685,
+            "y": 800
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 375
+        },
+        "time": 2006,
+        "distance": 806.1327434114062
+    },
+    {
+        "player_position": {
+            "x": 680,
+            "y": 800
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 372
+        },
+        "time": 2021,
+        "distance": 803.4824204673056
+    },
+    {
+        "player_position": {
+            "x": 675,
+            "y": 800
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 369
+        },
+        "time": 2038,
+        "distance": 800.8657815139812
+    },
+    {
+        "player_position": {
+            "x": 670,
+            "y": 800
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 366
+        },
+        "time": 2054,
+        "distance": 798.2831577830012
+    },
+    {
+        "player_position": {
+            "x": 665,
+            "y": 800
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 363
+        },
+        "time": 2070,
+        "distance": 795.7348804721331
+    },
+    {
+        "player_position": {
+            "x": 660,
+            "y": 800
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 360
+        },
+        "time": 2087,
+        "distance": 793.2212806020776
+    },
+    {
+        "player_position": {
+            "x": 660,
+            "y": 795
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 363
+        },
+        "time": 2104,
+        "distance": 788.8117646181502
+    },
+    {
+        "player_position": {
+            "x": 660,
+            "y": 790
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 366
+        },
+        "time": 2120,
+        "distance": 784.4590492817327
+    },
+    {
+        "player_position": {
+            "x": 660,
+            "y": 785
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 369
+        },
+        "time": 2136,
+        "distance": 780.1640853051363
+    },
+    {
+        "player_position": {
+            "x": 660,
+            "y": 780
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 372
+        },
+        "time": 2152,
+        "distance": 775.9278316957061
+    },
+    {
+        "player_position": {
+            "x": 660,
+            "y": 775
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 375
+        },
+        "time": 2169,
+        "distance": 771.7512552629895
+    },
+    {
+        "player_position": {
+            "x": 660,
+            "y": 770
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 378
+        },
+        "time": 2185,
+        "distance": 767.6353300884476
+    },
+    {
+        "player_position": {
+            "x": 660,
+            "y": 765
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 381
+        },
+        "time": 2201,
+        "distance": 763.5810369567856
+    },
+    {
+        "player_position": {
+            "x": 660,
+            "y": 760
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 384
+        },
+        "time": 2218,
+        "distance": 759.5893627480574
+    },
+    {
+        "player_position": {
+            "x": 660,
+            "y": 755
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 387
+        },
+        "time": 2234,
+        "distance": 755.6612997897934
+    },
+    {
+        "player_position": {
+            "x": 660,
+            "y": 750
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 390
+        },
+        "time": 2250,
+        "distance": 751.7978451685001
+    },
+    {
+        "player_position": {
+            "x": 660,
+            "y": 745
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 393
+        },
+        "time": 2266,
+        "distance": 748.0
+    },
+    {
+        "player_position": {
+            "x": 660,
+            "y": 740
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 396
+        },
+        "time": 2283,
+        "distance": 744.2687686582045
+    },
+    {
+        "player_position": {
+            "x": 660,
+            "y": 735
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 399
+        },
+        "time": 2299,
+        "distance": 740.6051579620547
+    },
+    {
+        "player_position": {
+            "x": 660,
+            "y": 730
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 402
+        },
+        "time": 2316,
+        "distance": 737.0101763205173
+    },
+    {
+        "player_position": {
+            "x": 660,
+            "y": 725
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 405
+        },
+        "time": 2331,
+        "distance": 733.48483283569
+    },
+    {
+        "player_position": {
+            "x": 660,
+            "y": 720
+        },
+        "enemy_position": {
+            "x": 0,
+            "y": 408
+        },
+        "time": 2350,
+        "distance": 730.0301363642462
     }
 ]
