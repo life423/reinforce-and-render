@@ -1,4 +1,6 @@
 import pygame
+import json
+import os
 from core.config import Config
 from entities.enemy import Enemy
 
@@ -21,10 +23,16 @@ class Game:
         # Enemy instance
         self.enemy = Enemy(start_x=100, start_y=300, screen_width=self.SCREEN_WIDTH)
 
-
         self.PLAYER_STEP = Config.PLAYER_STEP
         self.player_pos = {'x': self.SCREEN_WIDTH // 2, 'y': self.SCREEN_HEIGHT // 2}
         self.running = True
+
+        # List to store collision data for training
+        self.collision_data = []
+
+        # Clear previous collision data file if it exists
+        if os.path.exists("collision_data.json"):
+            os.remove("collision_data.json")
     
     def initialize_pygame(self) -> pygame.Surface:
         """
@@ -90,6 +98,13 @@ class Game:
         enemy_rect = pygame.Rect(self.enemy.pos['x'], self.enemy.pos['y'], self.enemy.size, self.enemy.size)
         return player_rect.colliderect(enemy_rect)
 
+    def save_collision_data(self) -> None:
+        """
+        Save the collision data to a JSON file.
+        """
+        with open("collision_data.json", "w") as file:
+            json.dump(self.collision_data, file, indent=4)
+
     def run(self) -> None:
         """
         Main game loop that runs the game.
@@ -104,8 +119,14 @@ class Game:
 
             # Check collision
             if self.check_collision():
-                print("Collision Detected! Game Over.")
-                self.running = False
+                print("Collision Detected! Logging data...")
+                self.collision_data.append({
+                    'player_position': self.player_pos.copy(),
+                    'enemy_position': self.enemy.pos.copy(),
+                    'time': pygame.time.get_ticks()
+                })
+                self.save_collision_data()
+                # Instead of stopping the game, continue running
 
             # Draw everything
             self.screen.fill(self.BACKGROUND_COLOR)
