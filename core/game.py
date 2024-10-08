@@ -1,6 +1,7 @@
 import pygame
 import json
 import os
+import random
 from core.config import Config
 from entities.enemy import Enemy
 
@@ -58,34 +59,25 @@ class Game:
                 if event.key in [pygame.K_ESCAPE, pygame.K_q]:
                     self.running = False
 
-    def handle_player_movement_continuous(self, delta_time: float) -> None:
+    def handle_player_movement_random(self) -> None:
         """
-        Continuously update the player's position based on pressed keys, taking into account the time elapsed to ensure smooth movement.
+        Update the player's position randomly.
         The movement is restricted to ensure the player does not move off-screen.
-
-        Args:
-            delta_time (float): The time elapsed between the previous and current frame.
         """
-        
-        keys = pygame.key.get_pressed()
-        movement_directions = {
-            pygame.K_LEFT: (-self.PLAYER_STEP, 0),
-            pygame.K_a: (-self.PLAYER_STEP, 0),
-            pygame.K_RIGHT: (self.PLAYER_STEP, 0),
-            pygame.K_d: (self.PLAYER_STEP, 0),
-            pygame.K_UP: (0, -self.PLAYER_STEP),
-            pygame.K_w: (0, -self.PLAYER_STEP),
-            pygame.K_DOWN: (0, self.PLAYER_STEP),
-            pygame.K_s: (0, self.PLAYER_STEP)
-        }
+        directions = [
+            (-self.PLAYER_STEP, 0),  # left
+            (self.PLAYER_STEP, 0),   # right
+            (0, -self.PLAYER_STEP),  # up
+            (0, self.PLAYER_STEP)    # down
+        ]
+        dx, dy = random.choice(directions)
 
-        for key, (dx, dy) in movement_directions.items():
-            if keys[key]:
-                new_x = self.player_pos['x'] + dx
-                new_y = self.player_pos['y'] + dy
-                # Ensure the player does not move off-screen
-                self.player_pos['x'] = max(0, min(self.SCREEN_WIDTH - self.PLAYER_SIZE, new_x))
-                self.player_pos['y'] = max(0, min(self.SCREEN_HEIGHT - self.PLAYER_SIZE, new_y))
+        new_x = self.player_pos['x'] + dx
+        new_y = self.player_pos['y'] + dy
+
+        # Ensure the player does not move off-screen
+        self.player_pos['x'] = max(0, min(self.SCREEN_WIDTH - self.PLAYER_SIZE, new_x))
+        self.player_pos['y'] = max(0, min(self.SCREEN_HEIGHT - self.PLAYER_SIZE, new_y))
 
     def check_collision(self) -> bool:
         """
@@ -114,7 +106,7 @@ class Game:
         while self.running:
             delta_time = clock.tick(60) / 1000.0  # Calculate delta time in seconds
             self.handle_events()
-            self.handle_player_movement_continuous(delta_time)
+            self.handle_player_movement_random()  # Use random movement for the player
             self.enemy.update_position(self.player_pos)
 
             # Check collision
