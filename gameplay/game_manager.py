@@ -1,11 +1,16 @@
+import sys
+import os
 import pygame
 import json
-import os
 import random
 from core.config import Config
 
-
 from entities.enemy import Enemy
+
+# Add the project root directory to sys.path
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
 
 class Game:
     def __init__(self) -> None:
@@ -33,9 +38,22 @@ class Game:
         # List to store collision data for training
         self.collision_data = []
 
+        # Get the directory of the current script (game_manager.py)
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+
+        # Construct the path to the data directory
+        self.data_dir = os.path.join(script_dir, '..', 'data')
+
+        # Ensure the data directory exists
+        os.makedirs(self.data_dir, exist_ok=True)
+
+        # Path to the collision data file
+        self.collision_data_file = os.path.join(self.data_dir, "collision_data.json")
+        print(f"Collision data will be saved to: {self.collision_data_file}")
+
         # Clear previous collision data file if it exists
-        if os.path.exists("collision_data.json"):
-            os.remove("collision_data.json")
+        if os.path.exists(self.collision_data_file):
+            os.remove(self.collision_data_file)
 
         # Frame counter for player movement
         self.player_movement_counter = 0
@@ -112,7 +130,6 @@ class Game:
                 self.player_pos['x'] = max(0, min(self.SCREEN_WIDTH - self.PLAYER_SIZE, new_x))
                 self.player_pos['y'] = max(0, min(self.SCREEN_HEIGHT - self.PLAYER_SIZE, new_y))
 
-
     def log_game_state(self) -> None:
         """
         Log the current game state to be used for training.
@@ -126,6 +143,7 @@ class Game:
         
         # Save every 100 frames to avoid performance hit
         if len(self.collision_data) % 100 == 0:
+            print("Saving collision data...")
             self.save_collision_data()
 
     def check_collision(self) -> bool:
@@ -143,8 +161,12 @@ class Game:
         """
         Save the collision data to a JSON file.
         """
-        with open("collision_data.json", "w") as file:
-            json.dump(self.collision_data, file, indent=4)
+        try:
+            with open(self.collision_data_file, "w") as file:
+                json.dump(self.collision_data, file, indent=4)
+            print(f"Collision data saved successfully to {self.collision_data_file}.")
+        except Exception as e:
+            print(f"Failed to save collision data: {e}")
 
     def run(self) -> None:
         """
@@ -172,6 +194,12 @@ class Game:
             self.draw_player()
             self.enemy.draw(self.screen)
             pygame.display.flip()
+        
+        # Save remaining collision data on game exit
+        if self.collision_data:
+            print("Saving remaining collision data on exit...")
+            self.save_collision_data()
+        
         pygame.quit()
 
     def draw_player(self) -> None:
