@@ -4,7 +4,12 @@ import random
 
 class Enemy:
     def __init__(
-        self, start_x: int, start_y: int, screen_width: int, screen_height: int
+        self,
+        start_x: int,
+        start_y: int,
+        screen_width: int,
+        screen_height: int,
+        mode="training",
     ) -> None:
         """
         Initialize the enemy with a starting position and screen constraints.
@@ -16,6 +21,7 @@ class Enemy:
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.movement_counter = 0
+        self.mode = mode
         self.current_direction = random.choice(
             [(-self.speed, 0), (self.speed, 0), (0, -self.speed), (0, self.speed)]
         )
@@ -28,13 +34,22 @@ class Enemy:
         Args:
             player_pos (dict): The current position of the player.
         """
-        # Change direction every 20 frames to make movement more varied
-        if self.movement_counter % 20 == 0:
-            self.current_direction = random.choice(
-                [(-self.speed, 0), (self.speed, 0), (0, -self.speed), (0, self.speed)]
-            )
-
-        dx, dy = self.current_direction
+        if self.mode == "play":
+            # Move towards the player
+            dx = self.speed if player_pos["x"] > self.pos["x"] else -self.speed
+            dy = self.speed if player_pos["y"] > self.pos["y"] else -self.speed
+        else:
+            # Change direction every 20 frames to make movement more varied
+            if self.movement_counter % 20 == 0:
+                self.current_direction = random.choice(
+                    [
+                        (-self.speed, 0),
+                        (self.speed, 0),
+                        (0, -self.speed),
+                        (0, self.speed),
+                    ]
+                )
+            dx, dy = self.current_direction
 
         new_x = self.pos["x"] + dx
         new_y = self.pos["y"] + dy

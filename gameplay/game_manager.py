@@ -5,7 +5,7 @@ import json
 import random
 
 from core.config import Config
-from core.utils import clamp_position  # Add this import
+from core.utils import clamp_position
 from entities.enemy import Enemy
 
 # Add the project root directory to sys.path
@@ -61,12 +61,29 @@ class Game:
         self.collision_data_file = os.path.join(self.data_dir, "collision_data.json")
         print(f"Collision data will be saved to: {self.collision_data_file}")
 
-        # Clear previous collision data file if it exists
+        # Load existing collision data if it matches the expected pattern
         if os.path.exists(self.collision_data_file):
-            os.remove(self.collision_data_file)
-
-            # Set up data directory and file
-        self.data_dir, self.collision_data_file = self.setup_data_directory()
+            with open(self.collision_data_file, "r") as file:
+                try:
+                    data = json.load(file)
+                    # Pattern check: Ensure every entry has valid 'player_position' and 'enemy_position'
+                    is_valid = all(
+                        isinstance(entry, dict)
+                        and isinstance(entry.get("player_position"), dict)
+                        and "x" in entry["player_position"]
+                        and "y" in entry["player_position"]
+                        and isinstance(entry.get("enemy_position"), dict)
+                        and "x" in entry["enemy_position"]
+                        and "y" in entry["enemy_position"]
+                        and isinstance(entry.get("time"), (int, float))
+                        and isinstance(entry.get("distance"), (int, float))
+                        for entry in data
+                    )
+                    if is_valid:
+                        self.collision_data = data
+                except (json.JSONDecodeError, KeyError):
+                    # If data is not valid, we reset it
+                    self.collision_data = []
 
     def setup_data_directory(self) -> tuple[str, str]:
         """
@@ -80,20 +97,7 @@ class Game:
         collision_data_file = os.path.join(data_dir, "collision_data.json")
         print(f"Collision data will be saved to: {collision_data_file}")
 
-        # Clear previous collision data file if it exists
-        if os.path.exists(collision_data_file):
-            os.remove(collision_data_file)
-
         return data_dir, collision_data_file
-        self.player_movement_counter = 0
-        self.player_current_direction = random.choice(
-            [
-                (self.PLAYER_STEP, 0),
-                (-self.PLAYER_STEP, 0),
-                (0, self.PLAYER_STEP),
-                (0, -self.PLAYER_STEP),
-            ]
-        )
 
     def initialize_pygame(self) -> pygame.Surface:
         """
@@ -221,14 +225,10 @@ class Game:
 
     def save_collision_data(self) -> None:
         """
-        Save the collision data to a JSON file.
+        Save collision data to a JSON file.
         """
-        try:
-            with open(self.collision_data_file, "w") as file:
-                json.dump(self.collision_data, file, indent=4)
-            print(f"Collision data saved successfully to {self.collision_data_file}.")
-        except Exception as e:
-            print(f"Failed to save collision data: {e}")
+        with open(self.collision_data_file, "w") as file:
+            json.dump(self.collision_data, file, indent=4)
 
     def run(self, mode="training") -> None:
         """
@@ -243,11 +243,7 @@ class Game:
             if mode == "training"
             else self.handle_player_movement_manual
         )
-        enemy_movement_handler = (
-            self.enemy.update_position_randomly
-            if mode == "training"
-            else lambda: self.enemy.update_position(self.player_pos)
-        )
+        enemy_movement_handler = lambda: self.enemy.update_position(self.player_pos)
 
         while self.running:
             delta_time = clock.tick(60) / 1000.0  # Calculate delta time in seconds
@@ -262,7 +258,7 @@ class Game:
 
             # Check collision
             if self.check_collision():
-                self.log_game_state()
+                print("Collision detected!")
 
             # Draw everything
             self.screen.fill(self.BACKGROUND_COLOR)
