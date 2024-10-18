@@ -2,8 +2,23 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python Debugger: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Run Main", // This is the configuration you want to run by default
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/gameplay/main.py", // Path to your main.py
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Run Game",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "module": "gameplay.main",
             "cwd": "${workspaceFolder}",
