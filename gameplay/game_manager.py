@@ -1,31 +1,27 @@
-import sys
 import os
 import pygame
 import json
 import random
 
-from core.config import Config
-from core.utils import clamp_position
+from core.utils import clamp_position, add_project_root_to_sys_path
 from entities.enemy import Enemy
-from core.utils import add_project_root_to_sys_path
-
-
-
 
 # Add the project root directory to sys.path
 add_project_root_to_sys_path()
 
 
 class Game:
-    def __init__(self, config: Config) -> None:
+    def __init__(self) -> None:
         """
         Initialize the game, including Pygame and game variables like player position.
         """
         # Game configuration
-        self.SCREEN_TITLE = config.SCREEN_TITLE
-        self.BACKGROUND_COLOR = config.BACKGROUND_COLOR
-        self.PLAYER_COLOR = config.PLAYER_COLOR
-        self.PLAYER_SIZE = config.PLAYER_SIZE
+        self.BACKGROUND_COLOR = (135, 206, 235)  # Light blue color
+        self.PLAYER_COLOR = (0, 102, 204)  # A shade of blue for the player
+        self.PLAYER_SIZE = 100  # Size of the player square
+        self.PLAYER_STEP = 5  # Step size for player movement
+        self.ENEMY_COLOR = (255, 69, 0)  # Orange-Red color for the enemy
+        self.ENEMY_SIZE = 100  # Size of the enemy square
 
         # Initialize Pygame and set up player position
         self.screen = self.initialize_pygame()
@@ -40,7 +36,6 @@ class Game:
             screen_height=self.SCREEN_HEIGHT,
         )
 
-        self.PLAYER_STEP = config.PLAYER_STEP
         self.player_pos = {"x": self.SCREEN_WIDTH // 2, "y": self.SCREEN_HEIGHT // 2}
         self.running = True
 
@@ -60,7 +55,6 @@ class Game:
 
         # Set up data directory and file path
         self.data_dir, self.collision_data_file = self.setup_data_directory()
-        self.collision_data_file = os.path.join(self.data_dir, "collision_data.json")
         print(f"Collision data will be saved to: {self.collision_data_file}")
 
         # Load existing collision data if it matches the expected pattern
@@ -97,8 +91,6 @@ class Game:
         data_dir = os.path.join(script_dir, "..", "data")
         os.makedirs(data_dir, exist_ok=True)
         collision_data_file = os.path.join(data_dir, "collision_data.json")
-        print(f"Collision data will be saved to: {collision_data_file}")
-
         return data_dir, collision_data_file
 
     def initialize_pygame(self) -> pygame.Surface:
@@ -110,7 +102,8 @@ class Game:
         """
         pygame.init()
         screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-        pygame.display.set_caption(self.SCREEN_TITLE)
+        SCREEN_TITLE = "2D Platformer - Player Movement"
+        pygame.display.set_caption(SCREEN_TITLE)
         return screen
 
     def handle_events(self) -> None:
@@ -248,7 +241,7 @@ class Game:
         enemy_movement_handler = lambda: self.enemy.update_position(self.player_pos)
 
         while self.running:
-            delta_time = clock.tick(60) / 1000.0  # Calculate delta time in seconds
+            clock.tick(60)  # Cap the frame rate at 60 FPS
             self.handle_events()
 
             # Handle player and enemy movement
