@@ -3,7 +3,6 @@ import pygame
 import json
 import random
 
-
 from entities.enemy import Enemy
 from core.utils import clamp_position
 
@@ -283,8 +282,18 @@ class Game:
 
     def draw_menu_text(self) -> None:
         """
-        Draw the word 'Menu' at the top of the screen.
+        Draw the word 'Menu' centered in the middle of the screen.
         """
         font = pygame.font.Font(None, 74)
-        menu_text = font.render("Menu", True, (0, 0, 0))
-        self.screen.blit(menu_text, (50, 50))
+        menu_text = font.render("Menu", True, (0, 50, 0))
+
+        # Get the text's rectangle
+        text_rect = menu_text.get_rect()
+
+        # Get the screen's rectangle
+        screen_rect = self.screen.get_rect()
+
+        # Center the text rectangle on the screen
+        text_rect.center = screen_rect.center
+
+        self.screen.blit(menu_text, text_rect)
