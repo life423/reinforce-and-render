@@ -1,5 +1,5 @@
 import os
-import pygame
+import pygame  # type: ignore
 import json
 import random
 
@@ -40,7 +40,7 @@ class Game:
 
         # Menu state
         self.menu_active = True
-        self.menu_options = ["Training", "Play"]
+        self.menu_options = ["Training", "Play", "Options", "Exit"]
         self.selected_option = 0  # Index of the currently selected menu option
 
         # List to store collision data for training
@@ -133,9 +133,17 @@ class Game:
                         )
                     elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                         # Start the game with the selected mode
-                        selected_mode = self.menu_options[self.selected_option].lower()
+                        selected_option = self.menu_options[self.selected_option].lower()
+                    if selected_option == "exit":
+                        self.running = False
+                    elif selected_option == "options":
+                        # Implement options menu if needed
+                        pass
+                    else:
                         self.menu_active = False
-                        self.start_game(mode=selected_mode)
+                        self.start_game(mode=selected_option)
+                        self.menu_active = False
+                        self.start_game(mode=selected_option)
             else:
                 # Game-specific events can be handled here
                 pass
@@ -323,9 +331,10 @@ class Game:
         self.draw_player()
         self.enemy.draw(self.screen)
 
+    # Colors
     def draw_menu(self) -> None:
         """
-        Draw the main menu with the title and options.
+        Draw the menu on the screen.
         """
         # Colors
         background_color = self.BACKGROUND_COLOR  # Light blue
@@ -335,13 +344,20 @@ class Game:
 
         # Fonts
         title_font = pygame.font.Font(None, 100)
-        option_font = pygame.font.Font(None, 74)
+        option_font = pygame.font.Font(None, 60)  # Adjusted font size for better spacing
 
         # Render the title
         title_text = title_font.render("Pixel Pursuit", True, title_color)
         title_rect = title_text.get_rect(
-            center=(self.SCREEN_WIDTH // 2, self.SCREEN_HEIGHT // 4)
+            center=(self.SCREEN_WIDTH // 2, self.SCREEN_HEIGHT // 5)
         )
+
+        # Calculate spacing
+        number_of_options = len(self.menu_options)
+        spacing = 30  # Spacing between options
+
+        # Start position for the first menu option
+        options_start_y = title_rect.bottom + 50  # 50 pixels below the title
 
         # Render the menu options
         option_surfaces = []
@@ -353,7 +369,10 @@ class Game:
                 color = option_color
             option_surface = option_font.render(option, True, color)
             option_rect = option_surface.get_rect(
-                center=(self.SCREEN_WIDTH // 2, self.SCREEN_HEIGHT // 2 + index * 100)
+                center=(
+                    self.SCREEN_WIDTH // 2,
+                    options_start_y + index * (option_font.get_height() + spacing),
+                )
             )
             option_surfaces.append(option_surface)
             option_rects.append(option_rect)
