@@ -7,15 +7,9 @@ import random
 from core.config import Config
 from core.utils import clamp_position
 from entities.enemy import Enemy
+from core.utils import add_project_root_to_sys_path
 
 
-def add_project_root_to_sys_path() -> None:
-    """
-    Add the project root directory to sys.path to allow imports from the entire project.
-    """
-    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-    if project_root not in sys.path:
-        sys.path.insert(0, project_root)
 
 
 # Add the project root directory to sys.path
