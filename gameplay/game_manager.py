@@ -53,7 +53,6 @@ class Game:
 
         # Set up data directory and file path
         self.data_dir, self.collision_data_file = self.setup_data_directory()
-        
 
         # Load existing collision data if it matches the expected pattern
         if os.path.exists(self.collision_data_file):
@@ -110,7 +109,10 @@ class Game:
         Updates the running state and player's position accordingly.
         """
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key in [pygame.K_ESCAPE, pygame.K_q]):
+            if event.type == pygame.QUIT or (
+                event.type == pygame.KEYDOWN
+                and event.key in [pygame.K_ESCAPE, pygame.K_q]
+            ):
                 self.running = False
 
     def handle_player_movement_random(self) -> None:
@@ -254,6 +256,7 @@ class Game:
             self.screen.fill(self.BACKGROUND_COLOR)
             self.draw_player()
             self.enemy.draw(self.screen)
+            self.draw_menu_text()  # Draw the menu text on the screen after all other elements
             pygame.display.flip()
 
         # Save remaining collision data on game exit
@@ -277,5 +280,11 @@ class Game:
                 self.PLAYER_SIZE,
             ),
         )
-        
 
+    def draw_menu_text(self) -> None:
+        """
+        Draw the word 'Menu' at the top of the screen.
+        """
+        font = pygame.font.Font(None, 74)
+        menu_text = font.render("Menu", True, (0, 0, 0))
+        self.screen.blit(menu_text, (50, 50))
