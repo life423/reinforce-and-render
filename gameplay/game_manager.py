@@ -3,11 +3,9 @@ import pygame
 import json
 import random
 
-from core.utils import clamp_position, add_project_root_to_sys_path
-from entities.enemy import Enemy
 
-# Add the project root directory to sys.path
-add_project_root_to_sys_path()
+from entities.enemy import Enemy
+from core.utils import clamp_position
 
 
 class Game:
