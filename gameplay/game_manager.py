@@ -123,27 +123,25 @@ class Game:
 
             if self.menu_active:
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_UP:
+                    if event.key in [pygame.K_UP, pygame.K_w]:
                         self.selected_option = (self.selected_option - 1) % len(
                             self.menu_options
                         )
-                    elif event.key == pygame.K_DOWN:
+                    elif event.key in [pygame.K_DOWN, pygame.K_s]:
                         self.selected_option = (self.selected_option + 1) % len(
                             self.menu_options
                         )
                     elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                         # Start the game with the selected mode
                         selected_option = self.menu_options[self.selected_option].lower()
-                    if selected_option == "exit":
-                        self.running = False
-                    elif selected_option == "options":
-                        # Implement options menu if needed
-                        pass
-                    else:
-                        self.menu_active = False
-                        self.start_game(mode=selected_option)
-                        self.menu_active = False
-                        self.start_game(mode=selected_option)
+                        if selected_option == "exit":
+                            self.running = False
+                        elif selected_option == "options":
+                            # Implement options menu if needed
+                            pass
+                        else:
+                            self.menu_active = False
+                            self.start_game(mode=selected_option)
             else:
                 # Game-specific events can be handled here
                 pass
