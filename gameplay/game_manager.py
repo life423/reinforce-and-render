@@ -40,7 +40,7 @@ class Game:
 
         # Menu state
         self.menu_active = True
-        self.menu_options = ["Training", "Play", "Options", "Exit"]
+        self.menu_options = ["Training", "Play", "Exit"]
         self.selected_option = 0  # Index of the currently selected menu option
 
         # List to store collision data for training
