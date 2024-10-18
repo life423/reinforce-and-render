@@ -1,10 +1,14 @@
 import os
 import json  # Import json to handle JSON data
+import sys
 import torch  # Import torch for PyTorch functionality
 import torch.optim as optim  # Import optim for optimization algorithms
 
 
+sys.path.append(os.path.abspath(".."))
 from ai_model.model import EnemyAIModel
+
+import numpy as np  # Import NumPy to avoid missing dependency warning
 
 # Load collision data from a JSON file
 with open("../data/collision_data.json", "r") as f:
