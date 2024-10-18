@@ -53,7 +53,7 @@ class Game:
 
         # Set up data directory and file path
         self.data_dir, self.collision_data_file = self.setup_data_directory()
-        print(f"Collision data will be saved to: {self.collision_data_file}")
+        
 
         # Load existing collision data if it matches the expected pattern
         if os.path.exists(self.collision_data_file):
@@ -110,11 +110,8 @@ class Game:
         Updates the running state and player's position accordingly.
         """
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key in [pygame.K_ESCAPE, pygame.K_q]):
                 self.running = False
-            elif event.type == pygame.KEYDOWN:
-                if event.key in [pygame.K_ESCAPE, pygame.K_q]:
-                    self.running = False
 
     def handle_player_movement_random(self) -> None:
         """
