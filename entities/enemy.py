@@ -14,6 +14,8 @@ class Enemy:
         """
         Initialize the enemy with a starting position and screen constraints.
         """
+        self.start_x = start_x  # Store starting x position
+        self.start_y = start_y  # Store starting y position
         self.pos = {"x": start_x, "y": start_y}
         self.size = 100  # Size of the enemy block
         self.color = (255, 69, 0)  # Orange-Red color for the enemy
@@ -25,6 +27,13 @@ class Enemy:
         self.current_direction = random.choice(
             [(-self.speed, 0), (self.speed, 0), (0, -self.speed), (0, self.speed)]
         )
+
+    def reset_position(self) -> None:
+        """
+        Reset the enemy's position to its starting position.
+        """
+        self.pos = {"x": self.start_x, "y": self.start_y}
+        self.movement_counter = 0  # Reset movement counter if necessary
 
     def update_position(self, player_pos: dict) -> None:
         """
@@ -50,28 +59,6 @@ class Enemy:
                     ]
                 )
             dx, dy = self.current_direction
-
-        new_x = self.pos["x"] + dx
-        new_y = self.pos["y"] + dy
-
-        # Ensure the enemy does not move off-screen
-        self.pos["x"] = max(0, min(self.screen_width - self.size, new_x))
-        self.pos["y"] = max(0, min(self.screen_height - self.size, new_y))
-
-        # Increment movement counter
-        self.movement_counter += 1
-
-    def update_position_randomly(self) -> None:
-        """
-        Update the position of the enemy randomly.
-        """
-        # Change direction every 20 frames to make movement more varied
-        if self.movement_counter % 20 == 0:
-            self.current_direction = random.choice(
-                [(-self.speed, 0), (self.speed, 0), (0, -self.speed), (0, self.speed)]
-            )
-
-        dx, dy = self.current_direction
 
         new_x = self.pos["x"] + dx
         new_y = self.pos["y"] + dy

@@ -12,7 +12,9 @@ class Game:
         """
         Initialize the game, including Pygame and game variables like player position.
         """
+        self.mode = None  # Initialize mode to Non
         # Game configuration
+
         self.BACKGROUND_COLOR = (135, 206, 235)  # Light blue color
         self.PLAYER_COLOR = (0, 102, 204)  # A shade of blue for the player
         self.PLAYER_SIZE = 100  # Size of the player square
@@ -35,6 +37,11 @@ class Game:
 
         self.player_pos = {"x": self.SCREEN_WIDTH // 2, "y": self.SCREEN_HEIGHT // 2}
         self.running = True
+
+        # Menu state
+        self.menu_active = True
+        self.menu_options = ["Training", "Play"]
+        self.selected_option = 0  # Index of the currently selected menu option
 
         # List to store collision data for training
         self.collision_data = []
@@ -98,7 +105,7 @@ class Game:
         """
         pygame.init()
         screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-        SCREEN_TITLE = "2D Platformer - Player Movement"
+        SCREEN_TITLE = "Pixel Pursuit"
         pygame.display.set_caption(SCREEN_TITLE)
         return screen
 
@@ -113,6 +120,38 @@ class Game:
                 and event.key in [pygame.K_ESCAPE, pygame.K_q]
             ):
                 self.running = False
+
+            if self.menu_active:
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP:
+                        self.selected_option = (self.selected_option - 1) % len(
+                            self.menu_options
+                        )
+                    elif event.key == pygame.K_DOWN:
+                        self.selected_option = (self.selected_option + 1) % len(
+                            self.menu_options
+                        )
+                    elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
+                        # Start the game with the selected mode
+                        selected_mode = self.menu_options[self.selected_option].lower()
+                        self.menu_active = False
+                        self.start_game(mode=selected_mode)
+            else:
+                # Game-specific events can be handled here
+                pass
+
+
+    def start_game(self, mode: str) -> None:
+        """
+        Set up the game for the selected mode.
+        """
+        self.mode = mode  # Ensure self.mode is set
+        # Reset player and enemy positions if necessary
+        self.player_pos = {"x": self.SCREEN_WIDTH // 2, "y": self.SCREEN_HEIGHT // 2}
+        self.enemy.reset_position()
+        # Reset collision data
+        self.collision_data = []
+    # Reset other game states as needed
 
     def handle_player_movement_random(self) -> None:
         """
@@ -221,41 +260,38 @@ class Game:
         with open(self.collision_data_file, "w") as file:
             json.dump(self.collision_data, file, indent=4)
 
-    def run(self, mode="training") -> None:
+    def run(self) -> None:
         """
         Main game loop that runs the game.
         Handles events, updates game state, and redraws the screen.
         """
         clock = pygame.time.Clock()
 
-        # Assign movement handlers based on mode
-        player_movement_handler = (
-            self.handle_player_movement_random
-            if mode == "training"
-            else self.handle_player_movement_manual
-        )
-        enemy_movement_handler = lambda: self.enemy.update_position(self.player_pos)
-
         while self.running:
             clock.tick(60)  # Cap the frame rate at 60 FPS
             self.handle_events()
 
-            # Handle player and enemy movement
-            player_movement_handler()
-            enemy_movement_handler()
-
-            # Log game state for training purposes
-            self.log_game_state()
-
-            # Check collision
-            if self.check_collision():
-                print("Collision detected!")
-
             # Draw everything
             self.screen.fill(self.BACKGROUND_COLOR)
-            self.draw_player()
-            self.enemy.draw(self.screen)
-            self.draw_menu_text()  # Draw the menu text on the screen after all other elements
+            if self.menu_active:
+                self.draw_menu()
+            else:
+                # Handle player and enemy movement
+                if self.mode == "training":
+                    self.handle_player_movement_random()
+                else:
+                    self.handle_player_movement_manual()
+
+                self.enemy.update_position(self.player_pos)
+
+                # Log game state for training purposes
+                self.log_game_state()
+
+                # Check collision
+                if self.check_collision():
+                    print("Collision detected!")
+
+                self.draw_gameplay()
             pygame.display.flip()
 
         # Save remaining collision data on game exit
@@ -280,20 +316,57 @@ class Game:
             ),
         )
 
-    def draw_menu_text(self) -> None:
+    def draw_gameplay(self) -> None:
         """
-        Draw the word 'Menu' centered in the middle of the screen.
+        Draw all gameplay elements on the screen.
         """
-        font = pygame.font.Font(None, 74)
-        menu_text = font.render("Menu", True, (0, 50, 0))
+        self.draw_player()
+        self.enemy.draw(self.screen)
 
-        # Get the text's rectangle
-        text_rect = menu_text.get_rect()
+    def draw_menu(self) -> None:
+        """
+        Draw the main menu with the title and options.
+        """
+        # Colors
+        title_color = (50, 50, 50)  # Dark gray
+        option_color = (0, 0, 0)  # Black
+        selected_color = (255, 165, 0)  # Orange
 
-        # Get the screen's rectangle
-        screen_rect = self.screen.get_rect()
+        # Fonts
+        title_font = pygame.font.Font(None, 100)
+        option_font = pygame.font.Font(None, 74)
 
-        # Center the text rectangle on the screen
-        text_rect.center = screen_rect.center
+        # Render the title
+        title_text = title_font.render("Pixel Pursuit", True, title_color)
+        title_rect = title_text.get_rect(
+            center=(self.SCREEN_WIDTH // 2, self.SCREEN_HEIGHT // 4)
+        )
 
-        self.screen.blit(menu_text, text_rect)
+        # Render the menu options
+        option_surfaces = []
+        option_rects = []
+        for index, option in enumerate(self.menu_options):
+            if index == self.selected_option:
+                color = selected_color
+            else:
+                color = option_color
+            option_surface = option_font.render(option, True, color)
+            option_rect = option_surface.get_rect(
+                center=(self.SCREEN_WIDTH // 2, self.SCREEN_HEIGHT // 2 + index * 100)
+            )
+            option_surfaces.append(option_surface)
+            option_rects.append(option_rect)
+
+        # Blit the title and options onto the screen
+        self.screen.blit(title_text, title_rect)
+        for surface, rect in zip(option_surfaces, option_rects):
+            self.screen.blit(surface, rect)
+
+    def reset_game(self) -> None:
+        """
+        Reset the game state to start a new game.
+        """
+        self.player_pos = {"x": self.SCREEN_WIDTH // 2, "y": self.SCREEN_HEIGHT // 2}
+        self.enemy.reset_position()
+        self.collision_data = []
+        self.player_movement_counter = 0
