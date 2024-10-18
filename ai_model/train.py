@@ -1,11 +1,9 @@
-import sys
 import os
 import json  # Import json to handle JSON data
 import torch  # Import torch for PyTorch functionality
 import torch.optim as optim  # Import optim for optimization algorithms
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+
 from ai_model.model import EnemyAIModel
 
 # Load collision data from a JSON file

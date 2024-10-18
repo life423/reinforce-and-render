@@ -1,3 +1,6 @@
+
+import os
+
 def clamp_position(value: int, min_value: int, max_value: int) -> int:
     """
     Clamps a value between a minimum and maximum range.
@@ -11,3 +14,6 @@ def clamp_position(value: int, min_value: int, max_value: int) -> int:
         int: The clamped value within the specified range.
     """
     return max(min_value, min(max_value, value))
+
+
+
