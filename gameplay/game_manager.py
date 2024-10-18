@@ -140,7 +140,6 @@ class Game:
                 # Game-specific events can be handled here
                 pass
 
-
     def start_game(self, mode: str) -> None:
         """
         Set up the game for the selected mode.
@@ -151,6 +150,7 @@ class Game:
         self.enemy.reset_position()
         # Reset collision data
         self.collision_data = []
+
     # Reset other game states as needed
 
     def handle_player_movement_random(self) -> None:
@@ -328,9 +328,10 @@ class Game:
         Draw the main menu with the title and options.
         """
         # Colors
-        title_color = (50, 50, 50)  # Dark gray
-        option_color = (0, 0, 0)  # Black
-        selected_color = (255, 165, 0)  # Orange
+        background_color = self.BACKGROUND_COLOR  # Light blue
+        title_color = (0, 51, 102)  # Dark blue for the title
+        option_color = (245, 245, 245)  # Off-white for unselected options
+        selected_color = (255, 215, 0)  # Gold for the selected option
 
         # Fonts
         title_font = pygame.font.Font(None, 100)
