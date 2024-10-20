@@ -1,21 +1,25 @@
-# Use an official Python runtime as the base image
+# Use a slim Python image as the base
 FROM python:3.10-slim
 
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the requirements file and install dependencies
-COPY requirements.txt ./
+# Install system dependencies needed to build packages like noise
+RUN apt-get update && apt-get install -y \
+    gcc \
+    build-essential
+
+# Copy the requirements.txt file into the container
+COPY requirements.txt /app/
+
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the entire project to the container
-COPY . .
+# Copy the rest of the application code into the container
+COPY . /app
 
-# Environment variables for configuration
+# Set environment variables (e.g., to load MongoDB credentials from .env)
 ENV PYTHONUNBUFFERED=1
 
-# Expose the port used by your game (if needed, e.g., if you open a web interface)
-EXPOSE 8000
-
-# Command to run your game
+# Run the main Python file when the container starts
 CMD ["python", "main.py"]
