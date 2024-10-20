@@ -78,7 +78,6 @@ class Game:
     def training_update(self):
         # Increment time to get new noise values for smooth movement
         self.player.noise_time += 0.01
-        self.enemy.time += 0.01
 
         # Update player position using Perlin noise
         dx_player = pnoise1(self.player.noise_time +
@@ -90,8 +89,8 @@ class Game:
         self.player.position["y"] = max(0, min(self.screen.get_height(
         ) - self.player.size, self.player.position["y"] + dy_player))
 
-        # Update enemy position using Perlin noise
-        self.enemy.update_noise_movement()
+        # Update enemy position using combined noise and random direction movement
+        self.enemy.update_combined_movement()  # Use the correct method name
 
         # Log the data for training purposes
         self.data_logger.log_data(self.player.position, self.enemy.pos)
