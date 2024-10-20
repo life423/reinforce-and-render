@@ -1,14 +1,13 @@
 import pygame
 from noise import pnoise1
-from core.data_logger import DataLogger
 
 
 class TrainingManager:
-    def __init__(self, player, enemy, screen):
+    def __init__(self, player, enemy, screen, data_logger):
         self.player = player
         self.enemy = enemy
         self.screen = screen
-        self.data_logger = DataLogger()
+        self.data_logger = data_logger
 
     def training_update(self):
         # Increment time to get new noise values for smooth movement
@@ -19,27 +18,27 @@ class TrainingManager:
                             self.player.noise_offset_x) * self.player.step
         dy_player = pnoise1(self.player.noise_time +
                             self.player.noise_offset_y) * self.player.step
-        self.player.position["x"] = max(0, min(self.screen.get_width()
-                                               - self.player.size, self.player.position["x"] + dx_player))
-        self.player.position["y"] = max(0, min(self.screen.get_height()
-                                               - self.player.size, self.player.position["y"] + dy_player))
+        self.player.position["x"] = max(0, min(self.screen.get_width(
+        ) - self.player.size, self.player.position["x"] + dx_player))
+        self.player.position["y"] = max(0, min(self.screen.get_height(
+        ) - self.player.size, self.player.position["y"] + dy_player))
 
-        # Update enemy position using combined noise and random direction movement
+        # Update enemy position
         self.enemy.update_movement()
 
         # Check for collision between player and enemy
         collision_occurred = self.check_collision()
 
-        # Log the data for training purposes to MongoDB
-        training_data = {
-            "timestamp": pygame.time.get_ticks(),
-            "player_position": self.player.position,
-            "enemy_position": self.enemy.pos,
-            "distance": ((self.player.position["x"] - self.enemy.pos["x"]) ** 2 +
-                         (self.player.position["y"] - self.enemy.pos["y"]) ** 2) ** 0.5,
-            "collision": collision_occurred
-        }
-        self.data_logger.log_data(training_data)
+        # Log the data for training purposes
+        self.data_logger.log_data(
+            {
+                "timestamp": pygame.time.get_ticks(),
+                "player_position": self.player.position,
+                "enemy_position": self.enemy.pos,
+                "distance": ((self.player.position["x"] - self.enemy.pos["x"]) ** 2 + (self.player.position["y"] - self.enemy.pos["y"]) ** 2) ** 0.5,
+                "collision": collision_occurred
+            }
+        )
 
     def check_collision(self):
         player_rect = pygame.Rect(

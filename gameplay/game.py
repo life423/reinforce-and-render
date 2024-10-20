@@ -75,6 +75,13 @@ class Game:
         self.player.update()
         self.enemy.update(self.player.get_position())
 
+        # Check for collisions
+        if self.training_manager.check_collision():
+            print("Collision detected!")
+
+        
+    
+
     def training_update(self):
         # Increment time to get new noise values for smooth movement
         self.player.noise_time += 0.01
