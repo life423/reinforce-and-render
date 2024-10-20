@@ -1,4 +1,4 @@
-import pygame
+import pygame  # Import pygame
 import random
 from noise import pnoise1
 
@@ -9,10 +9,13 @@ class Enemy:
         self.start_x = screen_width // 2
         self.start_y = screen_height // 2
         self.pos = {"x": self.start_x, "y": self.start_y}
-        self.size = 100
-        self.color = (255, 99, 71)  # Light red to match the palette
-        # Increased speed for more dynamic movement
-        self.speed = max(2, screen_width // 400)
+
+        # Set size to match the player's size
+        self.size = 50  # Updated to be consistent with the player block size
+        # Orange color to match the color palette (or similar)
+        self.color = (255, 165, 0)
+
+        self.speed = max(2, screen_width // 400)  # Speed for dynamic movement
         self.screen_width = screen_width
         self.screen_height = screen_height
 
@@ -38,8 +41,8 @@ class Enemy:
         self.velocity_y = 0
 
     def update_combined_movement(self):
-        # Increment time for noise-based movement
-        self.time += 0.01
+        # Increment time to get new positions from noise
+        self.time += 0.01  # Increment time for smoother changes
 
         # Generate noise-based movement for smooth base movement
         noise_dx = pnoise1(self.time + self.noise_offset_x) * self.speed
