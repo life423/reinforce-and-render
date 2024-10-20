@@ -100,4 +100,4 @@ class Game:
         self.enemy.update_combined_movement()  # Use the correct method name
 
         # Log the data for training purposes
-        self.data_logger.log_data(self.player.position, self.enemy.pos)
+        # self.data_logger.log_data(self.player.position, self.enemy.pos)
