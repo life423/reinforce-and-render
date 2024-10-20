@@ -1,10 +1,13 @@
-from ai_model.model_definition.model import EnemyAIModel
 import torch
+import pygame
+from ai_model.model_definition.model import EnemyAIModel
 
 
 class Enemy:
     def __init__(self, screen_width, screen_height):
-        self.pos = {"x": screen_width // 2, "y": screen_height // 2}
+        self.start_x = screen_width // 2
+        self.start_y = screen_height // 2
+        self.pos = {"x": self.start_x, "y": self.start_y}
         self.size = 100
         self.color = (255, 69, 0)
         self.speed = max(1, screen_width // 500)
@@ -16,6 +19,12 @@ class Enemy:
         self.ai_model = EnemyAIModel(
             input_size=4, hidden_size=16, output_size=2)
         self.ai_model.eval()  # Set the model to evaluation mode
+
+    def reset(self):
+        """
+        Reset the enemy to its starting position.
+        """
+        self.pos = {"x": self.start_x, "y": self.start_y}
 
     def update(self, player_pos):
         # Using AI to update position
