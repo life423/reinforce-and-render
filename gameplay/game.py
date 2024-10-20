@@ -30,10 +30,16 @@ class Game:
     def run(self):
         while self.running:
             self.handle_events()
-            if not self.menu_active:
+            if self.menu_active:
+                # Only draw the menu if the menu is active
+                self.menu.draw(self.screen)
+            else:
+                # Draw and update game logic otherwise
                 self.update()
-            self.renderer.render(self.menu, self.player,
-                                 self.enemy, self.menu_active, self.screen)
+                self.renderer.render(self.menu, self.player,
+                                     self.enemy, self.menu_active, self.screen)
+
+            pygame.display.flip()
             self.clock.tick(60)  # Cap the frame rate
 
         # Save data on exit
@@ -45,17 +51,19 @@ class Game:
             if event.type == pygame.QUIT:
                 self.running = False
             elif self.menu_active:
-                self.menu.handle_menu_events(event)
-                self.check_menu_selection()
+                selected_action = self.menu.handle_menu_events(event)
+                if selected_action:
+                    self.check_menu_selection(selected_action)
+            else:
+                # Add additional event handling for gameplay if needed
+                pass
 
-    def check_menu_selection(self):
-        selected_option = self.menu.menu_options[self.menu.selected_option].lower(
-        )
-        if selected_option == "exit":
+    def check_menu_selection(self, selected_action):
+        if selected_action == "exit":
             self.running = False
-        elif selected_option in ["training", "play"]:
+        elif selected_action in ["train", "play"]:
             self.menu_active = False
-            self.start_game(selected_option)
+            self.start_game(selected_action)
 
     def start_game(self, mode: str):
         self.mode = mode
@@ -63,10 +71,18 @@ class Game:
         self.enemy.reset()
 
     def update(self):
-        # Update player and enemy movement
-        self.player.update()  # Update player position based on input
-        # Update enemy position based on AI logic
+        if self.mode == "train":
+            self.training_update()
+        elif self.mode == "play":
+            self.play_update()
+
+    def play_update(self):
+        # Update player and enemy movement for play mode
+        self.player.update()
         self.enemy.update(self.player.get_position())
 
-
-
+    def training_update(self):
+        # Training mode logic (for now, player and enemy move randomly)
+        self.player.update()  # Player moves manually
+        # In training mode, enemy moves in a more complex way for learning
+        self.enemy.update(self.player.get_position())
