@@ -23,13 +23,15 @@ class SimpleNN(nn.Module):
         super(SimpleNN, self).__init__()
         self.fc1 = nn.Linear(4, 32)
         self.fc2 = nn.Linear(32, 16)
-        self.fc3 = nn.Linear(16, 2)  # Outputs x and y movement
+        self.fc3 = nn.Linear(16, 1)  # Output a single value
 
     def forward(self, x):
         x = torch.relu(self.fc1(x))
         x = torch.relu(self.fc2(x))
         x = self.fc3(x)
         return x
+
+
 
 # Load data from MongoDB
 
@@ -56,9 +58,11 @@ X, y = load_data()
 X = torch.tensor(X, dtype=torch.float32)
 y = torch.tensor(y, dtype=torch.float32)
 
+# Initialize model, loss, and optimiz
+
 # Initialize model, loss, and optimizer
 model = SimpleNN()
-criterion = nn.MSELoss()
+criterion = nn.MSELoss()  # Mean Squared Error if you're predicting a scalar
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 # Training loop
