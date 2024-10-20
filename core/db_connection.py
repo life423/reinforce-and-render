@@ -11,8 +11,18 @@ mongo_uri = os.getenv('MONGO_URI')
 # Create a MongoClient object
 client = MongoClient(mongo_uri)
 
-# Access the specific database and collection
-db = client['pixel_pursuit']  # Use 'pixel_pursuit' as the database name
-collection = db['training_data']  # Use 'training_data' as the collection name
+# Example: Access the database and collection
+db = client['pixel_pursuit_db']
+collection = db['training_data']
 
-# Now you can use 'collection' to insert, find, update, or delete documents
+# Test: Insert sample data to verify connection
+test_data = {
+    "timestamp": "2024-10-20T12:00:00Z",
+    "player_position": {"x": 100, "y": 200},
+    "enemy_position": {"x": 150, "y": 250},
+    "distance": 70,
+    "collision": False
+}
+
+collection.insert_one(test_data)
+print("Test data inserted successfully")
