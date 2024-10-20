@@ -43,7 +43,9 @@ class Enemy:
             hidden_size = 64
             output_size = 1
             self.ai_model = EnemyAIModel(input_size, hidden_size, output_size)
-            self.ai_model.load_state_dict(torch.load(model_path))
+            self.ai_model.load_state_dict(
+            torch.load(model_path, weights_only=True))
+
             self.ai_model.eval()  # Set the model to evaluation mode
 
     def reset_position(self) -> None:
