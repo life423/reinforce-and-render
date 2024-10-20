@@ -73,4 +73,4 @@ for epoch in range(1000):  # Adjust epochs as needed
         print(f'Epoch [{epoch}/1000], Loss: {loss.item()}')
 
 # Save the model
-torch.save(model.state_dict(), './ai_model/saved_models/enemy_ai_model.pth')
+torch.save(model.state_dict(), 'saved_models/enemy_ai_model.pth')
