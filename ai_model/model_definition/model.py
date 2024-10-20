@@ -1,6 +1,9 @@
 import torch  # Importing PyTorch library, which is used for building and training neural networks
-import torch.nn as nn  # Importing the 'nn' module from PyTorch for creating neural network layers
-import torch.nn.functional as F  # Importing functional API for activation functions and other utilities
+# Importing the 'nn' module from PyTorch for creating neural network layers
+import torch.nn as nn
+# Importing functional API for activation functions and other utilities
+import torch.nn.functional as F
+
 
 class EnemyAIModel(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
@@ -12,9 +15,12 @@ class EnemyAIModel(nn.Module):
             hidden_size (int): Number of neurons in the hidden layer.
             output_size (int): Number of output features (e.g., possible actions for enemy).
         """
-        super(EnemyAIModel, self).__init__()  # Call the initializer of the parent class (nn.Module)
-        self.fc1 = nn.Linear(input_size, hidden_size)  # Define the first fully connected layer from input to hidden layer
-        self.fc2 = nn.Linear(hidden_size, output_size)  # Define the second fully connected layer from hidden to output layer
+        super(EnemyAIModel, self).__init__(
+        )  # Call the initializer of the parent class (nn.Module)
+        # Define the first fully connected layer from input to hidden layer
+        self.fc1 = nn.Linear(input_size, hidden_size)
+        # Define the second fully connected layer from hidden to output layer
+        self.fc2 = nn.Linear(hidden_size, output_size)
 
     def forward(self, x):
         """
@@ -26,6 +32,8 @@ class EnemyAIModel(nn.Module):
         Returns:
             torch.Tensor: Output tensor representing the predicted action.
         """
-        x = F.relu(self.fc1(x))  # Apply ReLU activation function to the output of the first layer
-        x = self.fc2(x)  # Pass the output from the hidden layer to the output layer
+        x = F.relu(
+            self.fc1(x))  # Apply ReLU activation function to the output of the first layer
+        # Pass the output from the hidden layer to the output layer
+        x = self.fc2(x)
         return x  # Return the final output
