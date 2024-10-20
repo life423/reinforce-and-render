@@ -1,9 +1,10 @@
 import pygame
+import random
 from entities.player import Player
 from entities.enemy import Enemy
 from gameplay.menu import Menu
 from gameplay.renderer import Renderer
-from gameplay.data_manager import DataManager
+from core.data_logger import DataLogger
 
 
 class Game:
@@ -19,8 +20,7 @@ class Game:
         self.enemy = Enemy(self.screen.get_width(), self.screen.get_height())
         self.menu = Menu(self.screen.get_width(), self.screen.get_height())
         self.renderer = Renderer(self.screen)
-        self.data_manager = DataManager("data/collision_data.json")
-        self.collision_data = self.data_manager.load_collision_data()
+        self.data_logger = DataLogger("data/training_data.json")
 
         # Game states
         self.running = True
@@ -31,10 +31,8 @@ class Game:
         while self.running:
             self.handle_events()
             if self.menu_active:
-                # Only draw the menu if the menu is active
                 self.menu.draw(self.screen)
             else:
-                # Draw and update game logic otherwise
                 self.update()
                 self.renderer.render(self.menu, self.player,
                                      self.enemy, self.menu_active, self.screen)
@@ -42,8 +40,6 @@ class Game:
             pygame.display.flip()
             self.clock.tick(60)  # Cap the frame rate
 
-        # Save data on exit
-        self.data_manager.save_collision_data(self.collision_data)
         pygame.quit()
 
     def handle_events(self):
@@ -54,9 +50,6 @@ class Game:
                 selected_action = self.menu.handle_menu_events(event)
                 if selected_action:
                     self.check_menu_selection(selected_action)
-            else:
-                # Add additional event handling for gameplay if needed
-                pass
 
     def check_menu_selection(self, selected_action):
         if selected_action == "exit":
@@ -82,7 +75,20 @@ class Game:
         self.enemy.update(self.player.get_position())
 
     def training_update(self):
-        # Training mode logic (for now, player and enemy move randomly)
-        self.player.update()  # Player moves manually
-        # In training mode, enemy moves in a more complex way for learning
-        self.enemy.update(self.player.get_position())
+        # Update player and enemy randomly for training mode
+        dx = random.choice([-1, 0, 1]) * self.player.step
+        dy = random.choice([-1, 0, 1]) * self.player.step
+        self.player.position["x"] = max(0, min(
+            self.screen.get_width() - self.player.size, self.player.position["x"] + dx))
+        self.player.position["y"] = max(0, min(
+            self.screen.get_height() - self.player.size, self.player.position["y"] + dy))
+
+        dx = random.choice([-1, 0, 1]) * self.enemy.speed
+        dy = random.choice([-1, 0, 1]) * self.enemy.speed
+        self.enemy.pos["x"] = max(
+            0, min(self.screen.get_width() - self.enemy.size, self.enemy.pos["x"] + dx))
+        self.enemy.pos["y"] = max(
+            0, min(self.screen.get_height() - self.enemy.size, self.enemy.pos["y"] + dy))
+
+        # Log training data using DataLogger
+        self.data_logger.log_data(self.player.position, self.enemy.pos)
