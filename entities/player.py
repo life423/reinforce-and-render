@@ -1,4 +1,6 @@
-import pygame
+import pygame  # <-- Add this line to import pygame
+import random
+from noise import pnoise1
 
 
 class Player:
@@ -10,38 +12,34 @@ class Player:
         self.screen_width = screen_width
         self.screen_height = screen_height
 
+        # Noise parameters for smooth movement
+        self.noise_offset_x = random.uniform(
+            0, 100)  # Random noise offset for x-axis
+        self.noise_offset_y = random.uniform(
+            0, 100)  # Random noise offset for y-axis
+        self.noise_time = 0.0  # Time variable for noise-based movement
+
     def reset(self):
         # Reset player position to the center of the screen
         self.position = {"x": self.screen_width //
                          2, "y": self.screen_height // 2}
+        self.noise_time = 0.0  # Reset noise time
 
-    def update(self):
-        keys = pygame.key.get_pressed()
-        # Check for movement keys and update position accordingly
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            self.position["x"] -= self.step
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            self.position["x"] += self.step
-        if keys[pygame.K_UP] or keys[pygame.K_w]:
-            self.position["y"] -= self.step
-        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
-            self.position["y"] += self.step
+    def update_noise_movement(self):
+        # Increment time for smoother movement
+        self.noise_time += 0.01
 
-        # Ensure the player doesn't move off-screen
+        # Generate new positions using Perlin noise
+        dx = pnoise1(self.noise_time + self.noise_offset_x) * self.step
+        dy = pnoise1(self.noise_time + self.noise_offset_y) * self.step
+
+        # Update position while keeping it within screen bounds
         self.position["x"] = max(
-            0, min(self.screen_width - self.size, self.position["x"]))
+            0, min(self.screen_width - self.size, self.position["x"] + dx))
         self.position["y"] = max(
-            0, min(self.screen_height - self.size, self.position["y"]))
+            0, min(self.screen_height - self.size, self.position["y"] + dy))
 
     def draw(self, screen):
+        # Use pygame to draw the player rectangle
         pygame.draw.rect(
             screen, self.color, (self.position["x"], self.position["y"], self.size, self.size))
-
-    def get_position(self):
-        """
-        Get the current position of the player.
-
-        Returns:
-            dict: The player's current position as {"x": ..., "y": ...}
-        """
-        return self.position

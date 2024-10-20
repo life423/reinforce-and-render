@@ -1,6 +1,6 @@
-import torch
+import random
 import pygame
-from ai_model.model_definition.model import EnemyAIModel
+from noise import pnoise1
 
 
 class Enemy:
@@ -9,42 +9,33 @@ class Enemy:
         self.start_y = screen_height // 2
         self.pos = {"x": self.start_x, "y": self.start_y}
         self.size = 100
-        self.color = (255, 69, 0)
+        self.color = (255, 99, 71)  # Adjusted color to fit the palette
         self.speed = max(1, screen_width // 500)
         self.screen_width = screen_width
         self.screen_height = screen_height
 
-        # Initialize the AI model
-        # Example input size and hidden/output sizes
-        self.ai_model = EnemyAIModel(
-            input_size=4, hidden_size=16, output_size=2)
-        self.ai_model.eval()  # Set the model to evaluation mode
+        # Noise parameters
+        self.noise_offset_x = random.uniform(0, 100)
+        self.noise_offset_y = random.uniform(0, 100)
+        self.time = 0.0
 
     def reset(self):
-        """
-        Reset the enemy to its starting position.
-        """
+        # Reset the enemy to its starting position
         self.pos = {"x": self.start_x, "y": self.start_y}
 
-    def update(self, player_pos):
-        # Using AI to update position
-        # Prepare input tensor with enemy and player positions
-        input_tensor = torch.tensor(
-            [self.pos["x"], self.pos["y"], player_pos["x"], player_pos["y"]], dtype=torch.float32)
+    def update_noise_movement(self):
+        # Increment time to get a new position
+        self.time += 0.01  # Increment time for smoother changes
 
-        # Get the output from the AI model
-        output = self.ai_model(input_tensor)
+        # Generate new positions using Perlin noise
+        dx = pnoise1(self.time + self.noise_offset_x) * self.speed
+        dy = pnoise1(self.time + self.noise_offset_y) * self.speed
 
-        # Use the output to decide movement direction
-        # Assuming output is something like [dx, dy] representing direction changes
-        self.pos["x"] += int(output[0].item()) * self.speed
-        self.pos["y"] += int(output[1].item()) * self.speed
-
-        # Clamp position to stay on the screen
+        # Update position while keeping it within bounds
         self.pos["x"] = max(
-            0, min(self.screen_width - self.size, self.pos["x"]))
+            0, min(self.screen_width - self.size, self.pos["x"] + dx))
         self.pos["y"] = max(
-            0, min(self.screen_height - self.size, self.pos["y"]))
+            0, min(self.screen_height - self.size, self.pos["y"] + dy))
 
     def draw(self, screen):
         pygame.draw.rect(screen, self.color,

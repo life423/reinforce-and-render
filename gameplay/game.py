@@ -5,6 +5,7 @@ from entities.enemy import Enemy
 from gameplay.menu import Menu
 from gameplay.renderer import Renderer
 from core.data_logger import DataLogger
+from noise import pnoise1
 
 
 class Game:
@@ -75,20 +76,22 @@ class Game:
         self.enemy.update(self.player.get_position())
 
     def training_update(self):
-        # Update player and enemy randomly for training mode
-        dx = random.choice([-1, 0, 1]) * self.player.step
-        dy = random.choice([-1, 0, 1]) * self.player.step
-        self.player.position["x"] = max(0, min(
-            self.screen.get_width() - self.player.size, self.player.position["x"] + dx))
-        self.player.position["y"] = max(0, min(
-            self.screen.get_height() - self.player.size, self.player.position["y"] + dy))
+        # Increment time to get new noise values for smooth movement
+        self.player.noise_time += 0.01
+        self.enemy.time += 0.01
 
-        dx = random.choice([-1, 0, 1]) * self.enemy.speed
-        dy = random.choice([-1, 0, 1]) * self.enemy.speed
-        self.enemy.pos["x"] = max(
-            0, min(self.screen.get_width() - self.enemy.size, self.enemy.pos["x"] + dx))
-        self.enemy.pos["y"] = max(
-            0, min(self.screen.get_height() - self.enemy.size, self.enemy.pos["y"] + dy))
+        # Update player position using Perlin noise
+        dx_player = pnoise1(self.player.noise_time +
+                            self.player.noise_offset_x) * self.player.step
+        dy_player = pnoise1(self.player.noise_time +
+                            self.player.noise_offset_y) * self.player.step
+        self.player.position["x"] = max(0, min(self.screen.get_width(
+        ) - self.player.size, self.player.position["x"] + dx_player))
+        self.player.position["y"] = max(0, min(self.screen.get_height(
+        ) - self.player.size, self.player.position["y"] + dy_player))
 
-        # Log training data using DataLogger
+        # Update enemy position using Perlin noise
+        self.enemy.update_noise_movement()
+
+        # Log the data for training purposes
         self.data_logger.log_data(self.player.position, self.enemy.pos)
