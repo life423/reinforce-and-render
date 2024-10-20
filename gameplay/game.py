@@ -3,8 +3,12 @@ import pygame  # type: ignore
 import json
 import random
 
+# Example import for the Enemy class in game.py
 from entities.enemy import Enemy
+
+# Import utility functions from core/utils.py
 from core.utils import clamp_position
+
 
 
 class Game:

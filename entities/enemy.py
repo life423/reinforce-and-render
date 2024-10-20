@@ -3,6 +3,7 @@ import pygame
 import random
 import os
 from ai_model.model import EnemyAIModel
+from gameplay.menu import Menu
 
 
 class Enemy:
@@ -27,9 +28,7 @@ class Enemy:
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.movement_counter = 0
-        self.mode = (
-            mode  # Mode can be 'training' or 'play' to dictate movement behavior
-        )
+        self.mode = mode
         self.current_direction = random.choice(
             [(-self.speed, 0), (self.speed, 0), (0, -self.speed), (0, self.speed)]
         )
@@ -84,6 +83,7 @@ class Enemy:
                 self.pos["y"] -= min(self.speed, distance)
         else:
             # Change direction every 20 frames to make movement more varied
+            print('we are in training mode')
             if self.movement_counter % 20 == 0:
                 self.current_direction = random.choice(
                     [
