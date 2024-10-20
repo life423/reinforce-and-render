@@ -1,0 +1,8 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.venv
+.DS_Store
+data/*.json  # You may not want to include training data in the container
+.env         # Ensure sensitive information is not baked into the image
