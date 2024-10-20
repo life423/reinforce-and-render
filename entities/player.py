@@ -11,32 +11,37 @@ class Player:
         self.screen_height = screen_height
 
     def reset(self):
+        # Reset player position to the center of the screen
         self.position = {"x": self.screen_width //
                          2, "y": self.screen_height // 2}
 
     def update(self):
         keys = pygame.key.get_pressed()
-        self.move(keys)
-
-    def update_random(self):
-        # Logic for random movement (for training)
-        pass
-
-    def move(self, keys):
+        # Check for movement keys and update position accordingly
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            self.position["x"] = max(0, self.position["x"] - self.step)
+            self.position["x"] -= self.step
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            self.position["x"] = min(
-                self.screen_width - self.size, self.position["x"] + self.step)
+            self.position["x"] += self.step
         if keys[pygame.K_UP] or keys[pygame.K_w]:
-            self.position["y"] = max(0, self.position["y"] - self.step)
+            self.position["y"] -= self.step
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
-            self.position["y"] = min(
-                self.screen_height - self.size, self.position["y"] + self.step)
+            self.position["y"] += self.step
+
+        # Ensure the player doesn't move off-screen
+        self.position["x"] = max(
+            0, min(self.screen_width - self.size, self.position["x"]))
+        self.position["y"] = max(
+            0, min(self.screen_height - self.size, self.position["y"]))
 
     def draw(self, screen):
         pygame.draw.rect(
             screen, self.color, (self.position["x"], self.position["y"], self.size, self.size))
 
     def get_position(self):
+        """
+        Get the current position of the player.
+
+        Returns:
+            dict: The player's current position as {"x": ..., "y": ...}
+        """
         return self.position

@@ -6,9 +6,6 @@ from gameplay.renderer import Renderer
 from gameplay.data_manager import DataManager
 
 
-
-
-
 class Game:
     def __init__(self):
         # Initialize screen and clock
@@ -22,7 +19,7 @@ class Game:
         self.enemy = Enemy(self.screen.get_width(), self.screen.get_height())
         self.menu = Menu(self.screen.get_width(), self.screen.get_height())
         self.renderer = Renderer(self.screen)
-        self.data_manager = DataManager("assets/collision_data.json")
+        self.data_manager = DataManager("data/collision_data.json")
         self.collision_data = self.data_manager.load_collision_data()
 
         # Game states
@@ -51,16 +48,14 @@ class Game:
                 self.menu.handle_menu_events(event)
                 self.check_menu_selection()
 
-
     def check_menu_selection(self):
-        selected_option = self.menu.menu_options[self.menu.selected_option].lower()
-
+        selected_option = self.menu.menu_options[self.menu.selected_option].lower(
+        )
         if selected_option == "exit":
             self.running = False
         elif selected_option in ["training", "play"]:
             self.menu_active = False
             self.start_game(selected_option)
-
 
     def start_game(self, mode: str):
         self.mode = mode
@@ -68,8 +63,10 @@ class Game:
         self.enemy.reset()
 
     def update(self):
-        if self.mode == "training":
-            self.player.update_random()
-        else:
-            self.player.update()
+        # Update player and enemy movement
+        self.player.update()  # Update player position based on input
+        # Update enemy position based on AI logic
         self.enemy.update(self.player.get_position())
+
+
+
