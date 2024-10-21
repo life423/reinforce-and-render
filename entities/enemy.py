@@ -40,7 +40,7 @@ class Enemy:
         self.velocity_x = 0
         self.velocity_y = 0
 
-    def update_combined_movement(self):
+    def update(self):
         # Increment time to get new positions from noise
         self.time += 0.01  # Increment time for smoother changes
 

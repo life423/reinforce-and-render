@@ -23,7 +23,7 @@ class Player:
                          2, "y": self.screen_height // 2}
         self.noise_time = 0.0
 
-    def update_noise_movement(self):
+    def update(self):
         # Increment time for smoother movement
         self.noise_time += 0.01
 
@@ -36,6 +36,9 @@ class Player:
             0, min(self.screen_width - self.size, self.position["x"] + dx))
         self.position["y"] = max(
             0, min(self.screen_height - self.size, self.position["y"] + dy))
+
+    def get_position(self):
+        return self.position
 
     def draw(self, screen):
         # Use pygame to draw the player rectangle

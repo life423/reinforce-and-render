@@ -70,17 +70,28 @@ class Game:
         elif self.mode == "play":
             self.play_update()
 
+
+
+    def check_collision(self):
+        # Define the player and enemy rectangles
+        player_rect = pygame.Rect(
+            self.player.position["x"], self.player.position["y"], self.player.size, self.player.size)
+        enemy_rect = pygame.Rect(
+            self.enemy.pos["x"], self.enemy.pos["y"], self.enemy.size, self.enemy.size)
+
+        # Check if the rectangles collide
+        return player_rect.colliderect(enemy_rect)
+
     def play_update(self):
         # Update player and enemy movement for play mode
         self.player.update()
-        self.enemy.update(self.player.get_position())
+        self.enemy.update()  # Remove the player's position here
 
         # Check for collisions
-        if self.training_manager.check_collision():
+        if self.check_collision():
             print("Collision detected!")
 
-        
-    
+
 
     def training_update(self):
         # Increment time to get new noise values for smooth movement
@@ -99,5 +110,16 @@ class Game:
         # Update enemy position using combined noise and random direction movement
         self.enemy.update_combined_movement()  # Use the correct method name
 
-        # Log the data for training purposes
-        # self.data_logger.log_data(self.player.position, self.enemy.pos)
+        # Check for collisions
+        if self.check_collision():
+            print("Collision detected!")
+
+    def check_collision(self):
+        # Define the player and enemy rectangles
+        player_rect = pygame.Rect(
+            self.player.position["x"], self.player.position["y"], self.player.size, self.player.size)
+        enemy_rect = pygame.Rect(
+            self.enemy.pos["x"], self.enemy.pos["y"], self.enemy.size, self.enemy.size)
+
+        # Check if the rectangles collide
+        return player_rect.colliderect(enemy_rect)
