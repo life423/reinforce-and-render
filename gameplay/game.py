@@ -61,6 +61,7 @@ class Game:
 
     def start_game(self, mode: str):
         self.mode = mode
+        print(mode)
         self.player.reset()
         self.enemy.reset()
 
@@ -69,8 +70,6 @@ class Game:
             self.training_update()
         elif self.mode == "play":
             self.play_update()
-
-
 
     def check_collision(self):
         # Define the player and enemy rectangles
@@ -83,15 +82,15 @@ class Game:
         return player_rect.colliderect(enemy_rect)
 
     def play_update(self):
-        # Update player and enemy movement for play mode
-        self.player.update()
-        self.enemy.update()  # Remove the player's position here
+        # Handle player input during play mode
+        self.handle_input()
+
+        # Update enemy movement
+        self.enemy.update()
 
         # Check for collisions
         if self.check_collision():
             print("Collision detected!")
-
-
 
     def training_update(self):
         # Increment time to get new noise values for smooth movement
@@ -108,18 +107,31 @@ class Game:
         ) - self.player.size, self.player.position["y"] + dy_player))
 
         # Update enemy position using combined noise and random direction movement
-        self.enemy.update_combined_movement()  # Use the correct method name
+        self.enemy.update_combined_movement()
 
         # Check for collisions
         if self.check_collision():
             print("Collision detected!")
 
-    def check_collision(self):
-        # Define the player and enemy rectangles
-        player_rect = pygame.Rect(
-            self.player.position["x"], self.player.position["y"], self.player.size, self.player.size)
-        enemy_rect = pygame.Rect(
-            self.enemy.pos["x"], self.enemy.pos["y"], self.enemy.size, self.enemy.size)
+    def handle_input(self):
+        keys = pygame.key.get_pressed()
 
-        # Check if the rectangles collide
-        return player_rect.colliderect(enemy_rect)
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+            self.player.position['x'] -= self.player.step
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            self.player.position['x'] += self.player.step
+        if keys[pygame.K_UP] or keys[pygame.K_w]:
+            self.player.position['y'] -= self.player.step
+        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+            self.player.position['y'] += self.player.step
+
+        # Ensure player stays within screen boundaries
+        self.player.position['x'] = max(
+            0, min(self.player.position['x'], self.screen.get_width() - self.player.size))
+        self.player.position['y'] = max(
+            0, min(self.player.position['y'], self.screen.get_height() - self.player.size))
+
+
+if __name__ == "__main__":
+    game = Game()
+    game.run()
