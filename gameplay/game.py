@@ -90,7 +90,7 @@ class Game:
 
         # Check for collisions
         if self.check_collision():
-            print("Collision detected!")
+            pass
 
     def training_update(self):
         # Increment time to get new noise values for smooth movement
@@ -111,7 +111,7 @@ class Game:
 
         # Check for collisions
         if self.check_collision():
-            print("Collision detected!")
+            pass
 
     def handle_input(self):
         keys = pygame.key.get_pressed()
