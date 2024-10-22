@@ -86,7 +86,7 @@ class Game:
         self.handle_input()
 
         # Update enemy movement
-        self.enemy.update()
+        self.enemy.update_movement()
 
         # Check for collisions
         if self.check_collision():
@@ -107,7 +107,7 @@ class Game:
         ) - self.player.size, self.player.position["y"] + dy_player))
 
         # Update enemy position using combined noise and random direction movement
-        self.enemy.update_combined_movement()
+        self.enemy.update_movement()
 
         # Check for collisions
         if self.check_collision():
