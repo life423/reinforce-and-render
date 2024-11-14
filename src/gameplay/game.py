@@ -101,10 +101,10 @@ class Game:
                             self.player.noise_offset_x) * self.player.step
         dy_player = pnoise1(self.player.noise_time +
                             self.player.noise_offset_y) * self.player.step
-        self.player.position["x"] = max(0, min(self.screen.get_width(
-        ) - self.player.size, self.player.position["x"] + dx_player))
-        self.player.position["y"] = max(0, min(self.screen.get_height(
-        ) - self.player.size, self.player.position["y"] + dy_player))
+        self.player.position["x"] = max(0, min(self.screen.get_width()
+                                                - self.player.size, self.player.position["x"] + dx_player))
+        self.player.position["y"] = max(0, min(self.screen.get_height()
+                                                - self.player.size, self.player.position["y"] + dy_player))
 
         # Update enemy position using combined noise and random direction movement
         self.enemy.update_movement()
