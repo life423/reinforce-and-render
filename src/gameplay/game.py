@@ -3,8 +3,9 @@ import random
 from entities.player import Player
 from entities.enemy import Enemy
 from gameplay.menu import Menu
-from gameplay.renderer import Renderer
 from core.data_logger import DataLogger
+from gameplay.renderer import Renderer
+
 from noise import pnoise1
 
 class Game:
@@ -125,7 +126,7 @@ class Game:
             "enemy_y": self.enemy.pos["y"],
             "collision": collision
         }
-        self.data_logger.log(data_point)
+       
 
     def handle_input(self):
         keys = pygame.key.get_pressed()
