@@ -7,7 +7,6 @@ from gameplay.renderer import Renderer
 from core.data_logger import DataLogger
 from noise import pnoise1
 
-
 class Game:
     def __init__(self):
         # Initialize screen and clock
@@ -26,7 +25,7 @@ class Game:
         # Game states
         self.running = True
         self.menu_active = True
-        self.mode = None  # Training or Play
+        self.mode = None  # "train" or "play"
 
     def run(self):
         while self.running:
@@ -64,6 +63,14 @@ class Game:
         print(mode)
         self.player.reset()
         self.enemy.reset()
+
+        # Set player spawn position: left side of the screen, centered vertically
+        self.player.position["x"] = self.screen.get_width() // 4 - self.player.size // 2
+        self.player.position["y"] = self.screen.get_height() // 2 - self.player.size // 2
+
+        # Set enemy spawn position: right side of the screen, centered vertically
+        self.enemy.pos["x"] = (self.screen.get_width() * 3) // 4 - self.enemy.size // 2
+        self.enemy.pos["y"] = self.screen.get_height() // 2 - self.enemy.size // 2
 
     def update(self):
         if self.mode == "train":
@@ -125,14 +132,13 @@ class Game:
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
             self.player.position['y'] += self.player.step
         if keys[pygame.K_ESCAPE]:
-                self.running = False
+            self.running = False
+
         # Ensure player stays within screen boundaries
         self.player.position['x'] = max(
             0, min(self.player.position['x'], self.screen.get_width() - self.player.size))
         self.player.position['y'] = max(
             0, min(self.player.position['y'], self.screen.get_height() - self.player.size))
-            
-
 
 if __name__ == "__main__":
     game = Game()
