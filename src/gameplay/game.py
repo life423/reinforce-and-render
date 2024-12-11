@@ -5,23 +5,29 @@ from entities.enemy import Enemy
 from gameplay.menu import Menu
 from core.data_logger import DataLogger
 from gameplay.renderer import Renderer
-
 from noise import pnoise1
 
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+WINDOW_TITLE = "Pixel Pursuit"
+FRAME_RATE = 60
+DATA_PATH = "data/training_data.json"
+
 class Game:
+    """Main class to run the Pixel Pursuit game."""
+    
     def __init__(self):
-        # Initialize screen and clock
         pygame.init()
-        self.screen = pygame.display.set_mode((800, 600))
-        pygame.display.set_caption("Pixel Pursuit")
+        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        pygame.display.set_caption(WINDOW_TITLE)
         self.clock = pygame.time.Clock()
 
-        # Initialize entities and managers
-        self.player = Player(self.screen.get_width(), self.screen.get_height())
-        self.enemy = Enemy(self.screen.get_width(), self.screen.get_height())
-        self.menu = Menu(self.screen.get_width(), self.screen.get_height())
+        # Entities and managers
+        self.player = Player(SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.enemy = Enemy(SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.menu = Menu(SCREEN_WIDTH, SCREEN_HEIGHT)
         self.renderer = Renderer(self.screen)
-        self.data_logger = DataLogger("data/training_data.json")
+        self.data_logger = DataLogger(DATA_PATH)
 
         # Game states
         self.running = True
@@ -29,8 +35,10 @@ class Game:
         self.mode = None  # "train" or "play"
 
     def run(self):
+        """Main game loop."""
         while self.running:
             self.handle_events()
+
             if self.menu_active:
                 self.menu.draw(self.screen)
             else:
@@ -38,115 +46,106 @@ class Game:
                 self.renderer.render(self.menu, self.player, self.enemy, self.menu_active, self.screen)
 
             pygame.display.flip()
-            self.clock.tick(60)  # Cap the frame rate
+            self.clock.tick(FRAME_RATE)
 
-        # When the game closes, save any logged data
+        # Save data on exit
         self.data_logger.save()
         pygame.quit()
 
     def handle_events(self):
+        """Handle all window and menu-related events."""
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.running = False
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 self.running = False
             elif self.menu_active:
                 selected_action = self.menu.handle_menu_events(event)
                 if selected_action:
                     self.check_menu_selection(selected_action)
 
-    def check_menu_selection(self, selected_action):
+    def check_menu_selection(self, selected_action: str) -> None:
+        """Handle actions selected from the menu."""
         if selected_action == "exit":
             self.running = False
         elif selected_action in ["train", "play"]:
             self.menu_active = False
             self.start_game(selected_action)
 
-    def start_game(self, mode: str):
+    def start_game(self, mode: str) -> None:
+        """Initialize game entities and set mode."""
         self.mode = mode
         print(mode)
         self.player.reset()
         self.enemy.reset()
 
-        # Position the player and enemy in visually distinct places
-        self.player.position["x"] = self.screen.get_width() // 4 - self.player.size // 2
-        self.player.position["y"] = self.screen.get_height() // 2 - self.player.size // 2
-
-        self.enemy.pos["x"] = (self.screen.get_width() * 3) // 4 - self.enemy.size // 2
-        self.enemy.pos["y"] = self.screen.get_height() // 2 - self.enemy.size // 2
+        # Place player and enemy at distinct positions
+        self.player.position["x"] = SCREEN_WIDTH // 4 - self.player.size // 2
+        self.player.position["y"] = SCREEN_HEIGHT // 2 - self.player.size // 2
+        self.enemy.pos["x"] = (SCREEN_WIDTH * 3) // 4 - self.enemy.size // 2
+        self.enemy.pos["y"] = SCREEN_HEIGHT // 2 - self.enemy.size // 2
 
     def update(self):
+        """Update game state depending on the mode."""
         if self.mode == "train":
             self.training_update()
         elif self.mode == "play":
             self.play_update()
 
-    def check_collision(self):
-        # Define the player and enemy rectangles
+    def check_collision(self) -> bool:
+        """Check if the player and enemy collide."""
         player_rect = pygame.Rect(
-            self.player.position["x"], self.player.position["y"], self.player.size, self.player.size)
+            self.player.position["x"], self.player.position["y"], self.player.size, self.player.size
+        )
         enemy_rect = pygame.Rect(
-            self.enemy.pos["x"], self.enemy.pos["y"], self.enemy.size, self.enemy.size)
-        # Check if the rectangles collide
+            self.enemy.pos["x"], self.enemy.pos["y"], self.enemy.size, self.enemy.size
+        )
         return player_rect.colliderect(enemy_rect)
 
     def play_update(self):
-        # Handle player input during play mode
+        """Update logic for play mode."""
         self.handle_input()
-
-        # Update enemy movement
         self.enemy.update_movement()
 
-        # Check for collisions
-        collision = self.check_collision()
-        if collision:
+        if self.check_collision():
+            # Log collision if needed
             if self.mode == "train":
-                data_point = {
+                self.data_logger.log({
                     "mode": "play",
                     "player_x": self.player.position["x"],
                     "player_y": self.player.position["y"],
                     "enemy_x": self.enemy.pos["x"],
                     "enemy_y": self.enemy.pos["y"],
                     "collision": True
-                }
-                self.data_logger.log(data_point)
+                })
             else:
                 print("Collision detected!")
-                self.running = False  # Stop the game on collision
-        
+                self.running = False
 
     def training_update(self):
-        # Increment time for Perlin noise movement
+        """Update logic for training mode."""
         self.player.noise_time += 0.01
-
-        # Update player position using Perlin noise
         dx_player = pnoise1(self.player.noise_time + self.player.noise_offset_x) * self.player.step
         dy_player = pnoise1(self.player.noise_time + self.player.noise_offset_y) * self.player.step
 
-        self.player.position["x"] = max(0, min(self.screen.get_width() - self.player.size, self.player.position["x"] + dx_player))
-        self.player.position["y"] = max(0, min(self.screen.get_height() - self.player.size, self.player.position["y"] + dy_player))
+        # Update player position with clamping
+        self.player.position["x"] = max(0, min(SCREEN_WIDTH - self.player.size, self.player.position["x"] + dx_player))
+        self.player.position["y"] = max(0, min(SCREEN_HEIGHT - self.player.size, self.player.position["y"] + dy_player))
 
-        # Update enemy position using its movement logic
         self.enemy.update_movement()
-
-        # Check for collisions
         collision = self.check_collision()
 
-        # **Data Logging for Training:**
-        # Here we log each frame's data. You can include anything you deem relevant.
-        data_point = {
+        # Log training data
+        self.data_logger.log({
             "mode": "train",
             "player_x": self.player.position["x"],
             "player_y": self.player.position["y"],
             "enemy_x": self.enemy.pos["x"],
             "enemy_y": self.enemy.pos["y"],
             "collision": collision
-        }
-        self.data_logger.log(data_point)
+        })
 
     def handle_input(self):
+        """Handle player keyboard input for movement."""
         keys = pygame.key.get_pressed()
-
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             self.player.position['x'] -= self.player.step
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
@@ -158,9 +157,9 @@ class Game:
         if keys[pygame.K_ESCAPE]:
             self.running = False
 
-        # Ensure player stays within screen boundaries
-        self.player.position['x'] = max(0, min(self.player.position['x'], self.screen.get_width() - self.player.size))
-        self.player.position['y'] = max(0, min(self.player.position['y'], self.screen.get_height() - self.player.size))
+        # Clamp player position
+        self.player.position['x'] = max(0, min(self.player.position['x'], SCREEN_WIDTH - self.player.size))
+        self.player.position['y'] = max(0, min(self.player.position['y'], SCREEN_HEIGHT - self.player.size))
 
 if __name__ == "__main__":
     game = Game()
