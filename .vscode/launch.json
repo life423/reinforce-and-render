@@ -9,10 +9,10 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Run Main", // This is the configuration you want to run by default
+            "name": "Run Main",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/gameplay/main.py", // Path to your main.py
+            "program": "${workspaceFolder}/gameplay/main.py",
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal"
         },
