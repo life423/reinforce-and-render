@@ -48,6 +48,8 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                self.running = False
             elif self.menu_active:
                 selected_action = self.menu.handle_menu_events(event)
                 if selected_action:
