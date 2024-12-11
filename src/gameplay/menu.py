@@ -31,6 +31,9 @@ class Menu:
                     self.selected_option + 1) % len(self.menu_options)
             elif event.key in [pygame.K_RETURN, pygame.K_KP_ENTER]:
                 return self.menu_options[self.selected_option].lower()
+            elif event.key == pygame.K_ESCAPE:
+                pygame.quit()
+                exit()
         return None
 
     def draw(self, screen):
