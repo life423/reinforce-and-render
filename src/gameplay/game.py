@@ -124,12 +124,14 @@ class Game:
             self.player.position['y'] -= self.player.step
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
             self.player.position['y'] += self.player.step
-
+        if keys[pygame.K_ESCAPE]:
+                self.running = False
         # Ensure player stays within screen boundaries
         self.player.position['x'] = max(
             0, min(self.player.position['x'], self.screen.get_width() - self.player.size))
         self.player.position['y'] = max(
             0, min(self.player.position['y'], self.screen.get_height() - self.player.size))
+            
 
 
 if __name__ == "__main__":
