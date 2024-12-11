@@ -98,8 +98,21 @@ class Game:
         self.enemy.update_movement()
 
         # Check for collisions
-        if self.check_collision():
-            pass
+        collision = self.check_collision()
+        if collision:
+            if self.mode == "train":
+                data_point = {
+                    "mode": "play",
+                    "player_x": self.player.position["x"],
+                    "player_y": self.player.position["y"],
+                    "enemy_x": self.enemy.pos["x"],
+                    "enemy_y": self.enemy.pos["y"],
+                    "collision": True
+                }
+                self.data_logger.log(data_point)
+            else:
+                print("Collision detected!")
+                self.running = False  # Stop the game on collision
         
 
     def training_update(self):
