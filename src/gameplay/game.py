@@ -98,6 +98,7 @@ class Game:
         # Check for collisions
         if self.check_collision():
             pass
+        
 
     def training_update(self):
         # Increment time for Perlin noise movement
@@ -126,7 +127,7 @@ class Game:
             "enemy_y": self.enemy.pos["y"],
             "collision": collision
         }
-       
+        self.data_logger.log(data_point)
 
     def handle_input(self):
         keys = pygame.key.get_pressed()
