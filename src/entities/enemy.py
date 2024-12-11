@@ -30,6 +30,7 @@ class Enemy:
         self.direction_change_timer = random.randint(30, 100)
 
         # Current velocity
+        
         self.velocity_x = 0
         self.velocity_y = 0
 
