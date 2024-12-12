@@ -9,7 +9,5 @@ if project_root not in sys.path:
 
 if __name__ == "__main__":
     game = Game()
-    
     game.run()
     
-
