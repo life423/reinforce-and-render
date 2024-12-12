@@ -1,5 +1,4 @@
 import pygame
-import random
 from entities.player import Player
 from entities.enemy import Enemy
 from gameplay.menu import Menu
