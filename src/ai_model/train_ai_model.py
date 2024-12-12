@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from pymongo import MongoClient
+
 import os
 from dotenv import load_dotenv
 import numpy as np
