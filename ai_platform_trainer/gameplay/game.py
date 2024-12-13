@@ -192,32 +192,51 @@ class Game:
             self.running = False
 
     def training_update(self):
-        """Update logic for training mode."""
+        """Update logic for training mode, forcing the enemy to chase the player directly."""
+        # Update the player's position first
         self.player.update(self.enemy.pos["x"], self.enemy.pos["y"])
-        old_enemy_x = self.enemy.pos["x"]
-        old_enemy_y = self.enemy.pos["y"]
-        self.enemy.update_movement(
-            self.player.position["x"], self.player.position["y"], self.player.step
-        )
 
-        action_dx = self.enemy.pos["x"] - old_enemy_x
-        action_dy = self.enemy.pos["y"] - old_enemy_y
+        # Get current positions
+        px = self.player.position["x"]
+        py = self.player.position["y"]
+        ex = self.enemy.pos["x"]
+        ey = self.enemy.pos["y"]
+
+        # Compute direction from enemy to player
+        direction_x = px - ex
+        direction_y = py - ey
+
+        dist = math.sqrt(direction_x**2 + direction_y**2)
+
+        # Normalize to get unit direction
+        if dist > 0:
+            action_dx = direction_x / dist
+            action_dy = direction_y / dist
+        else:
+            # If dist is 0, enemy is at the same position as player
+            action_dx = 0
+            action_dy = 0
+
+        # Move enemy towards player at a defined speed
+        speed = self.enemy.base_speed
+        self.enemy.pos["x"] += action_dx * speed
+        self.enemy.pos["y"] += action_dy * speed
+
+        # Check if a collision occurred
         collision = self.check_collision()
 
+        # Log this data point
         self.data_logger.log(
             {
                 "mode": "train",
-                "player_x": self.player.position["x"],
-                "player_y": self.player.position["y"],
+                "player_x": px,
+                "player_y": py,
                 "enemy_x": self.enemy.pos["x"],
                 "enemy_y": self.enemy.pos["y"],
                 "action_dx": action_dx,
                 "action_dy": action_dy,
                 "collision": collision,
-                "dist": math.sqrt(
-                    (self.player.position["x"] - self.enemy.pos["x"]) ** 2
-                    + (self.player.position["y"] - self.enemy.pos["y"]) ** 2
-                ),
+                "dist": math.sqrt((px - self.enemy.pos["x"]) ** 2 + (py - self.enemy.pos["y"]) ** 2),
             }
         )
 

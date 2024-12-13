@@ -1,6 +1,4 @@
 import json
-import os
-
 
 class DataLogger:
     def __init__(self, filename):
