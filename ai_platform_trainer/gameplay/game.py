@@ -48,8 +48,10 @@ class Game:
             pygame.display.flip()
             self.clock.tick(FRAME_RATE)
 
-        # Save data on exit
-        self.data_logger.save()
+        # Only save if in training mode
+        if self.mode == "train":
+            self.data_logger.save()
+
         pygame.quit()
 
     def handle_events(self):
@@ -106,19 +108,9 @@ class Game:
         self.enemy.update_movement()
 
         if self.check_collision():
-            # Log collision if needed
-            if self.mode == "train":
-                self.data_logger.log({
-                    "mode": "play",
-                    "player_x": self.player.position["x"],
-                    "player_y": self.player.position["y"],
-                    "enemy_x": self.enemy.pos["x"],
-                    "enemy_y": self.enemy.pos["y"],
-                    "collision": True
-                })
-            else:
-                print("Collision detected!")
-                self.running = False
+            # No training data saved in play mode
+            print("Collision detected!")
+            self.running = False
 
     def training_update(self):
         """Update logic for training mode."""
