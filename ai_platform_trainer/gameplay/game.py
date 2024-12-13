@@ -1,3 +1,4 @@
+# ai_platform_trainer/gameplay/game.py
 import pygame
 import torch
 import random
@@ -7,9 +8,9 @@ from typing import Optional, Tuple
 
 from ai_platform_trainer.gameplay.config import config
 from ai_platform_trainer.entities.player_play import PlayerPlay
-from ai_platform_trainer.entities.player_training import Player as PlayerTraining
-from ai_platform_trainer.entities.enemy_play import Enemy as EnemyPlay
-from ai_platform_trainer.entities.enemy_training import Enemy as EnemyTrain
+from ai_platform_trainer.entities.player_training import PlayerTraining
+from ai_platform_trainer.entities.enemy_play import EnemyPlay
+from ai_platform_trainer.entities.enemy_training import EnemyTrain
 from ai_platform_trainer.gameplay.menu import Menu
 from ai_platform_trainer.gameplay.renderer import Renderer
 from ai_platform_trainer.core.data_logger import DataLogger
@@ -126,34 +127,24 @@ class Game:
             self.start_game(selected_action)
 
     def start_game(self, mode: str) -> None:
-        """
-        Initialize game entities and state based on the selected mode (train or play).
-
-        :param mode: "train" or "play"
-        """
         self.mode = mode
         logging.info(f"Starting game in '{mode}' mode.")
 
         if mode == "train":
-            # Instantiate DataLogger only in training mode
             self.data_logger = DataLogger(config.DATA_PATH)
             self.player = PlayerTraining(self.screen_width, self.screen_height)
             self.enemy = EnemyTrain(self.screen_width, self.screen_height)
 
-            # Randomize speeds for training
+            # Flag to activate missile training within training mode
+            self.train_missile = True
+
             self._randomize_speeds()
-
             self.player.reset()
-
-            # Spawn entities
             self._spawn_entities()
         else:
             # Play mode: Do not instantiate DataLogger
             self.player, self.enemy = self._init_play_mode()
-
             self.player.reset()
-
-            # Spawn entities
             self._spawn_entities()
 
     def _randomize_speeds(self) -> None:
@@ -297,9 +288,18 @@ class Game:
             self.respawn_timer = current_time + self.respawn_delay  # Set respawn time
             logging.info(f"Enemy will respawn in {self.respawn_delay} ms.")
 
-    def training_update(self) -> None:
-        """Update logic for training mode."""
+    def training_update(self):
+        # Existing player and enemy update logic
         self.player.update(self.enemy.pos["x"], self.enemy.pos["y"])
+
+        # If training missiles as well
+        if self.train_missile:
+            # If we don’t have a missile yet, spawn it
+            if not hasattr(self.player, "missiles") or len(self.player.missiles) == 0:
+                self.player.shoot_missile()  # Fires a missile (could be a test or random action)
+
+            enemy_x, enemy_y = self.enemy.pos["x"], self.enemy.pos["y"]
+            self.player.update_missiles((enemy_x, enemy_y))
 
         px = self.player.position["x"]
         py = self.player.position["y"]
@@ -386,6 +386,7 @@ class Game:
                 logging.info(
                     f"Enemy will respawn in {self.respawn_delay} ms due to missile hit."
                 )
+
     def respawn_enemy(self) -> None:
         """
         Respawn the enemy at a new location not too close to the player.

@@ -1,84 +1,86 @@
-import pygame
+# ai_platform_trainer/entities/player_training.py
 import random
-import math
+import pygame
+import logging
+import random
+from ai_platform_trainer.entities.missile import Missile
 
 
-class Player:
+class PlayerTraining:
     def __init__(self, screen_width, screen_height):
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.size = 50
-        # Pastel Green for player
-        self.color = (112, 191, 113)
+        self.color = (0, 0, 139)  # Dark Blue or any color you prefer
+        self.position = {
+            "x": random.randint(0, self.screen_width - self.size),
+            "y": random.randint(0, self.screen_height - self.size),
+        }
         self.step = 5
-        self.position = {"x": self.screen_width // 2, "y": self.screen_height // 2}
+        self.missiles = []
+        logging.info("PlayerTraining initialized.")
 
-        # Timing logic
-        self.frame_counter = 0
-        self.direction_timer = (
-            0  # Counts down how long to keep moving in current direction
-        )
-        self.current_dx = 0
-        self.current_dy = 0
+    def reset(self) -> None:
+        self.position = {
+            "x": random.randint(0, self.screen_width - self.size),
+            "y": random.randint(0, self.screen_height - self.size),
+        }
+        self.missiles.clear()
+        logging.info("PlayerTraining has been reset.")
 
-    def reset(self):
-        """Reset player position and movement state."""
-        self.position = {"x": self.screen_width // 2, "y": self.screen_height // 2}
-        self.frame_counter = 0
-        self.direction_timer = 0
-        self.current_dx = 0
-        self.current_dy = 0
+    def update(self, enemy_x: float, enemy_y: float) -> None:
+        """
+        Update the player state each frame during training mode.
+        Let's move the player randomly to ensure it's not stationary.
+        """
 
-    def update(self, enemy_x, enemy_y):
-        """Update the player's position with wrap-around logic."""
-        self.frame_counter += 1
+        # Random horizontal and vertical steps: -1, 0, or 1 times self.step
+        dx = random.choice([-1, 0, 1]) * self.step
+        dy = random.choice([-1, 0, 1]) * self.step
 
-        # Direction logic
-        if self.direction_timer <= 0 and self.frame_counter % 20 == 0:
-            # Pick a random direction
-            direction = random.choice(["up", "down", "left", "right"])
-            if direction == "up":
-                self.current_dx, self.current_dy = 0, -1
-            elif direction == "down":
-                self.current_dx, self.current_dy = 0, 1
-            elif direction == "left":
-                self.current_dx, self.current_dy = -1, 0
-            elif direction == "right":
-                self.current_dx, self.current_dy = 1, 0
-            self.direction_timer = 90  # Move in this direction for 90 frames
+        self.position["x"] += dx
+        self.position["y"] += dy
 
-        if self.direction_timer > 0:
-            # Update position based on current direction
-            self.position["x"] += self.current_dx * self.step
-            self.position["y"] += self.current_dy * self.step
-            self.direction_timer -= 1
+        # Wrap-around logic or boundary checks if you want the player to stay on-screen
+        if self.position["x"] < -self.size:
+            self.position["x"] = self.screen_width
+        elif self.position["x"] > self.screen_width:
+            self.position["x"] = -self.size
 
-        # Apply wrap-around logic
-        self.position["x"], self.position["y"] = self.wrap_position(
-            self.position["x"],
-            self.position["y"],
-            self.screen_width,
-            self.screen_height,
-            self.size,
-        )
+        if self.position["y"] < -self.size:
+            self.position["y"] = self.screen_height
+        elif self.position["y"] > self.screen_height:
+            self.position["y"] = -self.size
 
-    @staticmethod
-    def wrap_position(x, y, width, height, size):
-        """Wrap around the screen if the player moves off the edges."""
-        if x < -size:
-            x = width
-        elif x > width:
-            x = -size
-        if y < -size:
-            y = height
-        elif y > height:
-            y = -size
-        return x, y
+    def shoot_missile(self) -> None:
+        missile_start_x = self.position["x"] + self.size // 2
+        missile_start_y = self.position["y"] + self.size // 2
+        missile = Missile(x=missile_start_x, y=missile_start_y, vx=5.0, vy=0.0)
+        self.missiles.append(missile)
+        logging.info("Training mode: Missile shot straight to the right.")
 
-    def draw(self, screen):
-        """Draw the player on the screen."""
+    def update_missiles(self, enemy_pos: tuple[int, int]) -> None:
+        ex, ey = enemy_pos
+        for missile in self.missiles[:]:
+            missile.update()
+            if (
+                missile.pos["x"] < 0
+                or missile.pos["x"] > self.screen_width
+                or missile.pos["y"] < 0
+                or missile.pos["y"] > self.screen_height
+            ):
+                self.missiles.remove(missile)
+                logging.debug("Missile removed for going off-screen.")
+
+    def draw_missiles(self, screen: pygame.Surface) -> None:
+        for missile in self.missiles:
+            missile.draw(screen)
+
+    def draw(self, screen: pygame.Surface) -> None:
+        # Draw the player as a rectangle
         pygame.draw.rect(
             screen,
             self.color,
             (self.position["x"], self.position["y"], self.size, self.size),
         )
+        self.draw_missiles(screen)

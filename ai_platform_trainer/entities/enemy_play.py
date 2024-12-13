@@ -1,3 +1,5 @@
+# ai_platform_trainer/entities/enemy_play.py
+
 import torch
 import math
 import pygame
@@ -5,13 +7,12 @@ import logging
 from typing import Optional, Tuple
 
 
-class Enemy:
+class EnemyPlay:
     def __init__(self, screen_width: int, screen_height: int, model):
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.size = 50
-        # Bright gold color
-        self.color = (255, 215, 0)
+        self.color = (255, 215, 0)  # Gold
         self.pos = {"x": self.screen_width // 2, "y": self.screen_height // 2}
         self.model = model
         self.base_speed = max(2, screen_width // 400)
@@ -44,6 +45,8 @@ class Enemy:
         if not self.visible:
             return
 
+        # Example movement logic
+        # Replace with your actual AI movement logic
         dist = math.sqrt(
             (player_x - self.pos["x"]) ** 2 + (player_y - self.pos["y"]) ** 2
         )
@@ -57,6 +60,7 @@ class Enemy:
 
         action_dx, action_dy = action[0].tolist()
 
+        # Normalize action vector
         action_len = math.sqrt(action_dx**2 + action_dy**2)
         if action_len > 0:
             action_dx /= action_len
