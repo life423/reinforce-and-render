@@ -1,6 +1,5 @@
 import pygame
 import math
-import random
 from noise import pnoise1
 from ai_platform_trainer.entities.player import Player
 from ai_platform_trainer.entities.enemy import Enemy
@@ -106,68 +105,43 @@ class Game:
     def play_update(self):
         """Update logic for play mode."""
         self.handle_input()
-        # Here we still use a deterministic chase, but later we can replace this with a learned model action.
+        # Enemy moves towards player using deterministic logic
+        old_enemy_x = self.enemy.pos["x"]
+        old_enemy_y = self.enemy.pos["y"]
         self.enemy.update_movement(self.player.position["x"], self.player.position["y"], self.player.step)
-
         if self.check_collision():
             print("Collision detected!")
             self.running = False
 
     def training_update(self):
         """Update logic for training mode."""
-        # Calculate distance before
-        dist_before = math.dist(
-            (self.enemy.pos["x"], self.enemy.pos["y"]),
-            (self.player.position["x"], self.player.position["y"])
-        )
+        # Player moves with noise
+        self.player.update(self.enemy.pos["x"], self.enemy.pos["y"])
 
-        # Move player with noise
-        self.player.update()
+        # Record enemy's old position to derive action
+        old_enemy_x = self.enemy.pos["x"]
+        old_enemy_y = self.enemy.pos["y"]
 
-        # Enemy takes a random action
-        actions = ["up", "down", "left", "right"]
-        action = random.choice(actions)
+        # Enemy moves towards the player just like in play mode
+        self.enemy.update_movement(self.player.position["x"], self.player.position["y"], self.player.step)
 
-        # Apply the action
-        if action == "up":
-            self.enemy.pos["y"] -= self.enemy.speed
-        elif action == "down":
-            self.enemy.pos["y"] += self.enemy.speed
-        elif action == "left":
-            self.enemy.pos["x"] -= self.enemy.speed
-        elif action == "right":
-            self.enemy.pos["x"] += self.enemy.speed
-
-        # Clamp enemy position
-        self.enemy.pos["x"] = max(0, min(SCREEN_WIDTH - self.enemy.size, self.enemy.pos["x"]))
-        self.enemy.pos["y"] = max(0, min(SCREEN_HEIGHT - self.enemy.size, self.enemy.pos["y"]))
-
-        # Calculate distance after
-        dist_after = math.dist(
-            (self.enemy.pos["x"], self.enemy.pos["y"]),
-            (self.player.position["x"], self.player.position["y"])
-        )
+        # Compute the action taken as a vector (dx, dy)
+        action_dx = self.enemy.pos["x"] - old_enemy_x
+        action_dy = self.enemy.pos["y"] - old_enemy_y
 
         collision = self.check_collision()
 
-        # Calculate reward
-        reward = (dist_before - dist_after) * 10
-        reward -= 1
-        if collision:
-            reward += 100
-
-        # Log the data: state, action, reward
+        # Log the data: This is imitation learning data
+        # We record state and action. Reward isn't strictly necessary for imitation learning.
         self.data_logger.log({
             "mode": "train",
             "player_x": self.player.position["x"],
             "player_y": self.player.position["y"],
             "enemy_x": self.enemy.pos["x"],
             "enemy_y": self.enemy.pos["y"],
-            "action": action,
-            "distance_before": dist_before,
-            "distance_after": dist_after,
-            "collision": collision,
-            "reward": reward
+            "action_dx": action_dx,
+            "action_dy": action_dy,
+            "collision": collision
         })
 
     def handle_input(self):
