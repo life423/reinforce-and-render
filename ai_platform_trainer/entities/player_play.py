@@ -2,10 +2,11 @@ import pygame
 from ai_platform_trainer.entities.player import Player
 
 
+# player_play.py
+
+
 class PlayerPlay(Player):
     def handle_input(self):
-        """Handle player keyboard input for movement in play mode.
-        Returns False if ESC is pressed (to stop the game), True otherwise."""
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             self.position["x"] -= self.step
@@ -16,10 +17,19 @@ class PlayerPlay(Player):
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
             self.position["y"] += self.step
         if keys[pygame.K_ESCAPE]:
-            return False  # Signal the game to stop
+            return False
 
-        # After applying movement, clamp the position.
-        self.clamp_position()
+        # Wrap-around logic for the player in play mode:
+        if self.position["x"] < -self.size:
+            self.position["x"] = self.screen_width
+        elif self.position["x"] > self.screen_width:
+            self.position["x"] = -self.size
+
+        if self.position["y"] < -self.size:
+            self.position["y"] = self.screen_height
+        elif self.position["y"] > self.screen_height:
+            self.position["y"] = -self.size
+
         return True
 
     def update(self, enemy_x, enemy_y):

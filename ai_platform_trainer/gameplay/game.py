@@ -1,5 +1,5 @@
 import pygame
-import math
+import torch
 from ai_platform_trainer.entities.player_play import PlayerPlay
 from ai_platform_trainer.entities.player_training import Player as PlayerTraining
 from ai_platform_trainer.entities.enemy_play import Enemy as EnemyPlay
@@ -7,6 +7,7 @@ from ai_platform_trainer.entities.enemy_training import Enemy as EnemyTrain
 from ai_platform_trainer.gameplay.menu import Menu
 from ai_platform_trainer.gameplay.renderer import Renderer
 from ai_platform_trainer.core.data_logger import DataLogger
+from ai_platform_trainer.ai_model.model_definition.model import SimpleModel
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -59,7 +60,6 @@ class Game:
 
         pygame.quit()
 
-
     def handle_events(self):
         """Handle all window and menu-related events."""
         for event in pygame.event.get():
@@ -86,11 +86,18 @@ class Game:
         print(mode)
 
         if mode == "train":
+            # Training mode entities
             self.player = PlayerTraining(self.screen_width, self.screen_height)
             self.enemy = EnemyTrain(self.screen_width, self.screen_height)
         else:
+            # Play mode entities: Load the trained model and pass it to EnemyPlay
+            model = SimpleModel(input_size=4, hidden_size=64, output_size=2)
+            model.load_state_dict(torch.load("models/enemy_ai_model.pth"))
+            model.eval()
+
             self.player = PlayerPlay(self.screen_width, self.screen_height)
-            self.enemy = EnemyPlay(self.screen_width, self.screen_height)
+            # Modify EnemyPlay to accept 'model' as a parameter in its __init__
+            self.enemy = EnemyPlay(self.screen_width, self.screen_height, model)
 
         # Position entities
         self.player.reset()
@@ -126,7 +133,7 @@ class Game:
             self.running = False
             return
 
-        # Enemy moves and collision check
+        # Enemy uses the model to pick actions in EnemyPlay.update_movement()
         self.enemy.update_movement(
             self.player.position["x"], self.player.position["y"], self.player.step
         )
