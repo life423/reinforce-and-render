@@ -1,6 +1,7 @@
 import json
 import os
 
+
 class DataLogger:
     def __init__(self, filename):
         base_dir = os.path.dirname(os.path.abspath(__file__))

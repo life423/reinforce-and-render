@@ -1,16 +1,17 @@
 import pygame
-from entities.player import Player
-from entities.enemy import Enemy
-from gameplay.menu import Menu
-from core.data_logger import DataLogger
-from gameplay.renderer import Renderer
 from noise import pnoise1
+from ai_platform_trainer.entities.player import Player
+from ai_platform_trainer.entities.enemy import Enemy
+from ai_platform_trainer.gameplay.menu import Menu
+from ai_platform_trainer.gameplay.renderer import Renderer
+from ai_platform_trainer.core.data_logger import DataLogger
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 WINDOW_TITLE = "Pixel Pursuit"
 FRAME_RATE = 60
 DATA_PATH = "data/training_data.json"
+
 
 class Game:
     """Main class to run the Pixel Pursuit game."""
