@@ -55,13 +55,18 @@ class Game:
         # Only save if in training mode
         if self.mode == "train":
             self.data_logger.save()
+        # if escape is pressed, the game will close
 
         pygame.quit()
+
 
     def handle_events(self):
         """Handle all window and menu-related events."""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                self.running = False
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                # Pressing ESC will now stop the game universally
                 self.running = False
             elif self.menu_active:
                 selected_action = self.menu.handle_menu_events(event)

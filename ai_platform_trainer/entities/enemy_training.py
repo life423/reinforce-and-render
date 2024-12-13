@@ -70,19 +70,32 @@ class Enemy:
         self.pos["y"] = max(0, min(self.screen_height - self.size, self.pos["y"]))
 
     def random_walk_pattern(self):
-        # Enemy picks a random direction each frame with slight speed variance
-        angle = random.uniform(0, 2 * math.pi)
-        speed = self.base_speed * random.uniform(0.5, 2.0)
-        dx = math.cos(angle) * speed
-        dy = math.sin(angle) * speed
+        # If we don’t have a current random direction or if time to switch direction:
+        if not hasattr(self, "random_walk_timer") or self.random_walk_timer <= 0:
+            # Pick a new direction and speed
+            self.random_walk_angle = random.uniform(0, 2 * math.pi)
+            self.random_walk_speed = self.base_speed * random.uniform(0.5, 2.0)
+            # Direction is chosen for the next 30 to 90 frames
+            self.random_walk_timer = random.randint(30, 90)
+        else:
+            self.random_walk_timer -= 1
+
+        # Move in the chosen direction this frame
+        dx = math.cos(self.random_walk_angle) * self.random_walk_speed
+        dy = math.sin(self.random_walk_angle) * self.random_walk_speed
+
         self.pos["x"] += dx
         self.pos["y"] += dy
 
+
     def circle_pattern(self):
         # Enemy moves in a circle around a fixed center
-        # Gradually increase the angle to move along the circle
+        # Use speed to control how fast the enemy moves around the circle
         speed = self.base_speed * 1.5
-        self.circle_angle += 0.02  # Increase angle slowly
+        # Increase angle by an amount proportional to speed, so higher speed = faster rotation
+        angle_increment = 0.02 * (speed / self.base_speed)
+        self.circle_angle += angle_increment
+
         dx = math.cos(self.circle_angle) * self.circle_radius
         dy = math.sin(self.circle_angle) * self.circle_radius
         self.pos["x"] = self.circle_center[0] + dx
