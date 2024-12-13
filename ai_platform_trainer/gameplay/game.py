@@ -2,6 +2,8 @@ import pygame
 import torch
 import random
 import math
+import logging
+from typing import Optional, Tuple
 
 from ai_platform_trainer.gameplay.config import config
 from ai_platform_trainer.entities.player_play import PlayerPlay
@@ -17,7 +19,12 @@ from ai_platform_trainer.gameplay.utils import (
     find_valid_spawn_position,
 )
 
-from typing import Optional, Tuple
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[logging.FileHandler("game.log"), logging.StreamHandler()],
+)
 
 
 class Game:
@@ -25,7 +32,7 @@ class Game:
 
     def __init__(self) -> None:
         pygame.init()
-        self.collision_count = 0
+        self.collision_count = 0  # Tracks number of collisions in play mode
         self.screen = pygame.display.set_mode(config.SCREEN_SIZE)
         pygame.display.set_caption(config.WINDOW_TITLE)
         self.clock = pygame.time.Clock()
@@ -46,7 +53,7 @@ class Game:
         # Entities and logger
         self.player: Optional[PlayerPlay] = None
         self.enemy: Optional[EnemyPlay] = None
-        self.data_logger: Optional[DataLogger] = None
+        self.data_logger: Optional[DataLogger] = None  # Initialized in training mode
 
     def run(self) -> None:
         """Main game loop."""
@@ -58,7 +65,7 @@ class Game:
             else:
                 self.update()
                 self.renderer.render(
-                    self.menu, self.player, self.enemy, self.menu_active, self.screen
+                    self.menu, self.player, self.enemy, self.menu_active
                 )
 
             pygame.display.flip()
@@ -74,8 +81,10 @@ class Game:
         """Handle all window and menu-related events."""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                logging.info("Quit event detected. Exiting game.")
                 self.running = False
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                logging.info("Escape key pressed. Exiting game.")
                 self.running = False
             elif self.menu_active:
                 selected_action = self.menu.handle_menu_events(event)
@@ -85,8 +94,10 @@ class Game:
     def check_menu_selection(self, selected_action: str) -> None:
         """Handle actions selected from the menu."""
         if selected_action == "exit":
+            logging.info("Exit action selected from menu.")
             self.running = False
         elif selected_action in ["train", "play"]:
+            logging.info(f"'{selected_action}' action selected from menu.")
             self.menu_active = False
             self.start_game(selected_action)
 
@@ -97,7 +108,7 @@ class Game:
         :param mode: "train" or "play"
         """
         self.mode = mode
-        print(f"Starting game in '{mode}' mode.")
+        logging.info(f"Starting game in '{mode}' mode.")
 
         if mode == "train":
             # Instantiate DataLogger only in training mode
@@ -130,6 +141,7 @@ class Game:
         self.enemy.base_speed = max(
             config.ENEMY_MIN_SPEED, int(self.enemy.base_speed * random_speed_factor)
         )
+        logging.info(f"Randomized speeds with factor {random_speed_factor:.2f}")
 
     def _init_play_mode(self) -> Tuple[PlayerPlay, EnemyPlay]:
         """
@@ -138,12 +150,18 @@ class Game:
         :return: Tuple containing PlayerPlay and EnemyPlay instances
         """
         model = SimpleModel(input_size=5, hidden_size=64, output_size=2)
-        model.load_state_dict(
-            torch.load(config.MODEL_PATH, map_location=torch.device("cpu"))
-        )
+        try:
+            model.load_state_dict(
+                torch.load(config.MODEL_PATH, map_location=torch.device("cpu"))
+            )
+            logging.info("Loaded enemy AI model successfully.")
+        except Exception as e:
+            logging.error(f"Failed to load model from {config.MODEL_PATH}: {e}")
+            raise e
         model.eval()
         player = PlayerPlay(self.screen_width, self.screen_height)
         enemy = EnemyPlay(self.screen_width, self.screen_height, model)
+        logging.info("Initialized PlayerPlay and EnemyPlay for play mode.")
         return player, enemy
 
     def _spawn_entities(self) -> None:
@@ -153,30 +171,34 @@ class Game:
         - They maintain a minimum distance from each other.
         """
         if not self.player or not self.enemy:
-            print("Entities not initialized properly.")
+            logging.error("Entities not initialized properly. Exiting game.")
             self.running = False
             return
 
+        # Spawn player without any minimum distance requirement
         player_pos = find_valid_spawn_position(
             screen_width=self.screen_width,
             screen_height=self.screen_height,
             entity_size=self.player.size,
             margin=config.WALL_MARGIN,
-            min_dist=config.MIN_DISTANCE,
+            min_dist=0,  # No minimum distance for player
             other_pos=None,
         )
 
+        # Spawn enemy ensuring minimum distance from player
         enemy_pos = find_valid_spawn_position(
             screen_width=self.screen_width,
             screen_height=self.screen_height,
             entity_size=self.enemy.size,
             margin=config.WALL_MARGIN,
             min_dist=config.MIN_DISTANCE,
-            other_pos=player_pos,
+            other_pos=(self.player.position["x"], self.player.position["y"]),
         )
 
         self.player.position["x"], self.player.position["y"] = player_pos
         self.enemy.pos["x"], self.enemy.pos["y"] = enemy_pos
+
+        logging.info(f"Spawned player at {player_pos} and enemy at {enemy_pos}.")
 
     def update(self) -> None:
         """Update game state depending on the mode."""
@@ -206,11 +228,15 @@ class Game:
             self.enemy.size,
             self.enemy.size,
         )
-        return player_rect.colliderect(enemy_rect)
+        collision = player_rect.colliderect(enemy_rect)
+        if collision:
+            logging.info("Collision detected between player and enemy.")
+        return collision
 
     def play_update(self) -> None:
         """Update logic for play mode."""
         if not self.player.handle_input():
+            logging.info("Player requested to quit. Exiting game.")
             self.running = False
             return
 
@@ -218,16 +244,18 @@ class Game:
             self.enemy.update_movement(
                 self.player.position["x"], self.player.position["y"], self.player.step
             )
+            logging.debug("Enemy movement updated in play mode.")
         except Exception as e:
-            print(f"Error updating enemy movement: {e}")
+            logging.error(f"Error updating enemy movement: {e}")
             self.running = False
             return
 
         if self.check_collision():
-            print("Collision detected!")
-            # self.running = False
+            logging.info("Collision detected!")
+            self.enemy.hide()  # Hide enemy upon collision
+            self.respawn_enemy()  # Respawn enemy at new location
             self.collision_count += 1
-            print(f"Collision count: {self.collision_count}")
+            logging.info(f"Collision count: {self.collision_count}")
 
     def training_update(self) -> None:
         """Update logic for training mode."""
@@ -263,7 +291,29 @@ class Game:
                     ),
                 }
             )
+            logging.debug("Logged training data point.")
 
+        # Uncomment if you want the game to end upon collision in training mode
         # if collision:
-        #     print("Collision detected in training mode!")
+        #     logging.info("Collision detected in training mode! Ending training.")
         #     self.running = False
+
+    def respawn_enemy(self) -> None:
+        """
+        Respawn the enemy at a new location not too close to the player.
+        """
+        # Find new position using utility function
+        new_pos = find_valid_spawn_position(
+            screen_width=self.screen_width,
+            screen_height=self.screen_height,
+            entity_size=self.enemy.size,
+            margin=config.WALL_MARGIN,
+            min_dist=config.MIN_DISTANCE,
+            other_pos=(self.player.position["x"], self.player.position["y"]),
+        )
+
+        # Set new position and make enemy visible again
+        self.enemy.set_position(new_pos[0], new_pos[1])
+        self.enemy.show()
+
+        logging.info(f"Enemy respawned at {new_pos}.")
