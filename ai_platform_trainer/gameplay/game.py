@@ -115,23 +115,21 @@ class Game:
 
     def training_update(self):
         """Update logic for training mode."""
-
-        # Calculate distance before moving anyone
+        # Calculate distance before movement
         dist_before = math.dist(
             (self.enemy.pos["x"], self.enemy.pos["y"]),
             (self.player.position["x"], self.player.position["y"])
         )
 
-        # Move player using Perlin noise
-        self.player.noise_time += 0.01
-        dx_player = pnoise1(self.player.noise_time + self.player.noise_offset_x) * self.player.step
-        dy_player = pnoise1(self.player.noise_time + self.player.noise_offset_y) * self.player.step
-
-        self.player.position["x"] = max(0, min(SCREEN_WIDTH - self.player.size, self.player.position["x"] + dx_player))
-        self.player.position["y"] = max(0, min(SCREEN_HEIGHT - self.player.size, self.player.position["y"] + dy_player))
+        # Move player using its own update method (noise-based movement)
+        self.player.update()
 
         # Move enemy towards the player
-        self.enemy.update_movement(self.player.position["x"], self.player.position["y"], self.player.step)
+        self.enemy.update_movement(
+            self.player.position["x"], 
+            self.player.position["y"], 
+            self.player.step
+        )
 
         # Calculate distance after movement
         dist_after = math.dist(
@@ -140,6 +138,7 @@ class Game:
         )
 
         collision = self.check_collision()
+
         # Calculate reward
         reward = (dist_before - dist_after) * 10
         reward -= 1
