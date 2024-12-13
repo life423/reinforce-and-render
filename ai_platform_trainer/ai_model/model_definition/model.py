@@ -3,7 +3,7 @@ import torch.nn as nn
 
 
 class SimpleModel(nn.Module):
-    def __init__(self, input_size=4, hidden_size=64, output_size=2):
+    def __init__(self, input_size=5, hidden_size=64, output_size=2):
         super(SimpleModel, self).__init__()
         self.fc1 = nn.Linear(input_size, hidden_size)
         self.fc2 = nn.Linear(hidden_size, hidden_size)

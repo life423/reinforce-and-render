@@ -1,5 +1,7 @@
 import pygame
 import torch
+import random
+import math
 from ai_platform_trainer.entities.player_play import PlayerPlay
 from ai_platform_trainer.entities.player_training import Player as PlayerTraining
 from ai_platform_trainer.entities.enemy_play import Enemy as EnemyPlay
@@ -85,26 +87,60 @@ class Game:
         self.mode = mode
         print(mode)
 
+        # Create player and enemy based on mode
         if mode == "train":
-            # Training mode entities
             self.player = PlayerTraining(self.screen_width, self.screen_height)
             self.enemy = EnemyTrain(self.screen_width, self.screen_height)
         else:
-            # Play mode entities: Load the trained model and pass it to EnemyPlay
-            model = SimpleModel(input_size=4, hidden_size=64, output_size=2)
+            model = SimpleModel(input_size=5, hidden_size=64, output_size=2)  # If you're using distance
             model.load_state_dict(torch.load("models/enemy_ai_model.pth"))
             model.eval()
-
             self.player = PlayerPlay(self.screen_width, self.screen_height)
-            # Modify EnemyPlay to accept 'model' as a parameter in its __init__
             self.enemy = EnemyPlay(self.screen_width, self.screen_height, model)
 
-        # Position entities
         self.player.reset()
-        self.player.position["x"] = self.screen_width // 4 - self.player.size // 2
-        self.player.position["y"] = self.screen_height // 2 - self.player.size // 2
-        self.enemy.pos["x"] = (self.screen_width * 3) // 4 - self.enemy.size // 2
-        self.enemy.pos["y"] = self.screen_height // 2 - self.enemy.size // 2
+
+        # Define margins and min distance
+        wall_margin = 50
+        min_dist = 100  # Minimum distance between player and enemy
+        
+        # Ensure both entities have room (their size + margin)
+        # Player:
+        player_min_x = wall_margin
+        player_max_x = self.screen_width - self.player.size - wall_margin
+        player_min_y = wall_margin
+        player_max_y = self.screen_height - self.player.size - wall_margin
+
+        # Enemy:
+        enemy_min_x = wall_margin
+        enemy_max_x = self.screen_width - self.enemy.size - wall_margin
+        enemy_min_y = wall_margin
+        enemy_max_y = self.screen_height - self.enemy.size - wall_margin
+
+        # Pick random positions until constraints are met
+        # This loop ensures we eventually find suitable positions
+        placed = False
+        while not placed:
+            # Random player position within margins
+            px = random.randint(player_min_x, player_max_x)
+            py = random.randint(player_min_y, player_max_y)
+
+            # Random enemy position within margins
+            ex = random.randint(enemy_min_x, enemy_max_x)
+            ey = random.randint(enemy_min_y, enemy_max_y)
+
+            # Compute distance between them
+            dist = math.sqrt((px - ex)**2 + (py - ey)**2)
+
+            if dist >= min_dist:
+                # Suitable positions found
+                self.player.position["x"] = px
+                self.player.position["y"] = py
+                self.enemy.pos["x"] = ex
+                self.enemy.pos["y"] = ey
+                placed = True
+
+        # Now we have player and enemy spawned within margins and not too close to each other.
 
     def update(self):
         """Update game state depending on the mode."""

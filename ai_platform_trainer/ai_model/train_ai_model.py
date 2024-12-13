@@ -19,21 +19,17 @@ def load_data(json_path):
         ex = step["enemy_x"]
         ey = step["enemy_y"]
 
-        # Compute distance if desired
+        # Compute distance
         dist = math.sqrt((px - ex) ** 2 + (py - ey) ** 2)
 
-        # For now, let's just use (player_x, player_y, enemy_x, enemy_y) as the state.
-        # If you want to include distance, you'd add it to the state vector.
-        # Example if including distance: state = [px, py, ex, ey, dist]
-        # Then input_size in the model would be 5.
+        # Include distance in the state vector
+        # State now has 5 elements: px, py, ex, ey, dist
+        state = [px, py, ex, ey, dist]
 
-        state = [px, py, ex, ey]  # input_size=4 as defined
         # Extract the action
         adx = step["action_dx"]
         ady = step["action_dy"]
 
-        # If doing supervised learning to predict action_dx, action_dy:
-        # collision could be used to filter data if you want, but we won't here.
         actions.append([adx, ady])
         states.append(state)
 
@@ -43,7 +39,8 @@ def load_data(json_path):
 
 
 def train_model(states, actions, epochs=50, lr=1e-3):
-    model = SimpleModel(input_size=4, hidden_size=64, output_size=2)
+    # Adjust input_size to 5 since we added distance
+    model = SimpleModel(input_size=5, hidden_size=64, output_size=2)
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=lr)
 
