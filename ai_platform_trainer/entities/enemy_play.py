@@ -18,7 +18,7 @@ class Enemy:
 
         # Fade-in attributes
         self.fading_in = False
-        self.fade_alpha = 0
+        self.fade_alpha = 255
         self.fade_duration = 300  # milliseconds
         self.fade_start_time = 0
 

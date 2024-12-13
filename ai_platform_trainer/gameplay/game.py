@@ -338,7 +338,6 @@ class Game:
         #     logging.info("Collision detected in training mode! Ending training.")
         #     self.running = False
 
-
     def handle_respawn(self, current_time: int) -> None:
         """
         Handle the respawn of the enemy after a delay.
@@ -358,6 +357,7 @@ class Game:
             self.enemy.set_position(new_pos[0], new_pos[1])
             self.enemy.show(current_time)  # Pass current_time here
             # Start fade-in effect
+            self.enemy.show(pygame.time.get_ticks())
 
             self.is_respawning = False
             logging.info(f"Enemy respawned at {new_pos} with fade-in.")
