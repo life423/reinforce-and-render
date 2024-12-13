@@ -27,40 +27,42 @@ class Player:
         }
 
     def update(self, enemy_x, enemy_y):
-        # Calculate vector from enemy to player (player_x - enemy_x, player_y - enemy_y)
         dx = self.position["x"] - enemy_x
         dy = self.position["y"] - enemy_y
+        dist = (dx*dx + dy*dy)**0.5
 
-        dist = math.sqrt(dx*dx + dy*dy)
         if dist > 0:
             dx /= dist
             dy /= dist
         else:
-            # If dist == 0, just pick a random direction to move
-            dx = random.uniform(-1, 1)
-            dy = random.uniform(-1, 1)
-            length = math.sqrt(dx*dx + dy*dy)
-            if length > 0:
-                dx /= length
-                dy /= length
+            # If player is exactly on enemy, pick a random direction
+            angle = random.uniform(0, 2*math.pi)
+            dx, dy = math.cos(angle), math.sin(angle)
 
-        # Apply a small random turn to the direction
-        # Convert (dx, dy) to an angle
+        # Apply a small random turn
         angle = math.atan2(dy, dx)
-        # Add a small random angle turn
         angle += random.uniform(-self.turn_angle_range_rad, self.turn_angle_range_rad)
-        # Convert back to vector
-        dx = math.cos(angle)
-        dy = math.sin(angle)
+        dx, dy = math.cos(angle), math.sin(angle)
 
-        # Move the player at a slightly faster speed than base step
         run_away_speed = self.step * self.speed_multiplier
-        self.position["x"] += dx * run_away_speed
-        self.position["y"] += dy * run_away_speed
 
-        # Clamp player position to screen bounds
-        self.position["x"] = max(0, min(self.screen_width - self.size, self.position["x"]))
-        self.position["y"] = max(0, min(self.screen_height - self.size, self.position["y"]))
+        # Check if going straight will hit a wall
+        future_x = self.position["x"] + dx * run_away_speed
+        future_y = self.position["y"] + dy * run_away_speed
+
+        # If future position is out of bounds, adjust angle
+        attempts = 10
+        while attempts > 0 and (future_x < 0 or future_x > self.screen_width - self.size or future_y < 0 or future_y > self.screen_height - self.size):
+            # Try a slightly different angle that avoids the wall
+            angle += random.uniform(-0.3, 0.3)  # adjust as needed
+            dx, dy = math.cos(angle), math.sin(angle)
+            future_x = self.position["x"] + dx * run_away_speed
+            future_y = self.position["y"] + dy * run_away_speed
+            attempts -= 1
+
+        # Move player
+        self.position["x"] = max(0, min(self.screen_width - self.size, future_x))
+        self.position["y"] = max(0, min(self.screen_height - self.size, future_y))
 
     def get_position(self):
         return self.position
