@@ -1,6 +1,4 @@
 import pygame
-import math
-from noise import pnoise1
 from ai_platform_trainer.entities.player import Player
 from ai_platform_trainer.entities.enemy import Enemy
 from ai_platform_trainer.gameplay.menu import Menu
