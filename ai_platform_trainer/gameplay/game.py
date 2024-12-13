@@ -25,6 +25,7 @@ class Game:
 
     def __init__(self) -> None:
         pygame.init()
+        self.collision_count = 0
         self.screen = pygame.display.set_mode(config.SCREEN_SIZE)
         pygame.display.set_caption(config.WINDOW_TITLE)
         self.clock = pygame.time.Clock()
@@ -224,7 +225,9 @@ class Game:
 
         if self.check_collision():
             print("Collision detected!")
-            self.running = False
+            # self.running = False
+            self.collision_count += 1
+            print(f"Collision count: {self.collision_count}")
 
     def training_update(self) -> None:
         """Update logic for training mode."""
