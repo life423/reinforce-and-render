@@ -8,7 +8,7 @@ class Enemy:
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.size = 50
-        self.color = (255, 0, 0)  # Red for enemy
+        self.color = (173, 153, 228)  # Red for enemy
         self.pos = {"x": self.screen_width // 2, "y": self.screen_height // 2}
 
         self.base_speed = max(2, screen_width // 400)
@@ -86,7 +86,6 @@ class Enemy:
 
         self.pos["x"] += dx
         self.pos["y"] += dy
-
 
     def circle_pattern(self):
         # Enemy moves in a circle around a fixed center

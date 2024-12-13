@@ -11,7 +11,6 @@ class Enemy:
         self.speed = max(2, screen_width // 400)
         self.screen_width = screen_width
         self.screen_height = screen_height
-        
 
     def reset(self):
         self.pos = {"x": self.start_x, "y": self.start_y}

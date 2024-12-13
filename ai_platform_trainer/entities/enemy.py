@@ -8,7 +8,7 @@ class Enemy:
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.size = 50
-        self.color = (255, 0, 0)
+        self.color = (173, 153, 228)
         self.pos = {"x": self.screen_width // 2, "y": self.screen_height // 2}
 
         self.base_speed = max(2, screen_width // 400)
