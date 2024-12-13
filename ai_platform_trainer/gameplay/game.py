@@ -55,15 +55,25 @@ class Game:
         self.enemy: Optional[EnemyPlay] = None
         self.data_logger: Optional[DataLogger] = None  # Initialized in training mode
 
+        # Respawn control
+        self.respawn_delay = 1000  # milliseconds
+        self.respawn_timer = 0
+        self.is_respawning = False
+
+        # Shooting control
+        self.last_shot_time = 0
+        self.shot_cooldown = 500  # milliseconds between shots
+
     def run(self) -> None:
         """Main game loop."""
         while self.running:
+            current_time = pygame.time.get_ticks()
             self.handle_events()
 
             if self.menu_active:
                 self.menu.draw(self.screen)
             else:
-                self.update()
+                self.update(current_time)
                 self.renderer.render(
                     self.menu, self.player, self.enemy, self.menu_active
                 )
@@ -90,6 +100,20 @@ class Game:
                 selected_action = self.menu.handle_menu_events(event)
                 if selected_action:
                     self.check_menu_selection(selected_action)
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    self.handle_shoot()
+
+    def handle_shoot(self) -> None:
+        """
+        Handle shooting a missile towards the current mouse position.
+        """
+        current_time = pygame.time.get_ticks()
+        if current_time - self.last_shot_time >= self.shot_cooldown:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            self.player.shoot_missile(mouse_x, mouse_y)
+            self.last_shot_time = current_time
+            logging.info(f"Player shot missile towards ({mouse_x}, {mouse_y}).")
 
     def check_menu_selection(self, selected_action: str) -> None:
         """Handle actions selected from the menu."""
@@ -200,12 +224,24 @@ class Game:
 
         logging.info(f"Spawned player at {player_pos} and enemy at {enemy_pos}.")
 
-    def update(self) -> None:
+    def update(self, current_time: int) -> None:
         """Update game state depending on the mode."""
         if self.mode == "train":
             self.training_update()
         elif self.mode == "play":
-            self.play_update()
+            self.play_update(current_time)
+            self.handle_respawn(current_time)
+            # Update enemy fade-in if applicable
+            if self.enemy.fading_in:
+                self.enemy.update_fade_in(current_time)
+            # Update missiles
+            enemy_pos = (
+                (self.enemy.pos["x"], self.enemy.pos["y"])
+                if self.enemy.visible
+                else (0, 0)
+            )
+            self.player.update_missiles(enemy_pos)
+            self.check_missile_collisions()
 
     def check_collision(self) -> bool:
         """
@@ -233,7 +269,7 @@ class Game:
             logging.info("Collision detected between player and enemy.")
         return collision
 
-    def play_update(self) -> None:
+    def play_update(self, current_time: int) -> None:
         """Update logic for play mode."""
         if not self.player.handle_input():
             logging.info("Player requested to quit. Exiting game.")
@@ -241,8 +277,12 @@ class Game:
             return
 
         try:
+            # Pass current_time to the update_movement method
             self.enemy.update_movement(
-                self.player.position["x"], self.player.position["y"], self.player.step
+                self.player.position["x"],
+                self.player.position["y"],
+                self.player.step,
+                current_time,  # Add current_time here
             )
             logging.debug("Enemy movement updated in play mode.")
         except Exception as e:
@@ -253,9 +293,9 @@ class Game:
         if self.check_collision():
             logging.info("Collision detected!")
             self.enemy.hide()  # Hide enemy upon collision
-            self.respawn_enemy()  # Respawn enemy at new location
-            self.collision_count += 1
-            logging.info(f"Collision count: {self.collision_count}")
+            self.is_respawning = True
+            self.respawn_timer = current_time + self.respawn_delay  # Set respawn time
+            logging.info(f"Enemy will respawn in {self.respawn_delay} ms.")
 
     def training_update(self) -> None:
         """Update logic for training mode."""
@@ -298,6 +338,54 @@ class Game:
         #     logging.info("Collision detected in training mode! Ending training.")
         #     self.running = False
 
+
+    def handle_respawn(self, current_time: int) -> None:
+        """
+        Handle the respawn of the enemy after a delay.
+        """
+        if self.is_respawning and current_time >= self.respawn_timer:
+            # Find new position not too close to the player
+            new_pos = find_valid_spawn_position(
+                screen_width=self.screen_width,
+                screen_height=self.screen_height,
+                entity_size=self.enemy.size,
+                margin=config.WALL_MARGIN,
+                min_dist=config.MIN_DISTANCE,
+                other_pos=(self.player.position["x"], self.player.position["y"]),
+            )
+
+            # Set new position and show enemy with fade-in
+            self.enemy.set_position(new_pos[0], new_pos[1])
+            self.enemy.show(current_time)  # Pass current_time here
+            # Start fade-in effect
+
+            self.is_respawning = False
+            logging.info(f"Enemy respawned at {new_pos} with fade-in.")
+
+    def check_missile_collisions(self) -> None:
+        """
+        Check for collisions between missiles and the enemy.
+        """
+        if not self.enemy.visible:
+            return
+
+        enemy_rect = pygame.Rect(
+            self.enemy.pos["x"],
+            self.enemy.pos["y"],
+            self.enemy.size,
+            self.enemy.size,
+        )
+
+        for missile in self.player.missiles[:]:
+            if missile.get_rect().colliderect(enemy_rect):
+                logging.info("Missile hit the enemy.")
+                self.player.missiles.remove(missile)
+                self.enemy.hide()
+                self.is_respawning = True
+                self.respawn_timer = pygame.time.get_ticks() + self.respawn_delay
+                logging.info(
+                    f"Enemy will respawn in {self.respawn_delay} ms due to missile hit."
+                )
     def respawn_enemy(self) -> None:
         """
         Respawn the enemy at a new location not too close to the player.
@@ -312,8 +400,35 @@ class Game:
             other_pos=(self.player.position["x"], self.player.position["y"]),
         )
 
-        # Set new position and make enemy visible again
+        # Set new position and show enemy with fade-in
         self.enemy.set_position(new_pos[0], new_pos[1])
         self.enemy.show()
+        self.enemy.start_fade_in(pygame.time.get_ticks())  # Start fade-in effect
 
-        logging.info(f"Enemy respawned at {new_pos}.")
+        self.is_respawning = False
+        logging.info(f"Enemy respawned at {new_pos} with fade-in.")
+
+    def check_missile_collisions(self) -> None:
+        """
+        Check for collisions between missiles and the enemy.
+        """
+        if not self.enemy.visible:
+            return
+
+        enemy_rect = pygame.Rect(
+            self.enemy.pos["x"],
+            self.enemy.pos["y"],
+            self.enemy.size,
+            self.enemy.size,
+        )
+
+        for missile in self.player.missiles[:]:
+            if missile.get_rect().colliderect(enemy_rect):
+                logging.info("Missile hit the enemy.")
+                self.player.missiles.remove(missile)
+                self.enemy.hide()
+                self.is_respawning = True
+                self.respawn_timer = pygame.time.get_ticks() + self.respawn_delay
+                logging.info(
+                    f"Enemy will respawn in {self.respawn_delay} ms due to missile hit."
+                )
