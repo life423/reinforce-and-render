@@ -12,36 +12,42 @@ from ai_platform_trainer.gameplay.menu import Menu
 from ai_platform_trainer.gameplay.renderer import Renderer
 from ai_platform_trainer.core.data_logger import DataLogger
 from ai_platform_trainer.ai_model.model_definition.model import SimpleModel
+from ai_platform_trainer.gameplay.utils import (
+    compute_normalized_direction,
+    find_valid_spawn_position,
+)
+
+from typing import Optional, Tuple
 
 
 class Game:
     """Main class to run the Pixel Pursuit game."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         pygame.init()
-        self.screen = pygame.display.set_mode(
-            (config.SCREEN_WIDTH, config.SCREEN_HEIGHT)
-        )
+        self.screen = pygame.display.set_mode(config.SCREEN_SIZE)
         pygame.display.set_caption(config.WINDOW_TITLE)
         self.clock = pygame.time.Clock()
 
-        self.screen_width = config.SCREEN_WIDTH
-        self.screen_height = config.SCREEN_HEIGHT
+        # Screen dimensions
+        self.screen_width: int = config.SCREEN_WIDTH
+        self.screen_height: int = config.SCREEN_HEIGHT
 
+        # UI components
         self.menu = Menu(config.SCREEN_WIDTH, config.SCREEN_HEIGHT)
         self.renderer = Renderer(self.screen)
 
         # Game states
-        self.running = True
-        self.menu_active = True
-        self.mode = None  # "train" or "play"
+        self.running: bool = True
+        self.menu_active: bool = True
+        self.mode: Optional[str] = None  # "train" or "play"
 
-        # Entities will be initialized in start_game
-        self.player = None
-        self.enemy = None
-        self.data_logger = None  # Initialize as None
+        # Entities and logger
+        self.player: Optional[PlayerPlay] = None
+        self.enemy: Optional[EnemyPlay] = None
+        self.data_logger: Optional[DataLogger] = None
 
-    def run(self):
+    def run(self) -> None:
         """Main game loop."""
         while self.running:
             self.handle_events()
@@ -57,13 +63,13 @@ class Game:
             pygame.display.flip()
             self.clock.tick(config.FRAME_RATE)
 
-        # Only save if in training mode
+        # Save training data if in training mode
         if self.mode == "train" and self.data_logger:
             self.data_logger.save()
 
         pygame.quit()
 
-    def handle_events(self):
+    def handle_events(self) -> None:
         """Handle all window and menu-related events."""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -99,55 +105,79 @@ class Game:
             self.enemy = EnemyTrain(self.screen_width, self.screen_height)
 
             # Randomize speeds for training
-            random_speed_factor = random.uniform(0.8, 1.2)
-            self.player.step = int(self.player.step * random_speed_factor)
-            self.enemy.base_speed = max(
-                2, int(self.enemy.base_speed * random_speed_factor)
-            )
+            self._randomize_speeds()
+
+            self.player.reset()
+
+            # Spawn entities
+            self._spawn_entities()
         else:
             # Play mode: Do not instantiate DataLogger
-            model = SimpleModel(input_size=5, hidden_size=64, output_size=2)
-            model.load_state_dict(
-                torch.load(
-                    "models/enemy_ai_model.pth", map_location=torch.device("cpu")
-                )
-            )
-            model.eval()
-            self.player = PlayerPlay(self.screen_width, self.screen_height)
-            self.enemy = EnemyPlay(self.screen_width, self.screen_height, model)
+            self.player, self.enemy = self._init_play_mode()
 
-        self.player.reset()
+            self.player.reset()
 
-        # Define margins and min distance
-        wall_margin = 50
-        min_dist = 100
+            # Spawn entities
+            self._spawn_entities()
 
-        player_min_x = wall_margin
-        player_max_x = self.screen_width - self.player.size - wall_margin
-        player_min_y = wall_margin
-        player_max_y = self.screen_height - self.player.size - wall_margin
+    def _randomize_speeds(self) -> None:
+        """Randomize player and enemy speeds for training."""
+        random_speed_factor = random.uniform(
+            config.RANDOM_SPEED_FACTOR_MIN, config.RANDOM_SPEED_FACTOR_MAX
+        )
+        self.player.step = int(self.player.step * random_speed_factor)
+        self.enemy.base_speed = max(
+            config.ENEMY_MIN_SPEED, int(self.enemy.base_speed * random_speed_factor)
+        )
 
-        enemy_min_x = wall_margin
-        enemy_max_x = self.screen_width - self.enemy.size - wall_margin
-        enemy_min_y = wall_margin
-        enemy_max_y = self.screen_height - self.enemy.size - wall_margin
+    def _init_play_mode(self) -> Tuple[PlayerPlay, EnemyPlay]:
+        """
+        Initialize player and enemy for play mode.
 
-        placed = False
-        while not placed:
-            px = random.randint(player_min_x, player_max_x)
-            py = random.randint(player_min_y, player_max_y)
-            ex = random.randint(enemy_min_x, enemy_max_x)
-            ey = random.randint(enemy_min_y, enemy_max_y)
+        :return: Tuple containing PlayerPlay and EnemyPlay instances
+        """
+        model = SimpleModel(input_size=5, hidden_size=64, output_size=2)
+        model.load_state_dict(
+            torch.load(config.MODEL_PATH, map_location=torch.device("cpu"))
+        )
+        model.eval()
+        player = PlayerPlay(self.screen_width, self.screen_height)
+        enemy = EnemyPlay(self.screen_width, self.screen_height, model)
+        return player, enemy
 
-            dist = math.sqrt((px - ex) ** 2 + (py - ey) ** 2)
-            if dist >= min_dist:
-                self.player.position["x"] = px
-                self.player.position["y"] = py
-                self.enemy.pos["x"] = ex
-                self.enemy.pos["y"] = ey
-                placed = True
+    def _spawn_entities(self) -> None:
+        """
+        Spawn the player and enemy at random positions ensuring:
+        - Both are within the screen margins.
+        - They maintain a minimum distance from each other.
+        """
+        if not self.player or not self.enemy:
+            print("Entities not initialized properly.")
+            self.running = False
+            return
 
-    def update(self):
+        player_pos = find_valid_spawn_position(
+            screen_width=self.screen_width,
+            screen_height=self.screen_height,
+            entity_size=self.player.size,
+            margin=config.WALL_MARGIN,
+            min_dist=config.MIN_DISTANCE,
+            other_pos=None,
+        )
+
+        enemy_pos = find_valid_spawn_position(
+            screen_width=self.screen_width,
+            screen_height=self.screen_height,
+            entity_size=self.enemy.size,
+            margin=config.WALL_MARGIN,
+            min_dist=config.MIN_DISTANCE,
+            other_pos=player_pos,
+        )
+
+        self.player.position["x"], self.player.position["y"] = player_pos
+        self.enemy.pos["x"], self.enemy.pos["y"] = enemy_pos
+
+    def update(self) -> None:
         """Update game state depending on the mode."""
         if self.mode == "train":
             self.training_update()
@@ -155,7 +185,14 @@ class Game:
             self.play_update()
 
     def check_collision(self) -> bool:
-        """Check if the player and enemy collide."""
+        """
+        Check if the player and enemy collide.
+
+        :return: True if collision occurs, False otherwise.
+        """
+        if not self.player or not self.enemy:
+            return False
+
         player_rect = pygame.Rect(
             self.player.position["x"],
             self.player.position["y"],
@@ -170,20 +207,26 @@ class Game:
         )
         return player_rect.colliderect(enemy_rect)
 
-    def play_update(self):
+    def play_update(self) -> None:
         """Update logic for play mode."""
         if not self.player.handle_input():
             self.running = False
             return
 
-        self.enemy.update_movement(
-            self.player.position["x"], self.player.position["y"], self.player.step
-        )
+        try:
+            self.enemy.update_movement(
+                self.player.position["x"], self.player.position["y"], self.player.step
+            )
+        except Exception as e:
+            print(f"Error updating enemy movement: {e}")
+            self.running = False
+            return
+
         if self.check_collision():
             print("Collision detected!")
             self.running = False
 
-    def training_update(self):
+    def training_update(self) -> None:
         """Update logic for training mode."""
         self.player.update(self.enemy.pos["x"], self.enemy.pos["y"])
 
@@ -192,17 +235,8 @@ class Game:
         ex = self.enemy.pos["x"]
         ey = self.enemy.pos["y"]
 
-        direction_x = px - ex
-        direction_y = py - ey
-        dist = math.sqrt(direction_x**2 + direction_y**2)
-
-        if dist > 0:
-            action_dx = direction_x / dist
-            action_dy = direction_y / dist
-        else:
-            action_dx = 0
-            action_dy = 0
-
+        # Compute direction and move enemy toward player
+        action_dx, action_dy = compute_normalized_direction(px, py, ex, ey)
         speed = self.enemy.base_speed
         self.enemy.pos["x"] += action_dx * speed
         self.enemy.pos["y"] += action_dy * speed
@@ -221,18 +255,12 @@ class Game:
                     "action_dx": action_dx,
                     "action_dy": action_dy,
                     "collision": collision,
-                    "dist": math.sqrt(
-                        (px - self.enemy.pos["x"]) ** 2
-                        + (py - self.enemy.pos["y"]) ** 2
+                    "dist": math.hypot(
+                        px - self.enemy.pos["x"], py - self.enemy.pos["y"]
                     ),
                 }
             )
 
-        if collision:
-            print("Collision detected in training mode!")
-            self.running = False
-
-
-if __name__ == "__main__":
-    game = Game()
-    game.run()
+        # if collision:
+        #     print("Collision detected in training mode!")
+        #     self.running = False
