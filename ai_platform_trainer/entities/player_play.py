@@ -2,9 +2,6 @@ import pygame
 from ai_platform_trainer.entities.player import Player
 
 
-# player_play.py
-
-
 class PlayerPlay(Player):
     def handle_input(self):
         keys = pygame.key.get_pressed()

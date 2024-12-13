@@ -13,4 +13,16 @@ def clamp_position(value: int, min_value: int, max_value: int) -> int:
     return max(min_value, min(max_value, value))
 
 
+def wrap_position(x, y, width, height, size):
+    if x < -size:
+        x = width
+    elif x > width:
+        x = -size
+    if y < -size:
+        y = height
+    elif y > height:
+        y = -size
+    return x, y
+
+
 

@@ -58,5 +58,5 @@ def train_model(states, actions, epochs=50, lr=1e-3):
 
 
 if __name__ == "__main__":
-    states, actions = load_data("data/raw/training_data.json")
+    states, actions = load_data("data/training_data.json")
     train_model(states, actions, epochs=50, lr=1e-3)

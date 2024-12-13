@@ -1,5 +1,6 @@
 import torch
 import math
+import pygame
 
 
 class Enemy:
@@ -7,43 +8,51 @@ class Enemy:
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.size = 50
-        # Your chosen color
         self.color = (173, 153, 228)
         self.pos = {"x": self.screen_width // 2, "y": self.screen_height // 2}
-        self.model = model  # Store the model
+        self.model = model
         self.base_speed = max(2, screen_width // 400)
 
+    def wrap_position(self, x, y):
+        if x < -self.size:
+            x = self.screen_width
+        elif x > self.screen_width:
+            x = -self.size
+        if y < -self.size:
+            y = self.screen_height
+        elif y > self.screen_height:
+            y = -self.size
+        return x, y
+
     def update_movement(self, player_x, player_y, player_speed):
-        # Construct the state vector
+        # State with 5 inputs: (player_x, player_y, self.pos["x"], self.pos["y"], dist)
+        dist = math.sqrt(
+            (player_x - self.pos["x"]) ** 2 + (player_y - self.pos["y"]) ** 2
+        )
         state = torch.tensor(
-            [[player_x, player_y, self.pos["x"], self.pos["y"]]], dtype=torch.float32
+            [[player_x, player_y, self.pos["x"], self.pos["y"], dist]],
+            dtype=torch.float32,
         )
 
-        # Get action from model
         with torch.no_grad():
-            action = self.model(state)  # shape: [1,2]
+            action = self.model(state)
 
         action_dx, action_dy = action[0].tolist()
 
-        # Move enemy according to model's predicted action
-        # You can also scale action_dx, action_dy by some factor if needed
+        # Normalize action vector
+        action_len = math.sqrt(action_dx**2 + action_dy**2)
+        if action_len > 0:
+            action_dx /= action_len
+            action_dy /= action_len
+
         speed = player_speed * 0.7
-        # Normalize if needed
-        dist = math.sqrt(action_dx**2 + action_dy**2)
-        if dist > 0:
-            action_dx /= dist
-            action_dy /= dist
         self.pos["x"] += action_dx * speed
         self.pos["y"] += action_dy * speed
 
-        # Clamp or wrap-around
-        self.pos["x"] = max(0, min(self.screen_width - self.size, self.pos["x"]))
-        self.pos["y"] = max(0, min(self.screen_height - self.size, self.pos["y"]))
+        # Wrap-around logic
+        self.pos["x"], self.pos["y"] = self.wrap_position(self.pos["x"], self.pos["y"])
 
     def draw(self, screen):
-        # Draw as before
-        import pygame
-
         pygame.draw.rect(
             screen, self.color, (self.pos["x"], self.pos["y"], self.size, self.size)
         )

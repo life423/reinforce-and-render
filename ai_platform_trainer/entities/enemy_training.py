@@ -65,29 +65,14 @@ class Enemy:
             elif self.current_pattern == "diagonal_move":
                 self.diagonal_pattern()
 
-        # Wrap-around logic for Asteroids-like arena:
-        if self.pos["x"] < -self.size:
-            self.pos["x"] = self.screen_width
-        elif self.pos["x"] > self.screen_width:
-            self.pos["x"] = -self.size
-
-        if self.pos["y"] < -self.size:
-            self.pos["y"] = self.screen_height
-        elif self.pos["y"] > self.screen_height:
-            self.pos["y"] = -self.size
-
-        # Check wall hugging
-        if self.is_hugging_wall():
-            self.wall_stall_counter += 1
-        else:
-            self.wall_stall_counter = max(0, self.wall_stall_counter - 1)
-
-        # If hugging wall too long, forced escape
-        if (
-            self.wall_stall_counter > self.wall_stall_threshold
-            and self.forced_escape_timer <= 0
-        ):
-            self.initiate_forced_escape()
+        # Wrap-around logic
+        self.pos["x"], self.pos["y"] = wrap_position(
+            self.pos["x"],
+            self.pos["y"],
+            self.screen_width,
+            self.screen_height,
+            self.size,
+        )
 
     def initiate_forced_escape(self):
         dist_left = self.pos["x"]
@@ -126,6 +111,7 @@ class Enemy:
 
     def is_hugging_wall(self):
         wall_margin = 20
+        # Check if the enemy is near any of the walls
         if (
             self.pos["x"] < wall_margin
             or self.pos["x"] > self.screen_width - self.size - wall_margin
@@ -149,7 +135,7 @@ class Enemy:
         self.pos["y"] += dy
 
     def circle_pattern(self):
-        speed = self.base_speed 
+        speed = self.base_speed
         angle_increment = 0.02 * (speed / self.base_speed)
         self.circle_angle += angle_increment
 
@@ -168,7 +154,7 @@ class Enemy:
             angle += random.uniform(-0.3, 0.3)
             self.diagonal_direction = (math.cos(angle), math.sin(angle))
 
-        speed = self.base_speed 
+        speed = self.base_speed
         self.pos["x"] += self.diagonal_direction[0] * speed
         self.pos["y"] += self.diagonal_direction[1] * speed
 
@@ -176,3 +162,17 @@ class Enemy:
         pygame.draw.rect(
             screen, self.color, (self.pos["x"], self.pos["y"], self.size, self.size)
         )
+
+
+def wrap_position(x, y, screen_width, screen_height, size):
+    if x < -size:
+        x = screen_width
+    elif x > screen_width:
+        x = -size
+
+    if y < -size:
+        y = screen_height
+    elif y > screen_height:
+        y = -size
+
+    return x, y

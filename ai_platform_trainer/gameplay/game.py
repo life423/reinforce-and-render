@@ -87,13 +87,27 @@ class Game:
         self.mode = mode
         print(mode)
 
-        # Create player and enemy based on mode
         if mode == "train":
             self.player = PlayerTraining(self.screen_width, self.screen_height)
             self.enemy = EnemyTrain(self.screen_width, self.screen_height)
+
+            # Increase complexity: Randomize speeds each run in training mode
+            random_speed_factor = random.uniform(0.8, 1.2)  # +/-20% speed
+            self.player.step = int(self.player.step * random_speed_factor)
+            self.enemy.base_speed = max(
+                2, int((self.enemy.base_speed) * random_speed_factor)
+            )
+
+            # Randomize starting positions with constraints
+            # (Add your logic for random spawn with margin and min distance)
+
         else:
-            model = SimpleModel(input_size=5, hidden_size=64, output_size=2)  # If you're using distance
-            model.load_state_dict(torch.load("models/enemy_ai_model.pth"))
+            model = SimpleModel(
+                input_size=5, hidden_size=64, output_size=2
+            )  # If you're using distance
+            model.load_state_dict(
+                torch.load("models/enemy_ai_model.pth", weights_only=True)
+            )
             model.eval()
             self.player = PlayerPlay(self.screen_width, self.screen_height)
             self.enemy = EnemyPlay(self.screen_width, self.screen_height, model)
@@ -103,7 +117,7 @@ class Game:
         # Define margins and min distance
         wall_margin = 50
         min_dist = 100  # Minimum distance between player and enemy
-        
+
         # Ensure both entities have room (their size + margin)
         # Player:
         player_min_x = wall_margin
@@ -130,7 +144,7 @@ class Game:
             ey = random.randint(enemy_min_y, enemy_max_y)
 
             # Compute distance between them
-            dist = math.sqrt((px - ex)**2 + (py - ey)**2)
+            dist = math.sqrt((px - ex) ** 2 + (py - ey) ** 2)
 
             if dist >= min_dist:
                 # Suitable positions found
@@ -200,6 +214,10 @@ class Game:
                 "action_dx": action_dx,
                 "action_dy": action_dy,
                 "collision": collision,
+                "dist": math.sqrt(
+                    (self.player.position["x"] - self.enemy.pos["x"]) ** 2
+                    + (self.player.position["y"] - self.enemy.pos["y"]) ** 2
+                ),
             }
         )
 
