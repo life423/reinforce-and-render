@@ -102,7 +102,7 @@ class Game:
                     self.check_menu_selection(selected_action)
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    self.handle_shoot()
+                    self.player.shoot_missile()
 
     def handle_shoot(self) -> None:
         """

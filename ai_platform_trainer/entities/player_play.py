@@ -9,7 +9,6 @@ class PlayerPlay:
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.size = 50
-        # Dark blue color
         self.color = (0, 0, 139)  # Dark Blue
         self.position = {"x": screen_width // 4, "y": screen_height // 2}
         self.step = 5
@@ -33,7 +32,7 @@ class PlayerPlay:
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
             self.position["y"] += self.step
 
-        # Wrap-around logic for player
+        # Wrap-around logic for the player
         if self.position["x"] < -self.size:
             self.position["x"] = self.screen_width
         elif self.position["x"] > self.screen_width:
@@ -46,19 +45,19 @@ class PlayerPlay:
 
         return True
 
-    def shoot_missile(self, target_x: int, target_y: int) -> None:
-        missile = Missile(
-            x=self.position["x"] + self.size // 2,
-            y=self.position["y"] + self.size // 2,
-            target_x=target_x,
-            target_y=target_y,
-        )
+    def shoot_missile(self) -> None:
+        """Shoot a missile directly to the right of the player's position."""
+        missile_start_x = self.position["x"] + self.size // 2
+        missile_start_y = self.position["y"] + self.size // 2
+        # Create a missile that travels in a straight line (to the right)
+        missile = Missile(x=missile_start_x, y=missile_start_y, vx=5.0, vy=0.0)
         self.missiles.append(missile)
-        logging.info(f"Missile shot towards ({target_x}, {target_y}).")
+        logging.info("Missile shot straight to the right.")
 
     def update_missiles(self, enemy_pos: Tuple[int, int]) -> None:
         for missile in self.missiles[:]:
             missile.update()
+            # Remove missile if it goes off-screen
             if (
                 missile.pos["x"] < 0
                 or missile.pos["x"] > self.screen_width
