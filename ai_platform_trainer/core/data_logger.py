@@ -1,15 +1,22 @@
 import json
+import os
+
 
 class DataLogger:
     def __init__(self, filename):
         """
-        Initialize the DataLogger and create a new empty JSON file.
-        If the file exists, it will be overwritten.
+        Initialize the DataLogger.
+        If the file exists, delete it.
+        Then create a new empty JSON file.
         """
         self.filename = filename
-        self.data = []  # Initialize the data list
 
-        # Start fresh by creating or overwriting the file
+        # If file exists, remove it
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
+
+        # Create a new empty JSON file
+        self.data = []
         with open(self.filename, "w") as f:
             json.dump(self.data, f, indent=4)
 
