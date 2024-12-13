@@ -1,5 +1,6 @@
 import pygame
 import math
+import random
 from noise import pnoise1
 from ai_platform_trainer.entities.player import Player
 from ai_platform_trainer.entities.enemy import Enemy
@@ -12,7 +13,6 @@ SCREEN_HEIGHT = 600
 WINDOW_TITLE = "Pixel Pursuit"
 FRAME_RATE = 60
 DATA_PATH = "data/training_data.json"
-
 
 class Game:
     """Main class to run the Pixel Pursuit game."""
@@ -106,7 +106,7 @@ class Game:
     def play_update(self):
         """Update logic for play mode."""
         self.handle_input()
-        # Pass player's x, y, and speed to enemy.update_movement()
+        # Here we still use a deterministic chase, but later we can replace this with a learned model action.
         self.enemy.update_movement(self.player.position["x"], self.player.position["y"], self.player.step)
 
         if self.check_collision():
@@ -115,23 +115,34 @@ class Game:
 
     def training_update(self):
         """Update logic for training mode."""
-        # Calculate distance before movement
+        # Calculate distance before
         dist_before = math.dist(
             (self.enemy.pos["x"], self.enemy.pos["y"]),
             (self.player.position["x"], self.player.position["y"])
         )
 
-        # Move player using its own update method (noise-based movement)
+        # Move player with noise
         self.player.update()
 
-        # Move enemy towards the player
-        self.enemy.update_movement(
-            self.player.position["x"], 
-            self.player.position["y"], 
-            self.player.step
-        )
+        # Enemy takes a random action
+        actions = ["up", "down", "left", "right"]
+        action = random.choice(actions)
 
-        # Calculate distance after movement
+        # Apply the action
+        if action == "up":
+            self.enemy.pos["y"] -= self.enemy.speed
+        elif action == "down":
+            self.enemy.pos["y"] += self.enemy.speed
+        elif action == "left":
+            self.enemy.pos["x"] -= self.enemy.speed
+        elif action == "right":
+            self.enemy.pos["x"] += self.enemy.speed
+
+        # Clamp enemy position
+        self.enemy.pos["x"] = max(0, min(SCREEN_WIDTH - self.enemy.size, self.enemy.pos["x"]))
+        self.enemy.pos["y"] = max(0, min(SCREEN_HEIGHT - self.enemy.size, self.enemy.pos["y"]))
+
+        # Calculate distance after
         dist_after = math.dist(
             (self.enemy.pos["x"], self.enemy.pos["y"]),
             (self.player.position["x"], self.player.position["y"])
@@ -145,13 +156,14 @@ class Game:
         if collision:
             reward += 100
 
-        # Log training data
+        # Log the data: state, action, reward
         self.data_logger.log({
             "mode": "train",
             "player_x": self.player.position["x"],
             "player_y": self.player.position["y"],
             "enemy_x": self.enemy.pos["x"],
             "enemy_y": self.enemy.pos["y"],
+            "action": action,
             "distance_before": dist_before,
             "distance_after": dist_after,
             "collision": collision,
