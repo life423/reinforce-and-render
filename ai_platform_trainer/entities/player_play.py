@@ -9,38 +9,31 @@ class PlayerPlay:
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.size = 50
-        self.color = (0, 255, 0)  # Green
+        # Updated player color to dark blue
+        self.color = (0, 0, 139)  # Dark Blue
         self.position = {"x": screen_width // 4, "y": screen_height // 2}
         self.step = 5
         self.missiles: List[Missile] = []
 
-        # Initialize other player attributes as needed
-
     def reset(self) -> None:
-        """
-        Reset the player's position and other attributes to their initial state.
-        """
         self.position = {"x": self.screen_width // 4, "y": self.screen_height // 2}
-        self.missiles.clear()  # Clear any active missiles
+        self.missiles.clear()
         logging.info("Player has been reset to the initial position.")
 
     def handle_input(self) -> bool:
-        """
-        Handle player input for movement.
-
-        :return: False if player quits, True otherwise.
-        """
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
+
+        # WASD and Arrow Keys movement
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             self.position["x"] -= self.step
-        if keys[pygame.K_RIGHT]:
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             self.position["x"] += self.step
-        if keys[pygame.K_UP]:
+        if keys[pygame.K_UP] or keys[pygame.K_w]:
             self.position["y"] -= self.step
-        if keys[pygame.K_DOWN]:
+        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
             self.position["y"] += self.step
 
-        # Keep player within screen bounds
+        # Keep player within screen bounds (no wrap-around)
         self.position["x"] = max(
             0, min(self.screen_width - self.size, self.position["x"])
         )
@@ -48,10 +41,9 @@ class PlayerPlay:
             0, min(self.screen_height - self.size, self.position["y"])
         )
 
-        return True  # Continue running
+        return True
 
     def shoot_missile(self, target_x: int, target_y: int) -> None:
-        """Shoot a missile towards the target coordinates."""
         missile = Missile(
             x=self.position["x"] + self.size // 2,
             y=self.position["y"] + self.size // 2,
@@ -62,10 +54,8 @@ class PlayerPlay:
         logging.info(f"Missile shot towards ({target_x}, {target_y}).")
 
     def update_missiles(self, enemy_pos: Tuple[int, int]) -> None:
-        """Update all active missiles."""
         for missile in self.missiles[:]:
             missile.update()
-            # Remove missile if it goes off-screen
             if (
                 missile.pos["x"] < 0
                 or missile.pos["x"] > self.screen_width
@@ -76,12 +66,10 @@ class PlayerPlay:
                 logging.debug("Missile removed for going off-screen.")
 
     def draw_missiles(self, screen: pygame.Surface) -> None:
-        """Draw all active missiles."""
         for missile in self.missiles:
             missile.draw(screen)
 
     def draw(self, screen: pygame.Surface) -> None:
-        """Draw the player on the screen."""
         pygame.draw.rect(
             screen,
             self.color,
