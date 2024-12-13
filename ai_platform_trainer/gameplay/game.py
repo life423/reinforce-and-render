@@ -16,7 +16,7 @@ DATA_PATH = "data/training_data.json"
 
 class Game:
     """Main class to run the Pixel Pursuit game."""
-    
+
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -106,49 +106,47 @@ class Game:
     def play_update(self):
         """Update logic for play mode."""
         self.handle_input()
-        self.enemy.update_movement()
+        # Pass player's x, y, and speed to enemy.update_movement()
+        self.enemy.update_movement(self.player.position["x"], self.player.position["y"], self.player.step)
 
         if self.check_collision():
-            # No training data saved in play mode
             print("Collision detected!")
             self.running = False
 
     def training_update(self):
         """Update logic for training mode."""
-        # Calculate distance before enemy moves
+
+        # Calculate distance before moving anyone
         dist_before = math.dist(
             (self.enemy.pos["x"], self.enemy.pos["y"]),
             (self.player.position["x"], self.player.position["y"])
         )
 
+        # Move player using Perlin noise
         self.player.noise_time += 0.01
         dx_player = pnoise1(self.player.noise_time + self.player.noise_offset_x) * self.player.step
         dy_player = pnoise1(self.player.noise_time + self.player.noise_offset_y) * self.player.step
 
-        # Update player position with clamping
         self.player.position["x"] = max(0, min(SCREEN_WIDTH - self.player.size, self.player.position["x"] + dx_player))
         self.player.position["y"] = max(0, min(SCREEN_HEIGHT - self.player.size, self.player.position["y"] + dy_player))
 
-        self.enemy.update_movement()
+        # Move enemy towards the player
+        self.enemy.update_movement(self.player.position["x"], self.player.position["y"], self.player.step)
 
-        # Calculate distance after enemy moves
+        # Calculate distance after movement
         dist_after = math.dist(
             (self.enemy.pos["x"], self.enemy.pos["y"]),
             (self.player.position["x"], self.player.position["y"])
         )
 
         collision = self.check_collision()
-
-        # Calculate the reward
-        # Reward for moving closer: (dist_before - dist_after)*10
-        # Step penalty: -1 each update
-        # Collision bonus: +100 if collision occurs
+        # Calculate reward
         reward = (dist_before - dist_after) * 10
         reward -= 1
         if collision:
             reward += 100
 
-        # Log training data with the reward and distances
+        # Log training data
         self.data_logger.log({
             "mode": "train",
             "player_x": self.player.position["x"],
