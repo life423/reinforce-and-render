@@ -11,6 +11,9 @@ class DataLogger:
         """
         self.filename = filename
 
+        # Ensure the directory exists
+        os.makedirs(os.path.dirname(self.filename), exist_ok=True)
+
         # If file exists, remove it
         if os.path.exists(self.filename):
             os.remove(self.filename)

@@ -30,7 +30,6 @@ class Game:
 
         self.menu = Menu(config.SCREEN_WIDTH, config.SCREEN_HEIGHT)
         self.renderer = Renderer(self.screen)
-        # Removed DataLogger initialization from here
 
         # Game states
         self.running = True
@@ -95,7 +94,7 @@ class Game:
 
         if mode == "train":
             # Instantiate DataLogger only in training mode
-            self.data_logger = DataLogger("data/raw/training_data.json")
+            self.data_logger = DataLogger(config.DATA_PATH)
             self.player = PlayerTraining(self.screen_width, self.screen_height)
             self.enemy = EnemyTrain(self.screen_width, self.screen_height)
 
