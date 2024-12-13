@@ -13,6 +13,10 @@ class Player:
         self.step = 5
         self.position = {"x": self.screen_width // 2, "y": self.screen_height // 2}
 
+        # Probability of ignoring the enemy and moving randomly
+        # Higher means more collisions and variation
+        self.random_move_chance = 0.2
+
     def reset(self):
         self.position = {"x": self.screen_width // 2, "y": self.screen_height // 2}
 
@@ -25,30 +29,37 @@ class Player:
         )
 
     def update(self, enemy_x, enemy_y):
-        # Calculate vector from enemy to player (we want to move along this vector to increase distance)
-        dx = self.position["x"] - enemy_x
-        dy = self.position["y"] - enemy_y
-        dist = math.sqrt(dx * dx + dy * dy)
-
-        # If enemy is on same spot or too close, pick a random direction to escape
-        if dist < 0.0001:
+        # Decide whether to move away from the enemy or move randomly
+        if random.random() < self.random_move_chance:
+            # Move in a random direction
             angle = random.uniform(0, 2 * math.pi)
-            dx, dy = math.cos(angle), math.sin(angle)
+            dx = math.cos(angle)
+            dy = math.sin(angle)
         else:
-            # Normalize (dx, dy) to length 1
-            dx /= dist
-            dy /= dist
+            # Move away from the enemy
+            dx = self.position["x"] - enemy_x
+            dy = self.position["y"] - enemy_y
+            dist = math.sqrt(dx * dx + dy * dy)
 
-        # Add slight random variation to not be too predictable
-        angle = math.atan2(dy, dx)
-        angle += random.uniform(-0.3, 0.3)  # random turn of up to ~17 degrees
-        dx, dy = math.cos(angle), math.sin(angle)
+            if dist < 0.0001:
+                # If too close or same spot, pick a random escape angle
+                angle = random.uniform(0, 2 * math.pi)
+                dx, dy = math.cos(angle), math.sin(angle)
+            else:
+                # Normalize direction away from enemy
+                dx /= dist
+                dy /= dist
 
-        # Move player away from the enemy
+            # Add slight randomness so it's not a perfect line
+            angle = math.atan2(dy, dx)
+            angle += random.uniform(-0.2, 0.2)  # small random turn
+            dx, dy = math.cos(angle), math.sin(angle)
+
+        # Move the player
         self.position["x"] += dx * self.step
         self.position["y"] += dy * self.step
 
-        # Clamp to ensure we don't go out of bounds
+        # Clamp position to avoid going out of bounds
         self.clamp_position()
 
     def draw(self, screen):
