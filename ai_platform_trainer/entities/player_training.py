@@ -13,12 +13,20 @@ class Player:
         self.step = 5
         self.position = {"x": self.screen_width // 2, "y": self.screen_height // 2}
 
-        # Probability of ignoring the enemy and moving randomly
-        # Higher means more collisions and variation
-        self.random_move_chance = 0.2
+        # Timing logic
+        self.frame_counter = 0
+        self.direction_timer = (
+            0  # Counts down how long to keep moving in current direction
+        )
+        self.current_dx = 0
+        self.current_dy = 0
 
     def reset(self):
         self.position = {"x": self.screen_width // 2, "y": self.screen_height // 2}
+        self.frame_counter = 0
+        self.direction_timer = 0
+        self.current_dx = 0
+        self.current_dy = 0
 
     def clamp_position(self):
         self.position["x"] = max(
@@ -29,35 +37,33 @@ class Player:
         )
 
     def update(self, enemy_x, enemy_y):
-        # Decide whether to move away from the enemy or move randomly
-        if random.random() < self.random_move_chance:
-            # Move in a random direction
-            angle = random.uniform(0, 2 * math.pi)
-            dx = math.cos(angle)
-            dy = math.sin(angle)
+        self.frame_counter += 1
+
+        # If we are not currently locked into a direction (direction_timer <=0)
+        # and the current frame is a multiple of 20, pick a new direction
+        if self.direction_timer <= 0 and self.frame_counter % 20 == 0:
+            # Pick a new direction from four options: up, down, left, right
+            direction = random.choice(["up", "down", "left", "right"])
+            if direction == "up":
+                self.current_dx, self.current_dy = 0, -1
+            elif direction == "down":
+                self.current_dx, self.current_dy = 0, 1
+            elif direction == "left":
+                self.current_dx, self.current_dy = -1, 0
+            elif direction == "right":
+                self.current_dx, self.current_dy = 1, 0
+
+            # Set direction_timer for 1.5 seconds at 60 FPS = 90 frames
+            self.direction_timer = 90
+
+        if self.direction_timer > 0:
+            # Move in the chosen direction
+            self.position["x"] += self.current_dx * self.step
+            self.position["y"] += self.current_dy * self.step
+            self.direction_timer -= 1
         else:
-            # Move away from the enemy
-            dx = self.position["x"] - enemy_x
-            dy = self.position["y"] - enemy_y
-            dist = math.sqrt(dx * dx + dy * dy)
-
-            if dist < 0.0001:
-                # If too close or same spot, pick a random escape angle
-                angle = random.uniform(0, 2 * math.pi)
-                dx, dy = math.cos(angle), math.sin(angle)
-            else:
-                # Normalize direction away from enemy
-                dx /= dist
-                dy /= dist
-
-            # Add slight randomness so it's not a perfect line
-            angle = math.atan2(dy, dx)
-            angle += random.uniform(-0.2, 0.2)  # small random turn
-            dx, dy = math.cos(angle), math.sin(angle)
-
-        # Move the player
-        self.position["x"] += dx * self.step
-        self.position["y"] += dy * self.step
+            # Not currently locked into a direction, do nothing
+            pass
 
         # Clamp position to avoid going out of bounds
         self.clamp_position()
