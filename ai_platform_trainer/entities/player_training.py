@@ -30,18 +30,39 @@ class PlayerTraining:
 
     def update(self, enemy_x: float, enemy_y: float) -> None:
         """
-        Update the player state each frame during training mode.
-        Let's move the player randomly to ensure it's not stationary.
+        Update the player's position each frame during training mode.
+        The player will try to maintain a good distance from the enemy by moving away from it.
         """
 
-        # Random horizontal and vertical steps: -1, 0, or 1 times self.step
-        dx = random.choice([-1, 0, 1]) * self.step
-        dy = random.choice([-1, 0, 1]) * self.step
+        # Desired minimum distance from enemy
+        desired_distance = 200  # Adjust this value as needed
 
-        self.position["x"] += dx
-        self.position["y"] += dy
+        px, py = self.position["x"], self.position["y"]
+        dx = px - enemy_x
+        dy = py - enemy_y
+        dist = (dx**2 + dy**2)**0.5
 
-        # Wrap-around logic or boundary checks if you want the player to stay on-screen
+        if dist < desired_distance:
+            # Enemy is too close, move away
+            if dist > 0:  # Avoid division by zero
+                dx /= dist
+                dy /= dist
+            else:
+                # If exactly on the enemy, move randomly to escape
+                dx, dy = random.choice([(-1,0),(1,0),(0,-1),(0,1)])
+
+            # Move away from the enemy
+            self.position["x"] += dx * self.step
+            self.position["y"] += dy * self.step
+        else:
+            # Enemy is sufficiently far; move randomly or stay still
+            # Add a small random movement so the player isn't static:
+            rand_dx = random.choice([-1, 0, 1]) * self.step
+            rand_dy = random.choice([-1, 0, 1]) * self.step
+            self.position["x"] += rand_dx
+            self.position["y"] += rand_dy
+
+        # Wrap-around logic to keep player on screen
         if self.position["x"] < -self.size:
             self.position["x"] = self.screen_width
         elif self.position["x"] > self.screen_width:
