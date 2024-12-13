@@ -19,7 +19,7 @@ class Enemy:
 
         # Initialize forced escape variables BEFORE calling switch_pattern()
         self.wall_stall_counter = 0
-        self.wall_stall_threshold = 30
+        self.wall_stall_threshold = 10
         self.forced_escape_timer = 0
         self.forced_angle = None
         self.forced_speed = None
