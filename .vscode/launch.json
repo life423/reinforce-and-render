@@ -1,21 +1,14 @@
-//write a launch.json file that runs main.py 
-
 {
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
+            "name": "Run ai_platform_trainer via Module",
             "type": "python",
             "request": "launch",
-            "program": "../src/main.py",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Python: Main",
-            "type": "../src/main.py",
-            "request": "launch",
-            "program": "${workspaceFolder}/main.py",
-            "console": "integratedTerminal"
+            "module": "ai_platform_trainer.main",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "justMyCode": true
         }
     ]
 }
