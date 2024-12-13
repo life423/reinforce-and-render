@@ -17,20 +17,17 @@ class Enemy:
 
         self.patterns = ["random_walk", "circle_move", "diagonal_move"]
 
-        # Initialize forced escape variables BEFORE calling switch_pattern()
         self.wall_stall_counter = 0
         self.wall_stall_threshold = 10
         self.forced_escape_timer = 0
         self.forced_angle = None
         self.forced_speed = None
 
-        # Pattern-specific variables
         self.circle_center = (self.pos["x"], self.pos["y"])
         self.circle_angle = 0.0
         self.circle_radius = 100
         self.diagonal_direction = (1, 1)
 
-        # Now safe to call switch_pattern(), since forced_escape_timer exists
         self.switch_pattern()
 
     def switch_pattern(self):
@@ -68,9 +65,16 @@ class Enemy:
             elif self.current_pattern == "diagonal_move":
                 self.diagonal_pattern()
 
-        # Clamp position
-        self.pos["x"] = max(0, min(self.screen_width - self.size, self.pos["x"]))
-        self.pos["y"] = max(0, min(self.screen_height - self.size, self.pos["y"]))
+        # Wrap-around logic for Asteroids-like arena:
+        if self.pos["x"] < -self.size:
+            self.pos["x"] = self.screen_width
+        elif self.pos["x"] > self.screen_width:
+            self.pos["x"] = -self.size
+
+        if self.pos["y"] < -self.size:
+            self.pos["y"] = self.screen_height
+        elif self.pos["y"] > self.screen_height:
+            self.pos["y"] = -self.size
 
         # Check wall hugging
         if self.is_hugging_wall():
@@ -107,8 +111,9 @@ class Enemy:
             -min_angle_variation, min_angle_variation
         )
         self.forced_angle = angle_choice
-        self.forced_speed = self.base_speed * random.uniform(1.5, 2.5)
-        self.forced_escape_timer = random.randint(1, 30)  # ~0.5 sec if 60FPS
+        # No big speed burst, just a slight increase or even just use base_speed
+        self.forced_speed = self.base_speed * 1.0  # no extra burst
+        self.forced_escape_timer = random.randint(1, 30)
 
         self.wall_stall_counter = 0
         self.state_timer = self.forced_escape_timer * 2
@@ -120,7 +125,6 @@ class Enemy:
         self.pos["y"] += dy
 
     def is_hugging_wall(self):
-        # Consider hugging wall if within 20px of any wall
         wall_margin = 20
         if (
             self.pos["x"] < wall_margin
@@ -145,7 +149,7 @@ class Enemy:
         self.pos["y"] += dy
 
     def circle_pattern(self):
-        speed = self.base_speed * 1.5
+        speed = self.base_speed 
         angle_increment = 0.02 * (speed / self.base_speed)
         self.circle_angle += angle_increment
 
@@ -164,7 +168,7 @@ class Enemy:
             angle += random.uniform(-0.3, 0.3)
             self.diagonal_direction = (math.cos(angle), math.sin(angle))
 
-        speed = self.base_speed * random.uniform(1.0, 2.0)
+        speed = self.base_speed 
         self.pos["x"] += self.diagonal_direction[0] * speed
         self.pos["y"] += self.diagonal_direction[1] * speed
 

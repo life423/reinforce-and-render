@@ -29,12 +29,21 @@ class Player:
         self.current_dy = 0
 
     def clamp_position(self):
-        self.position["x"] = max(
-            0, min(self.position["x"], self.screen_width - self.size)
-        )
-        self.position["y"] = max(
-            0, min(self.position["y"], self.screen_height - self.size)
-        )
+        # self.position["x"] = max(
+        #     0, min(self.position["x"], self.screen_width - self.size)
+        # )
+        # self.position["y"] = max(
+        #     0, min(self.position["y"], self.screen_height - self.size)
+        # )
+        if self.position["x"] < -self.size:
+            self.position["x"] = self.screen_width
+        elif self.position["x"] > self.screen_width:
+            self.position["x"] = -self.size
+
+        if self.position["y"] < -self.size:
+            self.position["y"] = self.screen_height
+        elif self.position["y"] > self.screen_height:
+            self.position["y"] = -self.size
 
     def update(self, enemy_x, enemy_y):
         self.frame_counter += 1
