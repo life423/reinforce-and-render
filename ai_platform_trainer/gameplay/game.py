@@ -1,4 +1,5 @@
 import pygame
+import math
 from noise import pnoise1
 from ai_platform_trainer.entities.player import Player
 from ai_platform_trainer.entities.enemy import Enemy
@@ -114,6 +115,12 @@ class Game:
 
     def training_update(self):
         """Update logic for training mode."""
+        # Calculate distance before enemy moves
+        dist_before = math.dist(
+            (self.enemy.pos["x"], self.enemy.pos["y"]),
+            (self.player.position["x"], self.player.position["y"])
+        )
+
         self.player.noise_time += 0.01
         dx_player = pnoise1(self.player.noise_time + self.player.noise_offset_x) * self.player.step
         dy_player = pnoise1(self.player.noise_time + self.player.noise_offset_y) * self.player.step
@@ -123,16 +130,35 @@ class Game:
         self.player.position["y"] = max(0, min(SCREEN_HEIGHT - self.player.size, self.player.position["y"] + dy_player))
 
         self.enemy.update_movement()
+
+        # Calculate distance after enemy moves
+        dist_after = math.dist(
+            (self.enemy.pos["x"], self.enemy.pos["y"]),
+            (self.player.position["x"], self.player.position["y"])
+        )
+
         collision = self.check_collision()
 
-        # Log training data
+        # Calculate the reward
+        # Reward for moving closer: (dist_before - dist_after)*10
+        # Step penalty: -1 each update
+        # Collision bonus: +100 if collision occurs
+        reward = (dist_before - dist_after) * 10
+        reward -= 1
+        if collision:
+            reward += 100
+
+        # Log training data with the reward and distances
         self.data_logger.log({
             "mode": "train",
             "player_x": self.player.position["x"],
             "player_y": self.player.position["y"],
             "enemy_x": self.enemy.pos["x"],
             "enemy_y": self.enemy.pos["y"],
-            "collision": collision
+            "distance_before": dist_before,
+            "distance_after": dist_after,
+            "collision": collision,
+            "reward": reward
         })
 
     def handle_input(self):
