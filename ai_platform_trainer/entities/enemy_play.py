@@ -10,8 +10,8 @@ class Enemy:
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.size = 50
-        # Updated enemy color to a bright gold
-        self.color = (255, 215, 0)  # Gold
+        # Bright gold color
+        self.color = (255, 215, 0)
         self.pos = {"x": self.screen_width // 2, "y": self.screen_height // 2}
         self.model = model
         self.base_speed = max(2, screen_width // 400)
@@ -27,13 +27,23 @@ class Enemy:
         self.surface = pygame.Surface((self.size, self.size), pygame.SRCALPHA)
         self.surface.fill((*self.color, 255))
 
+    def wrap_position(self, x: float, y: float) -> Tuple[float, float]:
+        if x < -self.size:
+            x = self.screen_width
+        elif x > self.screen_width:
+            x = -self.size
+        if y < -self.size:
+            y = self.screen_height
+        elif y > self.screen_height:
+            y = -self.size
+        return x, y
+
     def update_movement(
         self, player_x: float, player_y: float, player_speed: int, current_time: int
     ):
         if not self.visible:
             return
 
-        # State: (player_x, player_y, enemy_x, enemy_y, dist)
         dist = math.sqrt(
             (player_x - self.pos["x"]) ** 2 + (player_y - self.pos["y"]) ** 2
         )
@@ -47,7 +57,6 @@ class Enemy:
 
         action_dx, action_dy = action[0].tolist()
 
-        # Normalize action vector
         action_len = math.sqrt(action_dx**2 + action_dy**2)
         if action_len > 0:
             action_dx /= action_len
@@ -59,9 +68,8 @@ class Enemy:
         self.pos["x"] += action_dx * speed
         self.pos["y"] += action_dy * speed
 
-        # Instead of wrap-around, clamp the enemy to stay within screen bounds
-        self.pos["x"] = max(0, min(self.screen_width - self.size, self.pos["x"]))
-        self.pos["y"] = max(0, min(self.screen_height - self.size, self.pos["y"]))
+        # Reintroduce wrap-around logic
+        self.pos["x"], self.pos["y"] = self.wrap_position(self.pos["x"], self.pos["y"])
 
     def draw(self, screen: pygame.Surface) -> None:
         if self.visible:

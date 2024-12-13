@@ -9,7 +9,7 @@ class PlayerPlay:
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.size = 50
-        # Updated player color to dark blue
+        # Dark blue color
         self.color = (0, 0, 139)  # Dark Blue
         self.position = {"x": screen_width // 4, "y": screen_height // 2}
         self.step = 5
@@ -33,13 +33,16 @@ class PlayerPlay:
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
             self.position["y"] += self.step
 
-        # Keep player within screen bounds (no wrap-around)
-        self.position["x"] = max(
-            0, min(self.screen_width - self.size, self.position["x"])
-        )
-        self.position["y"] = max(
-            0, min(self.screen_height - self.size, self.position["y"])
-        )
+        # Wrap-around logic for player
+        if self.position["x"] < -self.size:
+            self.position["x"] = self.screen_width
+        elif self.position["x"] > self.screen_width:
+            self.position["x"] = -self.size
+
+        if self.position["y"] < -self.size:
+            self.position["y"] = self.screen_height
+        elif self.position["y"] > self.screen_height:
+            self.position["y"] = -self.size
 
         return True
 
