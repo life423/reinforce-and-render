@@ -1,6 +1,9 @@
 import pygame
-from ai_platform_trainer.entities.player import Player
-from ai_platform_trainer.entities.enemy import Enemy
+import math
+from ai_platform_trainer.entities.player_play import PlayerPlay
+from ai_platform_trainer.entities.player_training import Player as PlayerTraining
+from ai_platform_trainer.entities.enemy_play import Enemy as EnemyPlay
+from ai_platform_trainer.entities.enemy_training import Enemy as EnemyTrain
 from ai_platform_trainer.gameplay.menu import Menu
 from ai_platform_trainer.gameplay.renderer import Renderer
 from ai_platform_trainer.core.data_logger import DataLogger
@@ -11,6 +14,7 @@ WINDOW_TITLE = "Pixel Pursuit"
 FRAME_RATE = 60
 DATA_PATH = "data/training_data.json"
 
+
 class Game:
     """Main class to run the Pixel Pursuit game."""
 
@@ -20,9 +24,9 @@ class Game:
         pygame.display.set_caption(WINDOW_TITLE)
         self.clock = pygame.time.Clock()
 
-        # Entities and managers
-        self.player = Player(SCREEN_WIDTH, SCREEN_HEIGHT)
-        self.enemy = Enemy(SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.screen_width = SCREEN_WIDTH
+        self.screen_height = SCREEN_HEIGHT
+
         self.menu = Menu(SCREEN_WIDTH, SCREEN_HEIGHT)
         self.renderer = Renderer(self.screen)
         self.data_logger = DataLogger(DATA_PATH)
@@ -41,7 +45,9 @@ class Game:
                 self.menu.draw(self.screen)
             else:
                 self.update()
-                self.renderer.render(self.menu, self.player, self.enemy, self.menu_active, self.screen)
+                self.renderer.render(
+                    self.menu, self.player, self.enemy, self.menu_active, self.screen
+                )
 
             pygame.display.flip()
             self.clock.tick(FRAME_RATE)
@@ -55,7 +61,7 @@ class Game:
     def handle_events(self):
         """Handle all window and menu-related events."""
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+            if event.type == pygame.QUIT:
                 self.running = False
             elif self.menu_active:
                 selected_action = self.menu.handle_menu_events(event)
@@ -71,17 +77,22 @@ class Game:
             self.start_game(selected_action)
 
     def start_game(self, mode: str) -> None:
-        """Initialize game entities and set mode."""
         self.mode = mode
         print(mode)
-        self.player.reset()
-        self.enemy.reset()
 
-        # Place player and enemy at distinct positions
-        self.player.position["x"] = SCREEN_WIDTH // 4 - self.player.size // 2
-        self.player.position["y"] = SCREEN_HEIGHT // 2 - self.player.size // 2
-        self.enemy.pos["x"] = (SCREEN_WIDTH * 3) // 4 - self.enemy.size // 2
-        self.enemy.pos["y"] = SCREEN_HEIGHT // 2 - self.enemy.size // 2
+        if mode == "train":
+            self.player = PlayerTraining(self.screen_width, self.screen_height)
+            self.enemy = EnemyTrain(self.screen_width, self.screen_height)
+        else:
+            self.player = PlayerPlay(self.screen_width, self.screen_height)
+            self.enemy = EnemyPlay(self.screen_width, self.screen_height)
+
+        # Position entities
+        self.player.reset()
+        self.player.position["x"] = self.screen_width // 4 - self.player.size // 2
+        self.player.position["y"] = self.screen_height // 2 - self.player.size // 2
+        self.enemy.pos["x"] = (self.screen_width * 3) // 4 - self.enemy.size // 2
+        self.enemy.pos["y"] = self.screen_height // 2 - self.enemy.size // 2
 
     def update(self):
         """Update game state depending on the mode."""
@@ -93,7 +104,10 @@ class Game:
     def check_collision(self) -> bool:
         """Check if the player and enemy collide."""
         player_rect = pygame.Rect(
-            self.player.position["x"], self.player.position["y"], self.player.size, self.player.size
+            self.player.position["x"],
+            self.player.position["y"],
+            self.player.size,
+            self.player.size,
         )
         enemy_rect = pygame.Rect(
             self.enemy.pos["x"], self.enemy.pos["y"], self.enemy.size, self.enemy.size
@@ -102,63 +116,45 @@ class Game:
 
     def play_update(self):
         """Update logic for play mode."""
-        self.handle_input()
-        # Enemy moves towards player using deterministic logic
-        old_enemy_x = self.enemy.pos["x"]
-        old_enemy_y = self.enemy.pos["y"]
-        self.enemy.update_movement(self.player.position["x"], self.player.position["y"], self.player.step)
+        # Let the player handle input directly
+        if not self.player.handle_input():
+            self.running = False
+            return
+
+        # Enemy moves and collision check
+        self.enemy.update_movement(
+            self.player.position["x"], self.player.position["y"], self.player.step
+        )
         if self.check_collision():
             print("Collision detected!")
             self.running = False
 
     def training_update(self):
         """Update logic for training mode."""
-        # Player moves with noise
         self.player.update(self.enemy.pos["x"], self.enemy.pos["y"])
-
-        # Record enemy's old position to derive action
         old_enemy_x = self.enemy.pos["x"]
         old_enemy_y = self.enemy.pos["y"]
+        self.enemy.update_movement(
+            self.player.position["x"], self.player.position["y"], self.player.step
+        )
 
-        # Enemy moves towards the player just like in play mode
-        self.enemy.update_movement(self.player.position["x"], self.player.position["y"], self.player.step)
-
-        # Compute the action taken as a vector (dx, dy)
         action_dx = self.enemy.pos["x"] - old_enemy_x
         action_dy = self.enemy.pos["y"] - old_enemy_y
-
         collision = self.check_collision()
 
-        # Log the data: This is imitation learning data
-        # We record state and action. Reward isn't strictly necessary for imitation learning.
-        self.data_logger.log({
-            "mode": "train",
-            "player_x": self.player.position["x"],
-            "player_y": self.player.position["y"],
-            "enemy_x": self.enemy.pos["x"],
-            "enemy_y": self.enemy.pos["y"],
-            "action_dx": action_dx,
-            "action_dy": action_dy,
-            "collision": collision
-        })
+        self.data_logger.log(
+            {
+                "mode": "train",
+                "player_x": self.player.position["x"],
+                "player_y": self.player.position["y"],
+                "enemy_x": self.enemy.pos["x"],
+                "enemy_y": self.enemy.pos["y"],
+                "action_dx": action_dx,
+                "action_dy": action_dy,
+                "collision": collision,
+            }
+        )
 
-    def handle_input(self):
-        """Handle player keyboard input for movement."""
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            self.player.position['x'] -= self.player.step
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            self.player.position['x'] += self.player.step
-        if keys[pygame.K_UP] or keys[pygame.K_w]:
-            self.player.position['y'] -= self.player.step
-        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
-            self.player.position['y'] += self.player.step
-        if keys[pygame.K_ESCAPE]:
-            self.running = False
-
-        # Clamp player position
-        self.player.position['x'] = max(0, min(self.player.position['x'], SCREEN_WIDTH - self.player.size))
-        self.player.position['y'] = max(0, min(self.player.position['y'], SCREEN_HEIGHT - self.player.size))
 
 if __name__ == "__main__":
     game = Game()
