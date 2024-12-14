@@ -1,21 +1,24 @@
 import pygame
 import random
 import math
-
+from ai_platform_trainer.utils.helpers import wrap_position  # Import from utils
 
 class EnemyTrain:
+    DEFAULT_SIZE = 50
+    DEFAULT_COLOR = (173, 153, 228)
+    PATTERNS = ["random_walk", "circle_move", "diagonal_move"]
+    WALL_MARGIN = 20
+
     def __init__(self, screen_width, screen_height):
         self.screen_width = screen_width
         self.screen_height = screen_height
-        self.size = 50
-        self.color = (173, 153, 228)
+        self.size = self.DEFAULT_SIZE
+        self.color = self.DEFAULT_COLOR
         self.pos = {"x": self.screen_width // 2, "y": self.screen_height // 2}
 
         self.base_speed = max(2, screen_width // 400)
         self.state_timer = 0
         self.current_pattern = None
-
-        self.patterns = ["random_walk", "circle_move", "diagonal_move"]
 
         self.wall_stall_counter = 0
         self.wall_stall_threshold = 10
@@ -26,7 +29,12 @@ class EnemyTrain:
         self.circle_center = (self.pos["x"], self.pos["y"])
         self.circle_angle = 0.0
         self.circle_radius = 100
+
         self.diagonal_direction = (1, 1)
+
+        self.random_walk_timer = 0
+        self.random_walk_angle = 0.0
+        self.random_walk_speed = self.base_speed
 
         self.switch_pattern()
 
@@ -36,7 +44,8 @@ class EnemyTrain:
 
         new_pattern = self.current_pattern
         while new_pattern == self.current_pattern:
-            new_pattern = random.choice(self.patterns)
+            new_pattern = random.choice(self.PATTERNS)
+
         self.current_pattern = new_pattern
         self.state_timer = random.randint(120, 300)
 
@@ -65,7 +74,7 @@ class EnemyTrain:
             elif self.current_pattern == "diagonal_move":
                 self.diagonal_pattern()
 
-        # Wrap-around logic
+        # Use the imported wrap_position utility
         self.pos["x"], self.pos["y"] = wrap_position(
             self.pos["x"],
             self.pos["y"],
@@ -91,13 +100,9 @@ class EnemyTrain:
         else:
             base_angle = math.pi * 3 / 2
 
-        min_angle_variation = math.radians(30)
-        angle_choice = base_angle + random.uniform(
-            -min_angle_variation, min_angle_variation
-        )
-        self.forced_angle = angle_choice
-        # No big speed burst, just a slight increase or even just use base_speed
-        self.forced_speed = self.base_speed * 1.0  # no extra burst
+        angle_variation = math.radians(30)
+        self.forced_angle = base_angle + random.uniform(-angle_variation, angle_variation)
+        self.forced_speed = self.base_speed * 1.0
         self.forced_escape_timer = random.randint(1, 30)
 
         self.wall_stall_counter = 0
@@ -110,19 +115,15 @@ class EnemyTrain:
         self.pos["y"] += dy
 
     def is_hugging_wall(self):
-        wall_margin = 20
-        # Check if the enemy is near any of the walls
-        if (
-            self.pos["x"] < wall_margin
-            or self.pos["x"] > self.screen_width - self.size - wall_margin
-            or self.pos["y"] < wall_margin
-            or self.pos["y"] > self.screen_height - self.size - wall_margin
-        ):
-            return True
-        return False
+        return (
+            self.pos["x"] < self.WALL_MARGIN
+            or self.pos["x"] > self.screen_width - self.size - self.WALL_MARGIN
+            or self.pos["y"] < self.WALL_MARGIN
+            or self.pos["y"] > self.screen_height - self.size - self.WALL_MARGIN
+        )
 
     def random_walk_pattern(self):
-        if not hasattr(self, "random_walk_timer") or self.random_walk_timer <= 0:
+        if self.random_walk_timer <= 0:
             self.random_walk_angle = random.uniform(0, 2 * math.pi)
             self.random_walk_speed = self.base_speed * random.uniform(0.5, 2.0)
             self.random_walk_timer = random.randint(30, 90)
@@ -162,17 +163,3 @@ class EnemyTrain:
         pygame.draw.rect(
             screen, self.color, (self.pos["x"], self.pos["y"], self.size, self.size)
         )
-
-
-def wrap_position(x, y, screen_width, screen_height, size):
-    if x < -size:
-        x = screen_width
-    elif x > screen_width:
-        x = -size
-
-    if y < -size:
-        y = screen_height
-    elif y > screen_height:
-        y = -size
-
-    return x, y

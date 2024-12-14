@@ -20,6 +20,21 @@ class PlayerTraining:
         self.missiles = []
         logging.info("PlayerTraining initialized.")
 
+        # Random Direction Movement State
+        # Directions defined as (dx, dy)
+        self.directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
+        self.direction_timer = 0
+        self.current_direction = (0, 0)
+        self.pick_new_direction()
+
+    def pick_new_direction(self) -> None:
+        """
+        Pick a random direction and a random duration to move in that direction.
+        """
+        self.current_direction = random.choice(self.directions)
+        # Duration in frames
+        self.direction_timer = random.randint(60, 180)
+
     def reset(self) -> None:
         self.position = {
             "x": random.randint(0, self.screen_width - self.size),
@@ -27,17 +42,20 @@ class PlayerTraining:
         }
         self.missiles.clear()
         logging.info("PlayerTraining has been reset.")
+        self.pick_new_direction()
 
     def update(self, enemy_x: float, enemy_y: float) -> None:
         """
         Update the player's position each frame during training mode.
-        The player will maintain a good distance from the enemy:
-        - If too close, move directly away.
-        - If at a safe distance, remain still.
 
-        Wrap-around logic is handled by modulo arithmetic to ensure stable wrapping.
+        If enemy is too close:
+          - Move directly away from the enemy.
+        Else:
+          - Move in a randomly chosen fixed direction for a random amount of time.
+            When the timer expires, choose a new direction.
+
+        Positions wrap around the screen edges.
         """
-
         desired_distance = 200
         px, py = self.position["x"], self.position["y"]
         dx = px - enemy_x
@@ -45,20 +63,25 @@ class PlayerTraining:
         dist = math.hypot(dx, dy)
 
         if dist < desired_distance:
-            # Enemy is too close, move away directly
+            # Move directly away from the enemy
             if dist > 0:
                 ndx, ndy = dx / dist, dy / dist
             else:
-                # Exactly overlapping enemy; pick a random direction to escape
-                ndx, ndy = random.choice([(1, 0), (-1, 0), (0, 1), (0, -1)])
-            # Move away at normal speed
+                # Exactly on enemy; pick a random direction
+                ndx, ndy = random.choice(self.directions)
             self.position["x"] += ndx * self.step
             self.position["y"] += ndy * self.step
         else:
-            # Enemy is far enough; remain still
-            pass
+            # Safe distance, follow random direction movement
+            if self.direction_timer <= 0:
+                self.pick_new_direction()
 
-        # Wrap-around using modulo to ensure stable wrapping
+            ndx, ndy = self.current_direction
+            self.position["x"] += ndx * self.step
+            self.position["y"] += ndy * self.step
+            self.direction_timer -= 1
+
+        # Wrap-around using modulo
         self.position["x"] %= self.screen_width
         self.position["y"] %= self.screen_height
 
@@ -74,7 +97,6 @@ class PlayerTraining:
         for missile in self.missiles[:]:
             missile.update()
             # Remove missile if it goes off-screen
-            # If you want missiles to wrap as well, you can also apply modulo here
             if (
                 missile.pos["x"] < 0
                 or missile.pos["x"] > self.screen_width
