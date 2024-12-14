@@ -20,19 +20,19 @@ class PlayerTraining:
         self.missiles = []
         logging.info("PlayerTraining initialized.")
 
-        # Random Direction Movement State
-        # Directions defined as (dx, dy)
         self.directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
         self.direction_timer = 0
         self.current_direction = (0, 0)
+        self.currently_moving_away = False
+
+        # Define hysteresis parameters
+        self.desired_distance = 200
+        self.margin = 20
+
         self.pick_new_direction()
 
     def pick_new_direction(self) -> None:
-        """
-        Pick a random direction and a random duration to move in that direction.
-        """
         self.current_direction = random.choice(self.directions)
-        # Duration in frames
         self.direction_timer = random.randint(60, 180)
 
     def reset(self) -> None:
@@ -41,47 +41,46 @@ class PlayerTraining:
             "y": random.randint(0, self.screen_height - self.size),
         }
         self.missiles.clear()
-        logging.info("PlayerTraining has been reset.")
         self.pick_new_direction()
+        logging.info("PlayerTraining has been reset.")
+
+    def move_away_from(self, enemy_x: float, enemy_y: float) -> None:
+        px, py = self.position["x"], self.position["y"]
+        dx, dy = px - enemy_x, py - enemy_y
+        dist = math.hypot(dx, dy)
+        if dist > 0:
+            ndx, ndy = dx / dist, dy / dist
+        else:
+            ndx, ndy = random.choice(self.directions)
+        self.position["x"] += ndx * self.step
+        self.position["y"] += ndy * self.step
+        self.currently_moving_away = True
+
+    def move_random_direction(self) -> None:
+        if self.direction_timer <= 0:
+            self.pick_new_direction()
+        ndx, ndy = self.current_direction
+        self.position["x"] += ndx * self.step
+        self.position["y"] += ndy * self.step
+        self.direction_timer -= 1
+        self.currently_moving_away = False
+
+    def is_currently_moving_away(self) -> bool:
+        return self.currently_moving_away
 
     def update(self, enemy_x: float, enemy_y: float) -> None:
-        """
-        Update the player's position each frame during training mode.
+        dist = math.hypot(self.position["x"] - enemy_x, self.position["y"] - enemy_y)
 
-        If enemy is too close:
-          - Move directly away from the enemy.
-        Else:
-          - Move in a randomly chosen fixed direction for a random amount of time.
-            When the timer expires, choose a new direction.
-
-        Positions wrap around the screen edges.
-        """
-        desired_distance = 200
-        px, py = self.position["x"], self.position["y"]
-        dx = px - enemy_x
-        dy = py - enemy_y
-        dist = math.hypot(dx, dy)
-
-        if dist < desired_distance:
-            # Move directly away from the enemy
-            if dist > 0:
-                ndx, ndy = dx / dist, dy / dist
-            else:
-                # Exactly on enemy; pick a random direction
-                ndx, ndy = random.choice(self.directions)
-            self.position["x"] += ndx * self.step
-            self.position["y"] += ndy * self.step
+        if dist < self.desired_distance - self.margin:
+            self.move_away_from(enemy_x, enemy_y)
+        elif dist > self.desired_distance + self.margin:
+            self.move_random_direction()
         else:
-            # Safe distance, follow random direction movement
-            if self.direction_timer <= 0:
-                self.pick_new_direction()
+            if self.is_currently_moving_away():
+                self.move_away_from(enemy_x, enemy_y)
+            else:
+                self.move_random_direction()
 
-            ndx, ndy = self.current_direction
-            self.position["x"] += ndx * self.step
-            self.position["y"] += ndy * self.step
-            self.direction_timer -= 1
-
-        # Wrap-around using modulo
         self.position["x"] %= self.screen_width
         self.position["y"] %= self.screen_height
 
@@ -93,10 +92,8 @@ class PlayerTraining:
         logging.info("Training mode: Missile shot straight to the right.")
 
     def update_missiles(self, enemy_pos: tuple[int, int]) -> None:
-        ex, ey = enemy_pos
         for missile in self.missiles[:]:
             missile.update()
-            # Remove missile if it goes off-screen
             if (
                 missile.pos["x"] < 0
                 or missile.pos["x"] > self.screen_width
