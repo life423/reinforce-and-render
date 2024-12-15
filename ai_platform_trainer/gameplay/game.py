@@ -16,10 +16,7 @@ from ai_platform_trainer.entities.player_training import PlayerTraining
 from ai_platform_trainer.gameplay.config import config
 from ai_platform_trainer.gameplay.menu import Menu
 from ai_platform_trainer.gameplay.renderer import Renderer
-from ai_platform_trainer.gameplay.spawner import (
-    spawn_entities,
-    respawn_enemy_at_position,
-)
+from ai_platform_trainer.gameplay.spawner import spawn_entities
 from ai_platform_trainer.gameplay.utils import (
     compute_normalized_direction,
     find_valid_spawn_position,
@@ -176,7 +173,7 @@ class Game:
             self.training_update()
         elif self.mode == "play":
             self.play_update(current_time)
-            self.handle_respawn(current_time)
+            # Removed handle_respawn call as spawning is now handled externally
             if self.enemy and self.enemy.fading_in:
                 self.enemy.update_fade_in(current_time)
             if self.enemy:
@@ -246,7 +243,7 @@ class Game:
         if self.enemy and self.player:
             self.player.update(self.enemy.pos["x"], self.enemy.pos["y"])
 
-        if hasattr(self, 'train_missile') and self.train_missile and self.player:
+        if hasattr(self, "train_missile") and self.train_missile and self.player:
             if not hasattr(self.player, "missiles") or len(self.player.missiles) == 0:
                 self.player.shoot_missile()
 
@@ -284,46 +281,8 @@ class Game:
                 )
                 logging.debug("Logged training data point.")
 
-    def handle_respawn(self, current_time: int) -> None:
-        """
-        Handle the respawn of the enemy after a delay.
-        """
-        if self.is_respawning and current_time >= self.respawn_timer and self.enemy and self.player:
-            new_pos = find_valid_spawn_position(
-                screen_width=self.screen_width,
-                screen_height=self.screen_height,
-                entity_size=self.enemy.size,
-                margin=config.WALL_MARGIN,
-                min_dist=config.MIN_DISTANCE,
-                other_pos=(self.player.position["x"], self.player.position["y"]),
-            )
-
-            self.enemy.set_position(new_pos[0], new_pos[1])
-            self.enemy.show(current_time)
-            self.enemy.show(pygame.time.get_ticks())
-
-            self.is_respawning = False
-            logging.info(f"Enemy respawned at {new_pos} with fade-in.")
-
-    def respawn_enemy(self) -> None:
-        """
-        Respawn the enemy at a new location not too close to the player.
-        """
-        if self.enemy and self.player:
-            new_pos = find_valid_spawn_position(
-                screen_width=self.screen_width,
-                screen_height=self.screen_height,
-                entity_size=self.enemy.size,
-                margin=config.WALL_MARGIN,
-                min_dist=config.MIN_DISTANCE,
-                other_pos=(self.player.position["x"], self.player.position["y"]),
-            )
-
-            self.enemy.set_position(new_pos[0], new_pos[1])
-            self.enemy.show()
-
-            self.is_respawning = False
-            logging.info(f"Enemy respawned at {new_pos} with fade-in.")
+    # Removed handle_respawn and respawn_enemy methods
+    # since their logic has been modularized and we no longer keep spawning code here.
 
     def check_missile_collisions(self) -> None:
         """

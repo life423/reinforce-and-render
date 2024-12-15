@@ -1,7 +1,8 @@
 import pygame
 import random
 import math
-from ai_platform_trainer.utils.helpers import wrap_position  # Import from utils
+from ai_platform_trainer.utils.helpers import wrap_position
+
 
 class EnemyTrain:
     DEFAULT_SIZE = 50
@@ -74,7 +75,6 @@ class EnemyTrain:
             elif self.current_pattern == "diagonal_move":
                 self.diagonal_pattern()
 
-        # Use the imported wrap_position utility
         self.pos["x"], self.pos["y"] = wrap_position(
             self.pos["x"],
             self.pos["y"],
@@ -101,7 +101,9 @@ class EnemyTrain:
             base_angle = math.pi * 3 / 2
 
         angle_variation = math.radians(30)
-        self.forced_angle = base_angle + random.uniform(-angle_variation, angle_variation)
+        self.forced_angle = base_angle + random.uniform(
+            -angle_variation, angle_variation
+        )
         self.forced_speed = self.base_speed * 1.0
         self.forced_escape_timer = random.randint(1, 30)
 
