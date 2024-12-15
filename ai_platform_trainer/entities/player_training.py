@@ -1,8 +1,7 @@
-# import random
+import random
 import math
 import logging
 import pygame
-import random
 from ai_platform_trainer.entities.missile import Missile
 from ai_platform_trainer.utils.helpers import wrap_position
 
@@ -44,16 +43,22 @@ class PlayerTraining:
             new_pattern = random.choice(self.PATTERNS)
 
         self.current_pattern = new_pattern
-        self.state_timer = random.randint(120, 300)
+        # Increase minimum from 120 to 180 for less frequent switches
+        self.state_timer = random.randint(180, 300)
 
         if self.current_pattern == "circle_move":
-            self.circle_center = (self.position["x"], self.position["y"])
+            # Clamp circle_center inside screen boundaries to reduce sudden off-screen jumps
+            cx = max(self.size, min(self.screen_width - self.size, self.position["x"]))
+            cy = max(self.size, min(self.screen_height - self.size, self.position["y"]))
+            self.circle_center = (cx, cy)
             self.circle_angle = random.uniform(0, 2 * math.pi)
             self.circle_radius = random.randint(50, 150)
         elif self.current_pattern == "diagonal_move":
             dx = random.choice([-1, 1])
             dy = random.choice([-1, 1])
             self.diagonal_direction = (dx, dy)
+
+        logging.debug(f"Switched pattern to {self.current_pattern} at {self.position}")
 
     def reset(self) -> None:
         self.position = {
@@ -67,7 +72,8 @@ class PlayerTraining:
     def random_walk_pattern(self):
         if self.random_walk_timer <= 0:
             self.random_walk_angle = random.uniform(0, 2 * math.pi)
-            self.random_walk_speed = self.step * random.uniform(0.5, 2.0)
+            # Lower upper bound from 2.0 to 1.2 to reduce speed extremes
+            self.random_walk_speed = self.step * random.uniform(0.5, 1.2)
             self.random_walk_timer = random.randint(30, 90)
         else:
             self.random_walk_timer -= 1
@@ -92,7 +98,8 @@ class PlayerTraining:
             self.circle_radius = max(20, min(200, self.circle_radius))
 
     def diagonal_pattern(self):
-        if random.random() < 0.05:
+        # Reduce angle change frequency from 0.05 to 0.02 for smoother movement
+        if random.random() < 0.02:
             angle = math.atan2(self.diagonal_direction[1], self.diagonal_direction[0])
             angle += random.uniform(-0.3, 0.3)
             self.diagonal_direction = (math.cos(angle), math.sin(angle))
@@ -106,28 +113,23 @@ class PlayerTraining:
         close_threshold = self.desired_distance - self.margin
         far_threshold = self.desired_distance + self.margin
 
-        # Decide if we should switch pattern based on enemy distance
         self.state_timer -= 1
         if self.state_timer <= 0:
             self.switch_pattern()
 
-        # Move according to the current pattern
         if dist < close_threshold:
-            # If enemy is too close, pick a pattern that moves away
-            # e.g., random_walk is good enough at moving around randomly
-            # Or you can set a forced escape pattern if desired
+            # Enemy close: use random_walk to move away randomly
             self.random_walk_pattern()
         elif dist > far_threshold:
-            # If enemy is far away, maybe try a less defensive pattern
+            # Enemy far: pick pattern
             if self.current_pattern == "circle_move":
                 self.circle_pattern()
             elif self.current_pattern == "diagonal_move":
                 self.diagonal_pattern()
             else:
-                # fallback to random_walk if no pattern matches
                 self.random_walk_pattern()
         else:
-            # In neutral zone, just follow current pattern
+            # Neutral zone: follow current pattern
             if self.current_pattern == "random_walk":
                 self.random_walk_pattern()
             elif self.current_pattern == "circle_move":
