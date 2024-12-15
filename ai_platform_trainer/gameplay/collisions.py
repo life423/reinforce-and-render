@@ -3,12 +3,6 @@ import pygame
 import logging
 
 
-def check_player_enemy_collision(player, enemy):
-    player_rect = pygame.Rect(
-        player.position["x"], player.position["y"], player.size, player.size
-    )
-    enemy_rect = pygame.Rect(enemy.pos["x"], enemy.pos["y"], enemy.size, enemy.size)
-    return player_rect.colliderect(enemy_rect)
 
 
 def handle_missile_collisions(player, enemy, respawn_callback):

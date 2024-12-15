@@ -18,7 +18,6 @@ from ai_platform_trainer.gameplay.config import config
 from ai_platform_trainer.gameplay.menu import Menu
 from ai_platform_trainer.gameplay.renderer import Renderer
 from ai_platform_trainer.gameplay.collisions import (
-    check_player_enemy_collision,
     handle_missile_collisions,
 )
 from ai_platform_trainer.gameplay.spawner import (
