@@ -9,18 +9,22 @@ class TrainingModeManager:
         self.game = game
 
     def update(self) -> None:
+        # Update player position based on enemy position
         self.game.player.update(self.game.enemy.pos["x"], self.game.enemy.pos["y"])
 
+        # Handle missile firing logic in training mode
         if self.game.train_missile:
+            # If no missile currently exists, shoot one
             if (
                 not hasattr(self.game.player, "missiles")
                 or len(self.game.player.missiles) == 0
             ):
                 self.game.player.shoot_missile()
 
-            enemy_x, enemy_y = self.game.enemy.pos["x"], self.game.enemy.pos["y"]
-            self.game.player.update_missiles((enemy_x, enemy_y))
+            # Update missiles without passing enemy_pos since it's unused
+            self.game.player.update_missiles()
 
+        # Compute direction for enemy movement
         px = self.game.player.position["x"]
         py = self.game.player.position["y"]
         ex = self.game.enemy.pos["x"]
@@ -31,8 +35,10 @@ class TrainingModeManager:
         self.game.enemy.pos["x"] += action_dx * speed
         self.game.enemy.pos["y"] += action_dy * speed
 
+        # Check for collisions
         collision = self.game.check_collision()
 
+        # Log data if data_logger is available
         if self.game.data_logger:
             self.game.data_logger.log(
                 {

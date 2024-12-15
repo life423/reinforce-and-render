@@ -45,19 +45,21 @@ class PlayerPlay:
 
         return True
 
-    def shoot_missile(self) -> None:
-        """Shoot a missile directly to the right of the player's position."""
-        missile_start_x = self.position["x"] + self.size // 2
-        missile_start_y = self.position["y"] + self.size // 2
-        # Create a missile that travels in a straight line (to the right)
-        missile = Missile(x=missile_start_x, y=missile_start_y, vx=5.0, vy=0.0)
-        self.missiles.append(missile)
-        logging.info("Missile shot straight to the right.")
 
-    def update_missiles(self, enemy_pos: Tuple[int, int]) -> None:
+    def shoot_missile(self) -> None:
+        # Only shoot if no missile is currently on-screen
+        if len(self.missiles) == 0:
+            missile_start_x = self.position["x"] + self.size // 2
+            missile_start_y = self.position["y"] + self.size // 2
+            missile = Missile(x=missile_start_x, y=missile_start_y, vx=5.0, vy=0.0)
+            self.missiles.append(missile)
+            logging.info("Training mode: Missile shot straight to the right.")
+        else:
+            logging.debug("Attempted to shoot missile, but one is already active.")
+
+    def update_missiles(self) -> None:
         for missile in self.missiles[:]:
             missile.update()
-            # Remove missile if it goes off-screen
             if (
                 missile.pos["x"] < 0
                 or missile.pos["x"] > self.screen_width

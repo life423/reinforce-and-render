@@ -127,17 +127,17 @@ class Game:
                 if event.key == pygame.K_SPACE and self.player:
                     self.player.shoot_missile()
 
-    def handle_shoot(self) -> None:
-        """
-        Handle shooting a missile towards the current mouse position.
-        (If you intend to use this function, call it from where needed.)
-        """
-        current_time = pygame.time.get_ticks()
-        if current_time - self.last_shot_time >= self.shot_cooldown and self.player:
-            mouse_x, mouse_y = pygame.mouse.get_pos()
-            self.player.shoot_missile(mouse_x, mouse_y)
-            self.last_shot_time = current_time
-            logging.info(f"Player shot missile towards ({mouse_x}, {mouse_y}).")
+    # def handle_shoot(self) -> None:
+    #     """
+    #     Handle shooting a missile towards the current mouse position.
+    #     (If you intend to use this function, call it from where needed.)
+    #     """
+    #     current_time = pygame.time.get_ticks()
+    #     if current_time - self.last_shot_time >= self.shot_cooldown and self.player:
+    #         mouse_x, mouse_y = pygame.mouse.get_pos()
+    #         self.player.shoot_missile(mouse_x, mouse_y)
+    #         self.last_shot_time = current_time
+    #         logging.info(f"Player shot missile towards ({mouse_x}, {mouse_y}).")
 
     def check_menu_selection(self, selected_action: str) -> None:
         """Handle actions selected from the menu."""
@@ -179,14 +179,9 @@ class Game:
             self.handle_respawn(current_time)  # Re-added call to handle respawn
             if self.enemy and self.enemy.fading_in:
                 self.enemy.update_fade_in(current_time)
-            if self.enemy:
-                enemy_pos = (
-                    (self.enemy.pos["x"], self.enemy.pos["y"])
-                    if self.enemy.visible
-                    else (0, 0)
-                )
-                if self.player:
-                    self.player.update_missiles(enemy_pos)
+
+            if self.player:
+                self.player.update_missiles()
             self.check_missile_collisions()
 
     def check_collision(self) -> bool:
@@ -242,50 +237,100 @@ class Game:
             self.respawn_timer = current_time + self.respawn_delay
             logging.info(f"Enemy will respawn in {self.respawn_delay} ms.")
 
+    # def training_update(self):
+    #     if self.enemy and self.player:
+    #         self.player.update(self.enemy.pos["x"], self.enemy.pos["y"])
+
+    #         if self.enemy:
+
+    #             self.player.update_missiles()
+
+    #         px = self.player.position["x"]
+    #         py = self.player.position["y"]
+    #         ex = self.enemy.pos["x"]
+    #         ey = self.enemy.pos["y"]
+
+    #         action_dx, action_dy = compute_normalized_direction(px, py, ex, ey)
+    #         speed = self.enemy.base_speed
+    #         self.enemy.pos["x"] += action_dx * speed
+    #         self.enemy.pos["y"] += action_dy * speed
+
+    #         collision = self.check_collision()
+
+    #         if self.data_logger:
+    #             self.data_logger.log(
+    #                 {
+    #                     "mode": "train",
+    #                     "player_x": px,
+    #                     "player_y": py,
+    #                     "enemy_x": self.enemy.pos["x"],
+    #                     "enemy_y": self.enemy.pos["y"],
+    #                     "action_dx": action_dx,
+    #                     "action_dy": action_dy,
+    #                     "collision": collision,
+    #                     "dist": math.hypot(
+    #                         px - self.enemy.pos["x"], py - self.enemy.pos["y"]
+    #                     ),
+    #                 }
+    #             )
+    #             logging.debug("Logged training data point.")
+
+    #         self.player.update_missiles()
+    #         self.check_missile_collisions()
+
+
     def training_update(self):
         if self.enemy and self.player:
             self.player.update(self.enemy.pos["x"], self.enemy.pos["y"])
 
+        # If training missiles are enabled and we have a player
         if hasattr(self, "train_missile") and self.train_missile and self.player:
-            if not hasattr(self.player, "missiles") or len(self.player.missiles) == 0:
+            # Introduce a simple cooldown timer
+            # Initialize it if it doesn't exist
+            if not hasattr(self, "missile_cooldown"):
+                self.missile_cooldown = 0
+
+            # Decrement the cooldown each frame
+            if self.missile_cooldown > 0:
+                self.missile_cooldown -= 1
+
+            # Only fire a missile if the cooldown is over and none are on-screen
+            if self.missile_cooldown <= 0 and len(self.player.missiles) == 0:
                 self.player.shoot_missile()
+                # Reset cooldown to some number of frames before next missile
+                self.missile_cooldown = 120  # Wait 120 frames before next missile
 
-            if self.enemy:
-                enemy_x, enemy_y = self.enemy.pos["x"], self.enemy.pos["y"]
-                self.player.update_missiles((enemy_x, enemy_y))
+        # Update missiles
+        self.player.update_missiles()
 
-            px = self.player.position["x"]
-            py = self.player.position["y"]
-            ex = self.enemy.pos["x"]
-            ey = self.enemy.pos["y"]
+        # Compute direction for enemy movement
+        px = self.player.position["x"]
+        py = self.player.position["y"]
+        ex = self.enemy.pos["x"]
+        ey = self.enemy.pos["y"]
 
-            action_dx, action_dy = compute_normalized_direction(px, py, ex, ey)
-            speed = self.enemy.base_speed
-            self.enemy.pos["x"] += action_dx * speed
-            self.enemy.pos["y"] += action_dy * speed
+        action_dx, action_dy = compute_normalized_direction(px, py, ex, ey)
+        speed = self.enemy.base_speed
+        self.enemy.pos["x"] += action_dx * speed
+        self.enemy.pos["y"] += action_dy * speed
 
-            collision = self.check_collision()
+        collision = self.check_collision()
 
-            if self.data_logger:
-                self.data_logger.log(
-                    {
-                        "mode": "train",
-                        "player_x": px,
-                        "player_y": py,
-                        "enemy_x": self.enemy.pos["x"],
-                        "enemy_y": self.enemy.pos["y"],
-                        "action_dx": action_dx,
-                        "action_dy": action_dy,
-                        "collision": collision,
-                        "dist": math.hypot(
-                            px - self.enemy.pos["x"], py - self.enemy.pos["y"]
-                        ),
-                    }
-                )
-                logging.debug("Logged training data point.")
-            enemy_x, enemy_y = self.enemy.pos["x"], self.enemy.pos["y"]
-            self.player.update_missiles((enemy_x, enemy_y))
-            self.check_missile_collisions()
+        if self.data_logger:
+            self.data_logger.log(
+                {
+                    "mode": "train",
+                    "player_x": px,
+                    "player_y": py,
+                    "enemy_x": self.enemy.pos["x"],
+                    "enemy_y": self.enemy.pos["y"],
+                    "action_dx": action_dx,
+                    "action_dy": action_dy,
+                    "collision": collision,
+                    "dist": math.hypot(px - self.enemy.pos["x"], py - self.enemy.pos["y"]),
+                }
+            )
+            logging.debug("Logged training data point.")
 
     def handle_respawn(self, current_time: int) -> None:
         """

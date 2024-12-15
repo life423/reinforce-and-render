@@ -1,4 +1,3 @@
-# ai_platform_trainer/entities/player_training.py
 import random
 import pygame
 import logging
@@ -11,7 +10,7 @@ class PlayerTraining:
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.size = 50
-        self.color = (0, 0, 139)  # Dark Blue
+        self.color = (0, 0, 139)
         self.position = {
             "x": random.randint(0, self.screen_width - self.size),
             "y": random.randint(0, self.screen_height - self.size),
@@ -25,7 +24,6 @@ class PlayerTraining:
         self.current_direction = (0, 0)
         self.currently_moving_away = False
 
-        # Define hysteresis parameters
         self.desired_distance = 200
         self.margin = 20
 
@@ -68,20 +66,16 @@ class PlayerTraining:
     def is_currently_moving_away(self) -> bool:
         return self.currently_moving_away
 
-
     def update(self, enemy_x: float, enemy_y: float) -> None:
         dist = math.hypot(self.position["x"] - enemy_x, self.position["y"] - enemy_y)
         close_threshold = self.desired_distance - self.margin
         far_threshold = self.desired_distance + self.margin
 
-        # Update state only if outside the neutral zone
         if dist < close_threshold:
             self.currently_moving_away = True
         elif dist > far_threshold:
             self.currently_moving_away = False
-        # If in between close_threshold and far_threshold, do not change self.currently_moving_away
 
-        # Move according to the current state
         if self.currently_moving_away:
             self.move_away_from(enemy_x, enemy_y)
         else:
@@ -91,13 +85,18 @@ class PlayerTraining:
         self.position["y"] %= self.screen_height
 
     def shoot_missile(self) -> None:
-        missile_start_x = self.position["x"] + self.size // 2
-        missile_start_y = self.position["y"] + self.size // 2
-        missile = Missile(x=missile_start_x, y=missile_start_y, vx=5.0, vy=0.0)
-        self.missiles.append(missile)
-        logging.info("Training mode: Missile shot straight to the right.")
+        if len(self.missiles) == 0:
+            missile_start_x = self.position["x"] + self.size // 2
+            missile_start_y = self.position["y"] + self.size // 2
+            missile = Missile(x=missile_start_x, y=missile_start_y, vx=5.0, vy=0.0)
+            self.missiles.append(missile)
+            logging.info("Training mode: Missile shot straight to the right.")
+        else:
+            logging.debug(
+                "Attempted to shoot a missile in training mode, but one is already active."
+            )
 
-    def update_missiles(self, enemy_pos: tuple[int, int]) -> None:
+    def update_missiles(self) -> None:
         for missile in self.missiles[:]:
             missile.update()
             if (
