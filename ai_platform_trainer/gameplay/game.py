@@ -16,7 +16,10 @@ from ai_platform_trainer.entities.player_training import PlayerTraining
 from ai_platform_trainer.gameplay.config import config
 from ai_platform_trainer.gameplay.menu import Menu
 from ai_platform_trainer.gameplay.renderer import Renderer
-from ai_platform_trainer.gameplay.spawner import spawn_entities
+from ai_platform_trainer.gameplay.spawner import (
+    spawn_entities,
+    respawn_enemy_with_fade_in,
+)
 from ai_platform_trainer.gameplay.utils import (
     compute_normalized_direction,
     find_valid_spawn_position,
@@ -173,7 +176,7 @@ class Game:
             self.training_update()
         elif self.mode == "play":
             self.play_update(current_time)
-            # Removed handle_respawn call as spawning is now handled externally
+            self.handle_respawn(current_time)  # Re-added call to handle respawn
             if self.enemy and self.enemy.fading_in:
                 self.enemy.update_fade_in(current_time)
             if self.enemy:
@@ -281,8 +284,18 @@ class Game:
                 )
                 logging.debug("Logged training data point.")
 
-    # Removed handle_respawn and respawn_enemy methods
-    # since their logic has been modularized and we no longer keep spawning code here.
+    def handle_respawn(self, current_time: int) -> None:
+        """
+        Handle the respawn of the enemy after a delay.
+        """
+        if (
+            self.is_respawning
+            and current_time >= self.respawn_timer
+            and self.enemy
+            and self.player
+        ):
+            # Use respawn_enemy_with_fade_in to actually respawn the enemy
+            respawn_enemy_with_fade_in(self, current_time)
 
     def check_missile_collisions(self) -> None:
         """
