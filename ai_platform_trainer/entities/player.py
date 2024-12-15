@@ -13,13 +13,7 @@ class Player:
     def reset(self):
         self.position = {"x": self.screen_width // 2, "y": self.screen_height // 2}
 
-    def clamp_position(self):
-        self.position["x"] = max(
-            0, min(self.position["x"], self.screen_width - self.size)
-        )
-        self.position["y"] = max(
-            0, min(self.position["y"], self.screen_height - self.size)
-        )
+
 
     def update(self, enemy_x, enemy_y):
         # Base class does nothing; play/training modes override if needed.
