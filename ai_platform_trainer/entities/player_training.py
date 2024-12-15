@@ -36,7 +36,13 @@ class PlayerTraining:
 
         # Wrap-around cooldown attributes
         self.wrap_cooldown = 0
-        self.wrap_cooldown_frames = 120  # Number of frames to wait after a wrap
+        self.wrap_cooldown_frames = 120
+
+        # Introduce a velocity vector for smoother movement (to reduce jitter)
+        self.velocity = {"x": 0.0, "y": 0.0}
+        self.velocity_blend_factor = (
+            0.2  # Lower = smoother movement, Higher = more responsive
+        )
 
         self.switch_pattern()
 
@@ -93,6 +99,24 @@ class PlayerTraining:
 
         return new_angle % (2 * math.pi)
 
+    def move_with_velocity(self, ndx, ndy):
+        """
+        Use a velocity vector to reduce jitter.
+        Blend current velocity toward (ndx * step, ndy * step).
+        """
+        target_vx = ndx * self.step
+        target_vy = ndy * self.step
+
+        self.velocity["x"] = (1 - self.velocity_blend_factor) * self.velocity[
+            "x"
+        ] + self.velocity_blend_factor * target_vx
+        self.velocity["y"] = (1 - self.velocity_blend_factor) * self.velocity[
+            "y"
+        ] + self.velocity_blend_factor * target_vy
+
+        self.position["x"] += self.velocity["x"]
+        self.position["y"] += self.velocity["y"]
+
     def random_walk_pattern(self, enemy_x, enemy_y):
         if self.random_walk_timer <= 0:
             self.random_walk_angle = random.uniform(0, 2 * math.pi)
@@ -104,10 +128,9 @@ class PlayerTraining:
         angle = self.bias_angle_away_from_enemy(
             enemy_x, enemy_y, self.random_walk_angle
         )
-        dx = math.cos(angle) * self.random_walk_speed
-        dy = math.sin(angle) * self.random_walk_speed
-        self.position["x"] += dx
-        self.position["y"] += dy
+        ndx = math.cos(angle)
+        ndy = math.sin(angle)
+        self.move_with_velocity(ndx, ndy)
 
         logging.debug(f"Random walk: pos={self.position}")
 
@@ -127,11 +150,9 @@ class PlayerTraining:
 
         base_angle = math.atan2(dy, dx)
         final_angle = self.bias_angle_away_from_enemy(enemy_x, enemy_y, base_angle)
-
-        dx = math.cos(final_angle) * self.step
-        dy = math.sin(final_angle) * self.step
-        self.position["x"] += dx
-        self.position["y"] += dy
+        ndx = math.cos(final_angle)
+        ndy = math.sin(final_angle)
+        self.move_with_velocity(ndx, ndy)
 
         if random.random() < 0.01:
             self.circle_radius += random.randint(-2, 2)
@@ -149,12 +170,10 @@ class PlayerTraining:
 
         base_angle = math.atan2(self.diagonal_direction[1], self.diagonal_direction[0])
         final_angle = self.bias_angle_away_from_enemy(enemy_x, enemy_y, base_angle)
-        self.diagonal_direction = (math.cos(final_angle), math.sin(final_angle))
 
-        dx = math.cos(final_angle) * self.step
-        dy = math.sin(final_angle) * self.step
-        self.position["x"] += dx
-        self.position["y"] += dy
+        self.diagonal_direction = (math.cos(final_angle), math.sin(final_angle))
+        ndx, ndy = self.diagonal_direction
+        self.move_with_velocity(ndx, ndy)
 
         logging.debug(
             f"Diagonal move: pos={self.position}, direction={self.diagonal_direction}"
@@ -190,7 +209,6 @@ class PlayerTraining:
         # Introduce wrap-around cooldown logic
         old_x, old_y = self.position["x"], self.position["y"]
 
-        # Attempt wrap only if cooldown is zero
         if self.wrap_cooldown == 0:
             new_x, new_y = wrap_position(
                 self.position["x"],
@@ -201,28 +219,23 @@ class PlayerTraining:
             )
 
             if (new_x, new_y) != (old_x, old_y):
-                # Player wrapped around
                 self.wrap_cooldown = self.wrap_cooldown_frames
                 self.position["x"], self.position["y"] = new_x, new_y
                 logging.debug(f"Wrapped around: new pos={self.position}")
             else:
                 self.position["x"], self.position["y"] = new_x, new_y
         else:
-            # If we can't wrap due to cooldown, clamp at edges if off-screen
             px, py = self.position["x"], self.position["y"]
-            # If off to the left or right
+            # Clamp if off-screen while cooldown is active
             if px < -self.size:
-                self.position["x"] = 0  # clamp at left edge
+                self.position["x"] = 0
             elif px > self.screen_width:
                 self.position["x"] = self.screen_width - self.size
-
-            # If off to the top or bottom
             if py < -self.size:
-                self.position["y"] = 0  # clamp at top edge
+                self.position["y"] = 0
             elif py > self.screen_height:
                 self.position["y"] = self.screen_height - self.size
 
-        # Decrement wrap cooldown if active
         if self.wrap_cooldown > 0:
             self.wrap_cooldown -= 1
 
@@ -241,6 +254,7 @@ class PlayerTraining:
     def update_missiles(self) -> None:
         for missile in self.missiles[:]:
             missile.update()
+            # Remove if off-screen
             if (
                 missile.pos["x"] < 0
                 or missile.pos["x"] > self.screen_width
