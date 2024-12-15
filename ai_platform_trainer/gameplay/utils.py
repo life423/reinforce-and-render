@@ -61,3 +61,29 @@ def find_valid_spawn_position(
                 return x, y
         else:
             return x, y
+
+
+def find_enemy_spawn_position(
+    screen_width: int,
+    screen_height: int,
+    enemy_size: int,
+    player_pos: Tuple[float, float],
+) -> Tuple[int, int]:
+    """
+    Find a valid spawn position for the enemy, ensuring it isn't too close to the player.
+    Leverages find_valid_spawn_position.
+
+    :param screen_width: Width of the game screen
+    :param screen_height: Height of the game screen
+    :param enemy_size: Size of the enemy
+    :param player_pos: (x, y) position of the player to maintain distance from
+    :return: Valid (x, y) position tuple for the enemy
+    """
+    return find_valid_spawn_position(
+        screen_width=screen_width,
+        screen_height=screen_height,
+        entity_size=enemy_size,
+        margin=config.WALL_MARGIN,
+        min_dist=config.MIN_DISTANCE,
+        other_pos=player_pos,
+    )
