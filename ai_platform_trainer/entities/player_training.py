@@ -225,19 +225,18 @@ class PlayerTraining:
             else:
                 self.position["x"], self.position["y"] = new_x, new_y
         else:
-            px, py = self.position["x"], self.position["y"]
-            # Clamp if off-screen while cooldown is active
-            if px < -self.size:
-                self.position["x"] = 0
-            elif px > self.screen_width:
-                self.position["x"] = self.screen_width - self.size
-            if py < -self.size:
-                self.position["y"] = 0
-            elif py > self.screen_height:
-                self.position["y"] = self.screen_height - self.size
+    # During cooldown, adjust movement to prevent moving off-screen
+            self.position["x"] = max(
+                0,
+                min(self.position["x"], self.screen_width - self.size)
+            )
+            self.position["y"] = max(
+                0,
+                min(self.position["y"], self.screen_height - self.size)
+            )
 
         if self.wrap_cooldown > 0:
-            self.wrap_cooldown -= 1
+                    self.wrap_cooldown -= 1
 
     def shoot_missile(self) -> None:
         if len(self.missiles) == 0:
