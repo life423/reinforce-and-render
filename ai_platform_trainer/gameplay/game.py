@@ -247,7 +247,6 @@ class Game:
             # Use respawn_enemy_with_fade_in to actually respawn the enemy
             respawn_enemy_with_fade_in(self, current_time)
 
-
     def check_missile_collisions(self) -> None:
         if not self.enemy or not self.player:
             return
