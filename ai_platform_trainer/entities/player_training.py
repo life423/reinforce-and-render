@@ -1,11 +1,15 @@
-import random
-import pygame
-import logging
+# import random
 import math
+import logging
+import pygame
+import random
 from ai_platform_trainer.entities.missile import Missile
+from ai_platform_trainer.utils.helpers import wrap_position
 
 
 class PlayerTraining:
+    PATTERNS = ["random_walk", "circle_move", "diagonal_move"]
+
     def __init__(self, screen_width: int, screen_height: int):
         self.screen_width = screen_width
         self.screen_height = screen_height
@@ -19,19 +23,37 @@ class PlayerTraining:
         self.missiles = []
         logging.info("PlayerTraining initialized.")
 
-        self.directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
-        self.direction_timer = 0
-        self.current_direction = (0, 0)
-        self.currently_moving_away = False
-
         self.desired_distance = 200
         self.margin = 20
 
-        self.pick_new_direction()
+        # Pattern-related attributes
+        self.current_pattern = None
+        self.state_timer = 0
+        self.random_walk_timer = 0
+        self.random_walk_angle = 0.0
+        self.random_walk_speed = self.step
+        self.circle_angle = 0.0
+        self.circle_radius = 100
+        self.diagonal_direction = (1, 1)
 
-    def pick_new_direction(self) -> None:
-        self.current_direction = random.choice(self.directions)
-        self.direction_timer = random.randint(60, 180)
+        self.switch_pattern()
+
+    def switch_pattern(self):
+        new_pattern = self.current_pattern
+        while new_pattern == self.current_pattern:
+            new_pattern = random.choice(self.PATTERNS)
+
+        self.current_pattern = new_pattern
+        self.state_timer = random.randint(120, 300)
+
+        if self.current_pattern == "circle_move":
+            self.circle_center = (self.position["x"], self.position["y"])
+            self.circle_angle = random.uniform(0, 2 * math.pi)
+            self.circle_radius = random.randint(50, 150)
+        elif self.current_pattern == "diagonal_move":
+            dx = random.choice([-1, 1])
+            dy = random.choice([-1, 1])
+            self.diagonal_direction = (dx, dy)
 
     def reset(self) -> None:
         self.position = {
@@ -39,50 +61,88 @@ class PlayerTraining:
             "y": random.randint(0, self.screen_height - self.size),
         }
         self.missiles.clear()
-        self.pick_new_direction()
+        self.switch_pattern()
         logging.info("PlayerTraining has been reset.")
 
-    def move_away_from(self, enemy_x: float, enemy_y: float) -> None:
-        px, py = self.position["x"], self.position["y"]
-        dx, dy = px - enemy_x, py - enemy_y
-        dist = math.hypot(dx, dy)
-        if dist > 0:
-            ndx, ndy = dx / dist, dy / dist
+    def random_walk_pattern(self):
+        if self.random_walk_timer <= 0:
+            self.random_walk_angle = random.uniform(0, 2 * math.pi)
+            self.random_walk_speed = self.step * random.uniform(0.5, 2.0)
+            self.random_walk_timer = random.randint(30, 90)
         else:
-            ndx, ndy = random.choice(self.directions)
-        self.position["x"] += ndx * self.step
-        self.position["y"] += ndy * self.step
-        self.currently_moving_away = True
+            self.random_walk_timer -= 1
 
-    def move_random_direction(self) -> None:
-        if self.direction_timer <= 0:
-            self.pick_new_direction()
-        ndx, ndy = self.current_direction
-        self.position["x"] += ndx * self.step
-        self.position["y"] += ndy * self.step
-        self.direction_timer -= 1
-        self.currently_moving_away = False
+        dx = math.cos(self.random_walk_angle) * self.random_walk_speed
+        dy = math.sin(self.random_walk_angle) * self.random_walk_speed
+        self.position["x"] += dx
+        self.position["y"] += dy
 
-    def is_currently_moving_away(self) -> bool:
-        return self.currently_moving_away
+    def circle_pattern(self):
+        speed = self.step
+        angle_increment = 0.02 * (speed / self.step)
+        self.circle_angle += angle_increment
+
+        dx = math.cos(self.circle_angle) * self.circle_radius
+        dy = math.sin(self.circle_angle) * self.circle_radius
+        self.position["x"] = self.circle_center[0] + dx
+        self.position["y"] = self.circle_center[1] + dy
+
+        if random.random() < 0.01:
+            self.circle_radius += random.randint(-5, 5)
+            self.circle_radius = max(20, min(200, self.circle_radius))
+
+    def diagonal_pattern(self):
+        if random.random() < 0.05:
+            angle = math.atan2(self.diagonal_direction[1], self.diagonal_direction[0])
+            angle += random.uniform(-0.3, 0.3)
+            self.diagonal_direction = (math.cos(angle), math.sin(angle))
+
+        speed = self.step
+        self.position["x"] += self.diagonal_direction[0] * speed
+        self.position["y"] += self.diagonal_direction[1] * speed
 
     def update(self, enemy_x: float, enemy_y: float) -> None:
         dist = math.hypot(self.position["x"] - enemy_x, self.position["y"] - enemy_y)
         close_threshold = self.desired_distance - self.margin
         far_threshold = self.desired_distance + self.margin
 
+        # Decide if we should switch pattern based on enemy distance
+        self.state_timer -= 1
+        if self.state_timer <= 0:
+            self.switch_pattern()
+
+        # Move according to the current pattern
         if dist < close_threshold:
-            self.currently_moving_away = True
+            # If enemy is too close, pick a pattern that moves away
+            # e.g., random_walk is good enough at moving around randomly
+            # Or you can set a forced escape pattern if desired
+            self.random_walk_pattern()
         elif dist > far_threshold:
-            self.currently_moving_away = False
-
-        if self.currently_moving_away:
-            self.move_away_from(enemy_x, enemy_y)
+            # If enemy is far away, maybe try a less defensive pattern
+            if self.current_pattern == "circle_move":
+                self.circle_pattern()
+            elif self.current_pattern == "diagonal_move":
+                self.diagonal_pattern()
+            else:
+                # fallback to random_walk if no pattern matches
+                self.random_walk_pattern()
         else:
-            self.move_random_direction()
+            # In neutral zone, just follow current pattern
+            if self.current_pattern == "random_walk":
+                self.random_walk_pattern()
+            elif self.current_pattern == "circle_move":
+                self.circle_pattern()
+            elif self.current_pattern == "diagonal_move":
+                self.diagonal_pattern()
 
-        self.position["x"] %= self.screen_width
-        self.position["y"] %= self.screen_height
+        # Wrap-around logic
+        self.position["x"], self.position["y"] = wrap_position(
+            self.position["x"],
+            self.position["y"],
+            self.screen_width,
+            self.screen_height,
+            self.size,
+        )
 
     def shoot_missile(self) -> None:
         if len(self.missiles) == 0:

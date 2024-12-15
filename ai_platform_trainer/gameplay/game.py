@@ -8,6 +8,7 @@ import logging
 
 from ai_platform_trainer.core.logging_config import setup_logging
 from ai_platform_trainer.ai_model.model_definition.model import SimpleModel
+
 from ai_platform_trainer.core.data_logger import DataLogger
 from ai_platform_trainer.entities.enemy_play import EnemyPlay
 from ai_platform_trainer.entities.enemy_training import EnemyTrain
@@ -24,6 +25,7 @@ from ai_platform_trainer.gameplay.utils import (
     compute_normalized_direction,
     find_valid_spawn_position,
 )
+from ai_platform_trainer.gameplay.modes.training_mode import TrainingModeManager
 
 
 class Game:
@@ -80,7 +82,6 @@ class Game:
         pygame.quit()
 
     def start_game(self, mode: str) -> None:
-        """Start the game in the given mode ('train' or 'play')."""
         self.mode = mode
         logging.info(f"Starting game in '{mode}' mode.")
 
@@ -94,6 +95,10 @@ class Game:
             self._apply_speed_variation()
             self.player.reset()
             spawn_entities(self)
+
+            # Create a TrainingModeManager instance
+            self.training_mode_manager = TrainingModeManager(self)
+
         else:
             self.player, self.enemy = self._init_play_mode()
             self.player.reset()
@@ -173,7 +178,7 @@ class Game:
     def update(self, current_time: int) -> None:
         """Update game state depending on the mode."""
         if self.mode == "train":
-            self.training_update()
+            self.training_mode_manager.update()
         elif self.mode == "play":
             self.play_update(current_time)
             self.handle_respawn(current_time)  # Re-added call to handle respawn
@@ -278,59 +283,58 @@ class Game:
     #         self.player.update_missiles()
     #         self.check_missile_collisions()
 
+    # def training_update(self):
+    #     if self.enemy and self.player:
+    #         self.player.update(self.enemy.pos["x"], self.enemy.pos["y"])
 
-    def training_update(self):
-        if self.enemy and self.player:
-            self.player.update(self.enemy.pos["x"], self.enemy.pos["y"])
+    #     # If training missiles are enabled and we have a player
+    #     if hasattr(self, "train_missile") and self.train_missile and self.player:
+    #         # Introduce a simple cooldown timer
+    #         # Initialize it if it doesn't exist
+    #         if not hasattr(self, "missile_cooldown"):
+    #             self.missile_cooldown = 0
 
-        # If training missiles are enabled and we have a player
-        if hasattr(self, "train_missile") and self.train_missile and self.player:
-            # Introduce a simple cooldown timer
-            # Initialize it if it doesn't exist
-            if not hasattr(self, "missile_cooldown"):
-                self.missile_cooldown = 0
+    #         # Decrement the cooldown each frame
+    #         if self.missile_cooldown > 0:
+    #             self.missile_cooldown -= 1
 
-            # Decrement the cooldown each frame
-            if self.missile_cooldown > 0:
-                self.missile_cooldown -= 1
+    #         # Only fire a missile if the cooldown is over and none are on-screen
+    #         if self.missile_cooldown <= 0 and len(self.player.missiles) == 0:
+    #             self.player.shoot_missile()
+    #             # Reset cooldown to some number of frames before next missile
+    #             self.missile_cooldown = 120  # Wait 120 frames before next missile
 
-            # Only fire a missile if the cooldown is over and none are on-screen
-            if self.missile_cooldown <= 0 and len(self.player.missiles) == 0:
-                self.player.shoot_missile()
-                # Reset cooldown to some number of frames before next missile
-                self.missile_cooldown = 120  # Wait 120 frames before next missile
+    #     # Update missiles
+    #     self.player.update_missiles()
 
-        # Update missiles
-        self.player.update_missiles()
+    #     # Compute direction for enemy movement
+    #     px = self.player.position["x"]
+    #     py = self.player.position["y"]
+    #     ex = self.enemy.pos["x"]
+    #     ey = self.enemy.pos["y"]
 
-        # Compute direction for enemy movement
-        px = self.player.position["x"]
-        py = self.player.position["y"]
-        ex = self.enemy.pos["x"]
-        ey = self.enemy.pos["y"]
+    #     action_dx, action_dy = compute_normalized_direction(px, py, ex, ey)
+    #     speed = self.enemy.base_speed
+    #     self.enemy.pos["x"] += action_dx * speed
+    #     self.enemy.pos["y"] += action_dy * speed
 
-        action_dx, action_dy = compute_normalized_direction(px, py, ex, ey)
-        speed = self.enemy.base_speed
-        self.enemy.pos["x"] += action_dx * speed
-        self.enemy.pos["y"] += action_dy * speed
+    #     collision = self.check_collision()
 
-        collision = self.check_collision()
-
-        if self.data_logger:
-            self.data_logger.log(
-                {
-                    "mode": "train",
-                    "player_x": px,
-                    "player_y": py,
-                    "enemy_x": self.enemy.pos["x"],
-                    "enemy_y": self.enemy.pos["y"],
-                    "action_dx": action_dx,
-                    "action_dy": action_dy,
-                    "collision": collision,
-                    "dist": math.hypot(px - self.enemy.pos["x"], py - self.enemy.pos["y"]),
-                }
-            )
-            logging.debug("Logged training data point.")
+    #     if self.data_logger:
+    #         self.data_logger.log(
+    #             {
+    #                 "mode": "train",
+    #                 "player_x": px,
+    #                 "player_y": py,
+    #                 "enemy_x": self.enemy.pos["x"],
+    #                 "enemy_y": self.enemy.pos["y"],
+    #                 "action_dx": action_dx,
+    #                 "action_dy": action_dy,
+    #                 "collision": collision,
+    #                 "dist": math.hypot(px - self.enemy.pos["x"], py - self.enemy.pos["y"]),
+    #             }
+    #         )
+    #         logging.debug("Logged training data point.")
 
     def handle_respawn(self, current_time: int) -> None:
         """

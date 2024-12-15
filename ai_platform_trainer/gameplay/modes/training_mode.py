@@ -1,4 +1,4 @@
-# ai_platform_trainer/gameplay/modes/training_mode.py
+# training_mode.py
 import math
 import logging
 from ai_platform_trainer.gameplay.utils import compute_normalized_direction
@@ -7,22 +7,27 @@ from ai_platform_trainer.gameplay.utils import compute_normalized_direction
 class TrainingModeManager:
     def __init__(self, game):
         self.game = game
+        self.missile_cooldown = 0  # If you need a cooldown for missiles
 
     def update(self) -> None:
-        # Update player position based on enemy position
-        self.game.player.update(self.game.enemy.pos["x"], self.game.enemy.pos["y"])
+        # Update player with enemy positions
+        if self.game.enemy and self.game.player:
+            self.game.player.update(self.game.enemy.pos["x"], self.game.enemy.pos["y"])
 
-        # Handle missile firing logic in training mode
-        if self.game.train_missile:
-            # If no missile currently exists, shoot one
-            if (
-                not hasattr(self.game.player, "missiles")
-                or len(self.game.player.missiles) == 0
-            ):
+        # Missile firing logic (if train_missile is enabled)
+        if (
+            hasattr(self.game, "train_missile")
+            and self.game.train_missile
+            and self.game.player
+        ):
+            if self.missile_cooldown > 0:
+                self.missile_cooldown -= 1
+            if self.missile_cooldown <= 0 and len(self.game.player.missiles) == 0:
                 self.game.player.shoot_missile()
+                self.missile_cooldown = 120
 
-            # Update missiles without passing enemy_pos since it's unused
-            self.game.player.update_missiles()
+        # Update missiles
+        self.game.player.update_missiles()
 
         # Compute direction for enemy movement
         px = self.game.player.position["x"]
@@ -35,10 +40,8 @@ class TrainingModeManager:
         self.game.enemy.pos["x"] += action_dx * speed
         self.game.enemy.pos["y"] += action_dy * speed
 
-        # Check for collisions
         collision = self.game.check_collision()
 
-        # Log data if data_logger is available
         if self.game.data_logger:
             self.game.data_logger.log(
                 {
