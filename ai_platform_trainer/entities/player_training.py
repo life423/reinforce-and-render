@@ -68,18 +68,24 @@ class PlayerTraining:
     def is_currently_moving_away(self) -> bool:
         return self.currently_moving_away
 
+
     def update(self, enemy_x: float, enemy_y: float) -> None:
         dist = math.hypot(self.position["x"] - enemy_x, self.position["y"] - enemy_y)
+        close_threshold = self.desired_distance - self.margin
+        far_threshold = self.desired_distance + self.margin
 
-        if dist < self.desired_distance - self.margin:
+        # Update state only if outside the neutral zone
+        if dist < close_threshold:
+            self.currently_moving_away = True
+        elif dist > far_threshold:
+            self.currently_moving_away = False
+        # If in between close_threshold and far_threshold, do not change self.currently_moving_away
+
+        # Move according to the current state
+        if self.currently_moving_away:
             self.move_away_from(enemy_x, enemy_y)
-        elif dist > self.desired_distance + self.margin:
-            self.move_random_direction()
         else:
-            if self.is_currently_moving_away():
-                self.move_away_from(enemy_x, enemy_y)
-            else:
-                self.move_random_direction()
+            self.move_random_direction()
 
         self.position["x"] %= self.screen_width
         self.position["y"] %= self.screen_height

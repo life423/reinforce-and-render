@@ -11,6 +11,7 @@ class EnemyTrain:
     WALL_MARGIN = 20
 
     def __init__(self, screen_width, screen_height):
+        self.visible = True  # Always visible in training mode
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.size = self.DEFAULT_SIZE

@@ -283,6 +283,9 @@ class Game:
                     }
                 )
                 logging.debug("Logged training data point.")
+            enemy_x, enemy_y = self.enemy.pos["x"], self.enemy.pos["y"]
+            self.player.update_missiles((enemy_x, enemy_y))
+            self.check_missile_collisions()
 
     def handle_respawn(self, current_time: int) -> None:
         """
@@ -301,7 +304,7 @@ class Game:
         """
         Check for collisions between missiles and the enemy.
         """
-        if not self.enemy or not self.player or not self.enemy.visible:
+        if not self.enemy or not self.player:
             return
 
         enemy_rect = pygame.Rect(
@@ -315,7 +318,6 @@ class Game:
             if missile.get_rect().colliderect(enemy_rect):
                 logging.info("Missile hit the enemy.")
                 self.player.missiles.remove(missile)
-                self.enemy.hide()
                 self.is_respawning = True
                 self.respawn_timer = pygame.time.get_ticks() + self.respawn_delay
                 logging.info(
