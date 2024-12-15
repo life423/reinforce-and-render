@@ -1,28 +1,25 @@
-import pygame
-import torch
-import random
 import math
-import logging
+import random
 from typing import Optional, Tuple
 
-from ai_platform_trainer.gameplay.config import config
-from ai_platform_trainer.entities.player_play import PlayerPlay
-from ai_platform_trainer.entities.player_training import PlayerTraining
+import pygame
+import torch
+import logging
+
+from ai_platform_trainer.core.logging_config import setup_logging
+from ai_platform_trainer.ai_model.model_definition.model import SimpleModel
+from ai_platform_trainer.core.data_logger import DataLogger
 from ai_platform_trainer.entities.enemy_play import EnemyPlay
 from ai_platform_trainer.entities.enemy_training import EnemyTrain
+from ai_platform_trainer.entities.player_play import PlayerPlay
+from ai_platform_trainer.entities.player_training import PlayerTraining
+from ai_platform_trainer.gameplay.config import config
 from ai_platform_trainer.gameplay.menu import Menu
 from ai_platform_trainer.gameplay.renderer import Renderer
-from ai_platform_trainer.core.data_logger import DataLogger
-from ai_platform_trainer.ai_model.model_definition.model import SimpleModel
+from ai_platform_trainer.gameplay.spawner import spawn_entities
 from ai_platform_trainer.gameplay.utils import (
     compute_normalized_direction,
     find_valid_spawn_position,
-)
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler("game.log"), logging.StreamHandler()],
 )
 
 
@@ -79,6 +76,37 @@ class Game:
 
         pygame.quit()
 
+    def start_game(self, mode: str) -> None:
+        """Start the game in the given mode ('train' or 'play')."""
+        self.mode = mode
+        logging.info(f"Starting game in '{mode}' mode.")
+
+        if mode == "train":
+            self.data_logger = DataLogger(config.DATA_PATH)
+            self.player = PlayerTraining(self.screen_width, self.screen_height)
+            self.enemy = EnemyTrain(self.screen_width, self.screen_height)
+
+            self.train_missile = True
+
+            self._apply_speed_variation()
+            self.player.reset()
+            spawn_entities(self)
+        else:
+            self.player, self.enemy = self._init_play_mode()
+            self.player.reset()
+            spawn_entities(self)
+
+    def _apply_speed_variation(self) -> None:
+        """Apply speed variation for player and enemy in training mode."""
+        random_speed_factor = random.uniform(
+            config.RANDOM_SPEED_FACTOR_MIN, config.RANDOM_SPEED_FACTOR_MAX
+        )
+        self.player.step = int(self.player.step * random_speed_factor)
+        self.enemy.base_speed = max(
+            config.ENEMY_MIN_SPEED, int(self.enemy.base_speed * random_speed_factor)
+        )
+        logging.info(f"Applied speed variation with factor {random_speed_factor:.2f}")
+
     def handle_events(self) -> None:
         """Handle all window and menu-related events."""
         for event in pygame.event.get():
@@ -93,15 +121,16 @@ class Game:
                 if selected_action:
                     self.check_menu_selection(selected_action)
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
+                if event.key == pygame.K_SPACE and self.player:
                     self.player.shoot_missile()
 
     def handle_shoot(self) -> None:
         """
         Handle shooting a missile towards the current mouse position.
+        (If you intend to use this function, call it from where needed.)
         """
         current_time = pygame.time.get_ticks()
-        if current_time - self.last_shot_time >= self.shot_cooldown:
+        if current_time - self.last_shot_time >= self.shot_cooldown and self.player:
             mouse_x, mouse_y = pygame.mouse.get_pos()
             self.player.shoot_missile(mouse_x, mouse_y)
             self.last_shot_time = current_time
@@ -116,36 +145,6 @@ class Game:
             logging.info(f"'{selected_action}' action selected from menu.")
             self.menu_active = False
             self.start_game(selected_action)
-
-    def start_game(self, mode: str) -> None:
-        self.mode = mode
-        logging.info(f"Starting game in '{mode}' mode.")
-
-        if mode == "train":
-            self.data_logger = DataLogger(config.DATA_PATH)
-            self.player = PlayerTraining(self.screen_width, self.screen_height)
-            self.enemy = EnemyTrain(self.screen_width, self.screen_height)
-
-            self.train_missile = True
-
-            self._randomize_speeds()
-            self.player.reset()
-            self._spawn_entities()
-        else:
-            self.player, self.enemy = self._init_play_mode()
-            self.player.reset()
-            self._spawn_entities()
-
-    def _randomize_speeds(self) -> None:
-        """Randomize player and enemy speeds for training."""
-        random_speed_factor = random.uniform(
-            config.RANDOM_SPEED_FACTOR_MIN, config.RANDOM_SPEED_FACTOR_MAX
-        )
-        self.player.step = int(self.player.step * random_speed_factor)
-        self.enemy.base_speed = max(
-            config.ENEMY_MIN_SPEED, int(self.enemy.base_speed * random_speed_factor)
-        )
-        logging.info(f"Randomized speeds with factor {random_speed_factor:.2f}")
 
     def _init_play_mode(self) -> Tuple[PlayerPlay, EnemyPlay]:
         """
@@ -168,62 +167,28 @@ class Game:
         logging.info("Initialized PlayerPlay and EnemyPlay for play mode.")
         return player, enemy
 
-    def _spawn_entities(self) -> None:
-        """
-        Spawn the player and enemy at random positions ensuring:
-        - Both are within the screen margins.
-        - They maintain a minimum distance from each other.
-        """
-        if not self.player or not self.enemy:
-            logging.error("Entities not initialized properly. Exiting game.")
-            self.running = False
-            return
-
-        player_pos = find_valid_spawn_position(
-            screen_width=self.screen_width,
-            screen_height=self.screen_height,
-            entity_size=self.player.size,
-            margin=config.WALL_MARGIN,
-            min_dist=0,
-            other_pos=None,
-        )
-
-        enemy_pos = find_valid_spawn_position(
-            screen_width=self.screen_width,
-            screen_height=self.screen_height,
-            entity_size=self.enemy.size,
-            margin=config.WALL_MARGIN,
-            min_dist=config.MIN_DISTANCE,
-            other_pos=(self.player.position["x"], self.player.position["y"]),
-        )
-
-        self.player.position["x"], self.player.position["y"] = player_pos
-        self.enemy.pos["x"], self.enemy.pos["y"] = enemy_pos
-
-        logging.info(f"Spawned player at {player_pos} and enemy at {enemy_pos}.")
-
     def update(self, current_time: int) -> None:
         """Update game state depending on the mode."""
         if self.mode == "train":
             self.training_update()
         elif self.mode == "play":
             self.play_update(current_time)
-            self.handle_respawn(current_time)
-            if self.enemy.fading_in:
+            # Removed handle_respawn call as spawning is now handled externally
+            if self.enemy and self.enemy.fading_in:
                 self.enemy.update_fade_in(current_time)
-            enemy_pos = (
-                (self.enemy.pos["x"], self.enemy.pos["y"])
-                if self.enemy.visible
-                else (0, 0)
-            )
-            self.player.update_missiles(enemy_pos)
+            if self.enemy:
+                enemy_pos = (
+                    (self.enemy.pos["x"], self.enemy.pos["y"])
+                    if self.enemy.visible
+                    else (0, 0)
+                )
+                if self.player:
+                    self.player.update_missiles(enemy_pos)
             self.check_missile_collisions()
 
     def check_collision(self) -> bool:
         """
         Check if the player and enemy collide.
-
-        :return: True if collision occurs, False otherwise.
         """
         if not self.player or not self.enemy:
             return False
@@ -247,116 +212,83 @@ class Game:
 
     def play_update(self, current_time: int) -> None:
         """Update logic for play mode."""
-        if not self.player.handle_input():
+        if self.player and not self.player.handle_input():
             logging.info("Player requested to quit. Exiting game.")
             self.running = False
             return
 
-        try:
-            self.enemy.update_movement(
-                self.player.position["x"],
-                self.player.position["y"],
-                self.player.step,
-                current_time,
-            )
-            logging.debug("Enemy movement updated in play mode.")
-        except Exception as e:
-            logging.error(f"Error updating enemy movement: {e}")
-            self.running = False
-            return
+        if self.enemy:
+            try:
+                self.enemy.update_movement(
+                    self.player.position["x"] if self.player else 0,
+                    self.player.position["y"] if self.player else 0,
+                    self.player.step if self.player else 0,
+                    current_time,
+                )
+                logging.debug("Enemy movement updated in play mode.")
+            except Exception as e:
+                logging.error(f"Error updating enemy movement: {e}")
+                self.running = False
+                return
 
         if self.check_collision():
             logging.info("Collision detected!")
-            self.enemy.hide()
+            if self.enemy:
+                self.enemy.hide()
             self.is_respawning = True
             self.respawn_timer = current_time + self.respawn_delay
             logging.info(f"Enemy will respawn in {self.respawn_delay} ms.")
 
     def training_update(self):
-        self.player.update(self.enemy.pos["x"], self.enemy.pos["y"])
+        if self.enemy and self.player:
+            self.player.update(self.enemy.pos["x"], self.enemy.pos["y"])
 
-        if self.train_missile:
+        if hasattr(self, "train_missile") and self.train_missile and self.player:
             if not hasattr(self.player, "missiles") or len(self.player.missiles) == 0:
                 self.player.shoot_missile()
 
-            enemy_x, enemy_y = self.enemy.pos["x"], self.enemy.pos["y"]
-            self.player.update_missiles((enemy_x, enemy_y))
+            if self.enemy:
+                enemy_x, enemy_y = self.enemy.pos["x"], self.enemy.pos["y"]
+                self.player.update_missiles((enemy_x, enemy_y))
 
-        px = self.player.position["x"]
-        py = self.player.position["y"]
-        ex = self.enemy.pos["x"]
-        ey = self.enemy.pos["y"]
+            px = self.player.position["x"]
+            py = self.player.position["y"]
+            ex = self.enemy.pos["x"]
+            ey = self.enemy.pos["y"]
 
-        action_dx, action_dy = compute_normalized_direction(px, py, ex, ey)
-        speed = self.enemy.base_speed
-        self.enemy.pos["x"] += action_dx * speed
-        self.enemy.pos["y"] += action_dy * speed
+            action_dx, action_dy = compute_normalized_direction(px, py, ex, ey)
+            speed = self.enemy.base_speed
+            self.enemy.pos["x"] += action_dx * speed
+            self.enemy.pos["y"] += action_dy * speed
 
-        collision = self.check_collision()
+            collision = self.check_collision()
 
-        if self.data_logger:
-            self.data_logger.log(
-                {
-                    "mode": "train",
-                    "player_x": px,
-                    "player_y": py,
-                    "enemy_x": self.enemy.pos["x"],
-                    "enemy_y": self.enemy.pos["y"],
-                    "action_dx": action_dx,
-                    "action_dy": action_dy,
-                    "collision": collision,
-                    "dist": math.hypot(
-                        px - self.enemy.pos["x"], py - self.enemy.pos["y"]
-                    ),
-                }
-            )
-            logging.debug("Logged training data point.")
+            if self.data_logger:
+                self.data_logger.log(
+                    {
+                        "mode": "train",
+                        "player_x": px,
+                        "player_y": py,
+                        "enemy_x": self.enemy.pos["x"],
+                        "enemy_y": self.enemy.pos["y"],
+                        "action_dx": action_dx,
+                        "action_dy": action_dy,
+                        "collision": collision,
+                        "dist": math.hypot(
+                            px - self.enemy.pos["x"], py - self.enemy.pos["y"]
+                        ),
+                    }
+                )
+                logging.debug("Logged training data point.")
 
-    def handle_respawn(self, current_time: int) -> None:
-        """
-        Handle the respawn of the enemy after a delay.
-        """
-        if self.is_respawning and current_time >= self.respawn_timer:
-            new_pos = find_valid_spawn_position(
-                screen_width=self.screen_width,
-                screen_height=self.screen_height,
-                entity_size=self.enemy.size,
-                margin=config.WALL_MARGIN,
-                min_dist=config.MIN_DISTANCE,
-                other_pos=(self.player.position["x"], self.player.position["y"]),
-            )
-
-            self.enemy.set_position(new_pos[0], new_pos[1])
-            self.enemy.show(current_time)
-            self.enemy.show(pygame.time.get_ticks())
-
-            self.is_respawning = False
-            logging.info(f"Enemy respawned at {new_pos} with fade-in.")
-
-    def respawn_enemy(self) -> None:
-        """
-        Respawn the enemy at a new location not too close to the player.
-        """
-        new_pos = find_valid_spawn_position(
-            screen_width=self.screen_width,
-            screen_height=self.screen_height,
-            entity_size=self.enemy.size,
-            margin=config.WALL_MARGIN,
-            min_dist=config.MIN_DISTANCE,
-            other_pos=(self.player.position["x"], self.player.position["y"]),
-        )
-
-        self.enemy.set_position(new_pos[0], new_pos[1])
-        self.enemy.show()
-
-        self.is_respawning = False
-        logging.info(f"Enemy respawned at {new_pos} with fade-in.")
+    # Removed handle_respawn and respawn_enemy methods
+    # since their logic has been modularized and we no longer keep spawning code here.
 
     def check_missile_collisions(self) -> None:
         """
         Check for collisions between missiles and the enemy.
         """
-        if not self.enemy.visible:
+        if not self.enemy or not self.player or not self.enemy.visible:
             return
 
         enemy_rect = pygame.Rect(

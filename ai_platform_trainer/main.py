@@ -1,5 +1,5 @@
-from ai_platform_trainer.gameplay.game import Game
+# ai_platform_trainer/main.py
+from ai_platform_trainer.core.launcher import main
 
 if __name__ == "__main__":
-    game = Game()
-    game.run()
+    main()
