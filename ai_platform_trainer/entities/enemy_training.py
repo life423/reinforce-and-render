@@ -1,6 +1,7 @@
 import pygame
 import random
 import math
+import logging
 from ai_platform_trainer.utils.helpers import wrap_position
 
 
@@ -166,3 +167,12 @@ class EnemyTrain:
         pygame.draw.rect(
             screen, self.color, (self.pos["x"], self.pos["y"], self.size, self.size)
         )
+        
+    def hide(self):
+        self.visible = False
+        logging.info("EnemyTrain hidden due to collision.")
+
+    def show(self):
+        # Training mode enemy might not do fade-in, so just set visible to True.
+        self.visible = True
+        logging.info("EnemyTrain made visible again.")

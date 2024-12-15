@@ -25,16 +25,18 @@ class PlayerTraining:
         self.desired_distance = 200
         self.margin = 20
 
-        # Pattern-related attributes
         self.current_pattern = None
         self.state_timer = 0
         self.random_walk_timer = 0
         self.random_walk_angle = 0.0
-        # Fixed speed to reduce jitter and complexity
         self.random_walk_speed = self.step
         self.circle_angle = 0.0
         self.circle_radius = 100
         self.diagonal_direction = (1, 1)
+
+        # Wrap-around cooldown attributes
+        self.wrap_cooldown = 0
+        self.wrap_cooldown_frames = 120  # Number of frames to wait after a wrap
 
         self.switch_pattern()
 
@@ -44,11 +46,9 @@ class PlayerTraining:
             new_pattern = random.choice(self.PATTERNS)
 
         self.current_pattern = new_pattern
-        # Longer stable periods before switching patterns to reduce jitter
         self.state_timer = random.randint(180, 300)
 
         if self.current_pattern == "circle_move":
-            # Clamp circle_center inside screen boundaries to reduce sudden off-screen jumps
             cx = max(self.size, min(self.screen_width - self.size, self.position["x"]))
             cy = max(self.size, min(self.screen_height - self.size, self.position["y"]))
             self.circle_center = (cx, cy)
@@ -71,35 +71,21 @@ class PlayerTraining:
         logging.info("PlayerTraining has been reset.")
 
     def bias_angle_away_from_enemy(self, enemy_x, enemy_y, base_angle):
-        """
-        Adjust the movement angle to bias away from the enemy based on distance.
-        """
-        # Compute enemy angle relative to player
         dx = enemy_x - self.position["x"]
         dy = enemy_y - self.position["y"]
         dist = math.hypot(dx, dy)
         if dist == 0:
-            # If overlapping enemy, choose opposite direction
             return (base_angle + math.pi) % (2 * math.pi)
 
         enemy_angle = math.atan2(dy, dx)
-
-        # Determine bias strength based on distance
         if dist < self.desired_distance - self.margin:
-            # Very close: moderately bias (~30 degrees)
             bias_strength = math.radians(30)
         elif dist > self.desired_distance + self.margin:
-            # Far: small bias (~15 degrees)
             bias_strength = math.radians(15)
         else:
-            # Medium distance: moderate bias (~45 degrees)
             bias_strength = math.radians(45)
 
-        # Determine which side to rotate based on angle difference
         angle_diff = (base_angle - enemy_angle) % (2 * math.pi)
-
-        # If angle_diff < pi, player is somewhat towards enemy; rotate by +bias
-        # else, rotate by -bias to push away
         if angle_diff < math.pi:
             new_angle = base_angle + bias_strength
         else:
@@ -110,17 +96,14 @@ class PlayerTraining:
     def random_walk_pattern(self, enemy_x, enemy_y):
         if self.random_walk_timer <= 0:
             self.random_walk_angle = random.uniform(0, 2 * math.pi)
-            # Fixed speed = self.step, no changes
             self.random_walk_speed = self.step
             self.random_walk_timer = random.randint(30, 90)
         else:
             self.random_walk_timer -= 1
 
-        # Bias angle away from enemy
         angle = self.bias_angle_away_from_enemy(
             enemy_x, enemy_y, self.random_walk_angle
         )
-
         dx = math.cos(angle) * self.random_walk_speed
         dy = math.sin(angle) * self.random_walk_speed
         self.position["x"] += dx
@@ -129,11 +112,9 @@ class PlayerTraining:
         logging.debug(f"Random walk: pos={self.position}")
 
     def circle_pattern(self, enemy_x, enemy_y):
-        # Increment angle
-        angle_increment = 0.02  # Consistent increment
+        angle_increment = 0.02
         self.circle_angle += angle_increment
 
-        # Compute desired position on circle
         desired_x = (
             self.circle_center[0] + math.cos(self.circle_angle) * self.circle_radius
         )
@@ -141,21 +122,17 @@ class PlayerTraining:
             self.circle_center[1] + math.sin(self.circle_angle) * self.circle_radius
         )
 
-        # Compute movement vector towards desired position
         dx = desired_x - self.position["x"]
         dy = desired_y - self.position["y"]
 
-        # Bias angle away from enemy based on desired direction
         base_angle = math.atan2(dy, dx)
         final_angle = self.bias_angle_away_from_enemy(enemy_x, enemy_y, base_angle)
 
-        # Update movement based on biased angle
         dx = math.cos(final_angle) * self.step
         dy = math.sin(final_angle) * self.step
         self.position["x"] += dx
         self.position["y"] += dy
 
-        # Slightly adjust circle_radius for subtle variation
         if random.random() < 0.01:
             self.circle_radius += random.randint(-2, 2)
             self.circle_radius = max(20, min(200, self.circle_radius))
@@ -170,11 +147,8 @@ class PlayerTraining:
             angle += random.uniform(-0.3, 0.3)
             self.diagonal_direction = (math.cos(angle), math.sin(angle))
 
-        # Convert diagonal direction to angle, then bias it
         base_angle = math.atan2(self.diagonal_direction[1], self.diagonal_direction[0])
         final_angle = self.bias_angle_away_from_enemy(enemy_x, enemy_y, base_angle)
-
-        # Update diagonal_direction based on final_angle to keep it consistent
         self.diagonal_direction = (math.cos(final_angle), math.sin(final_angle))
 
         dx = math.cos(final_angle) * self.step
@@ -195,12 +169,10 @@ class PlayerTraining:
         if self.state_timer <= 0:
             self.switch_pattern()
 
-        # Distance-based pattern selection:
+        # Distance-based pattern selection
         if dist < close_threshold:
-            # Enemy close: Use random_walk but biased away from enemy
             self.random_walk_pattern(enemy_x, enemy_y)
         elif dist > far_threshold:
-            # Enemy far: use chosen pattern but always angle away from enemy
             if self.current_pattern == "circle_move":
                 self.circle_pattern(enemy_x, enemy_y)
             elif self.current_pattern == "diagonal_move":
@@ -208,7 +180,6 @@ class PlayerTraining:
             else:
                 self.random_walk_pattern(enemy_x, enemy_y)
         else:
-            # Neutral zone: follow current pattern with angle bias away from enemy
             if self.current_pattern == "random_walk":
                 self.random_walk_pattern(enemy_x, enemy_y)
             elif self.current_pattern == "circle_move":
@@ -216,17 +187,44 @@ class PlayerTraining:
             elif self.current_pattern == "diagonal_move":
                 self.diagonal_pattern(enemy_x, enemy_y)
 
-        # Wrap-around logic
-        old_pos = (self.position["x"], self.position["y"])
-        self.position["x"], self.position["y"] = wrap_position(
-            self.position["x"],
-            self.position["y"],
-            self.screen_width,
-            self.screen_height,
-            self.size,
-        )
-        if (self.position["x"], self.position["y"]) != old_pos:
-            logging.debug(f"Wrapped around: new pos={self.position}")
+        # Introduce wrap-around cooldown logic
+        old_x, old_y = self.position["x"], self.position["y"]
+
+        # Attempt wrap only if cooldown is zero
+        if self.wrap_cooldown == 0:
+            new_x, new_y = wrap_position(
+                self.position["x"],
+                self.position["y"],
+                self.screen_width,
+                self.screen_height,
+                self.size,
+            )
+
+            if (new_x, new_y) != (old_x, old_y):
+                # Player wrapped around
+                self.wrap_cooldown = self.wrap_cooldown_frames
+                self.position["x"], self.position["y"] = new_x, new_y
+                logging.debug(f"Wrapped around: new pos={self.position}")
+            else:
+                self.position["x"], self.position["y"] = new_x, new_y
+        else:
+            # If we can't wrap due to cooldown, clamp at edges if off-screen
+            px, py = self.position["x"], self.position["y"]
+            # If off to the left or right
+            if px < -self.size:
+                self.position["x"] = 0  # clamp at left edge
+            elif px > self.screen_width:
+                self.position["x"] = self.screen_width - self.size
+
+            # If off to the top or bottom
+            if py < -self.size:
+                self.position["y"] = 0  # clamp at top edge
+            elif py > self.screen_height:
+                self.position["y"] = self.screen_height - self.size
+
+        # Decrement wrap cooldown if active
+        if self.wrap_cooldown > 0:
+            self.wrap_cooldown -= 1
 
     def shoot_missile(self) -> None:
         if len(self.missiles) == 0:
