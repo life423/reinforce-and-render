@@ -48,7 +48,7 @@ class PlayerTraining:
         self.state_timer = random.randint(180, 300)
 
         if self.current_pattern == "circle_move":
-            # Clamp circle_center to prevent large off-screen jumps
+            # Clamp circle_center inside screen boundaries to reduce sudden off-screen jumps
             cx = max(self.size, min(self.screen_width - self.size, self.position["x"]))
             cy = max(self.size, min(self.screen_height - self.size, self.position["y"]))
             self.circle_center = (cx, cy)
@@ -71,6 +71,9 @@ class PlayerTraining:
         logging.info("PlayerTraining has been reset.")
 
     def bias_angle_away_from_enemy(self, enemy_x, enemy_y, base_angle):
+        """
+        Adjust the movement angle to bias away from the enemy based on distance.
+        """
         # Compute enemy angle relative to player
         dx = enemy_x - self.position["x"]
         dy = enemy_y - self.position["y"]
@@ -81,14 +84,11 @@ class PlayerTraining:
 
         enemy_angle = math.atan2(dy, dx)
 
-        close_threshold = self.desired_distance - self.margin
-        far_threshold = self.desired_distance + self.margin
-
-        # Determine bias strength: closer enemy means stronger bias away
-        if dist < close_threshold:
-            # Very close: strongly bias (~90 degrees)
-            bias_strength = math.radians(90)
-        elif dist > far_threshold:
+        # Determine bias strength based on distance
+        if dist < self.desired_distance - self.margin:
+            # Very close: moderately bias (~30 degrees)
+            bias_strength = math.radians(30)
+        elif dist > self.desired_distance + self.margin:
             # Far: small bias (~15 degrees)
             bias_strength = math.radians(15)
         else:
@@ -98,8 +98,8 @@ class PlayerTraining:
         # Determine which side to rotate based on angle difference
         angle_diff = (base_angle - enemy_angle) % (2 * math.pi)
 
-        # If angle_diff < pi, player currently angled somewhat towards enemy; rotate by +bias
-        # else rotate by -bias to push away.
+        # If angle_diff < pi, player is somewhat towards enemy; rotate by +bias
+        # else, rotate by -bias to push away
         if angle_diff < math.pi:
             new_angle = base_angle + bias_strength
         else:
@@ -126,43 +126,43 @@ class PlayerTraining:
         self.position["x"] += dx
         self.position["y"] += dy
 
+        logging.debug(f"Random walk: pos={self.position}")
+
     def circle_pattern(self, enemy_x, enemy_y):
-        speed = self.step
-        angle_increment = 0.02 * (speed / self.step)
+        # Increment angle
+        angle_increment = 0.02  # Consistent increment
         self.circle_angle += angle_increment
 
-        # Before applying circle coords, consider biasing circle_angle slightly
-        # We'll treat circle_angle as base and adjust it slightly:
-        # Convert circle_angle to vector, add slight angle away from enemy
-        # Actually simpler: circle_angle defines a point on circle. Just find final angle after bias.
-        # We'll pick a small intermediate angle offset based on bias:
-        # Instead of rewriting circle logic extensively, just do a tiny final angle tweak after
-        # calculating dx, dy. But that would distort the circle. Instead, nudge circle_angle itself.
+        # Compute desired position on circle
+        desired_x = (
+            self.circle_center[0] + math.cos(self.circle_angle) * self.circle_radius
+        )
+        desired_y = (
+            self.circle_center[1] + math.sin(self.circle_angle) * self.circle_radius
+        )
 
-        # We'll bias the final movement direction:
-        # final_angle = bias_angle_away_from_enemy will require a direction vector.
-        # Circle direction is tangent. Let's just pick a direction from center to player pos:
-        # Actually, circle pattern sets exact coords based on circle_center and circle_angle.
-        # Let's first find final coords, then we have direction vector from circle_center:
-        dx = math.cos(self.circle_angle) * self.circle_radius
-        dy = math.sin(self.circle_angle) * self.circle_radius
+        # Compute movement vector towards desired position
+        dx = desired_x - self.position["x"]
+        dy = desired_y - self.position["y"]
 
-        # The direction we are about to move is from circle_center to these coords:
-        # Convert that to angle:
+        # Bias angle away from enemy based on desired direction
         base_angle = math.atan2(dy, dx)
         final_angle = self.bias_angle_away_from_enemy(enemy_x, enemy_y, base_angle)
 
-        # After bias, recalculate dx, dy from final_angle but same radius:
-        dx = math.cos(final_angle) * self.circle_radius
-        dy = math.sin(final_angle) * self.circle_radius
+        # Update movement based on biased angle
+        dx = math.cos(final_angle) * self.step
+        dy = math.sin(final_angle) * self.step
+        self.position["x"] += dx
+        self.position["y"] += dy
 
-        self.position["x"] = self.circle_center[0] + dx
-        self.position["y"] = self.circle_center[1] + dy
-
-        # Smaller circle radius adjustments to reduce sudden jumps
+        # Slightly adjust circle_radius for subtle variation
         if random.random() < 0.01:
             self.circle_radius += random.randint(-2, 2)
             self.circle_radius = max(20, min(200, self.circle_radius))
+
+        logging.debug(
+            f"Circle move: pos={self.position}, center={self.circle_center}, radius={self.circle_radius}"
+        )
 
     def diagonal_pattern(self, enemy_x, enemy_y):
         if random.random() < 0.02:
@@ -177,9 +177,14 @@ class PlayerTraining:
         # Update diagonal_direction based on final_angle to keep it consistent
         self.diagonal_direction = (math.cos(final_angle), math.sin(final_angle))
 
-        speed = self.step
-        self.position["x"] += self.diagonal_direction[0] * speed
-        self.position["y"] += self.diagonal_direction[1] * speed
+        dx = math.cos(final_angle) * self.step
+        dy = math.sin(final_angle) * self.step
+        self.position["x"] += dx
+        self.position["y"] += dy
+
+        logging.debug(
+            f"Diagonal move: pos={self.position}, direction={self.diagonal_direction}"
+        )
 
     def update(self, enemy_x: float, enemy_y: float) -> None:
         dist = math.hypot(self.position["x"] - enemy_x, self.position["y"] - enemy_y)
@@ -212,6 +217,7 @@ class PlayerTraining:
                 self.diagonal_pattern(enemy_x, enemy_y)
 
         # Wrap-around logic
+        old_pos = (self.position["x"], self.position["y"])
         self.position["x"], self.position["y"] = wrap_position(
             self.position["x"],
             self.position["y"],
@@ -219,6 +225,8 @@ class PlayerTraining:
             self.screen_height,
             self.size,
         )
+        if (self.position["x"], self.position["y"]) != old_pos:
+            logging.debug(f"Wrapped around: new pos={self.position}")
 
     def shoot_missile(self) -> None:
         if len(self.missiles) == 0:
