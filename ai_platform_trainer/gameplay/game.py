@@ -30,7 +30,7 @@ from ai_platform_trainer.gameplay.utils import (
 )
 
 from ai_platform_trainer.gameplay.modes.training_mode import TrainingModeManager
-
+from ai_platform_trainer.ai_model.train_missile_model import SimpleMissileModel
 
 class Game:
     """Main class to run the Pixel Pursuit game."""
@@ -107,6 +107,11 @@ class Game:
             self.player, self.enemy = self._init_play_mode()
             self.player.reset()
             spawn_entities(self)
+            
+                    
+            self.missile_model = SimpleMissileModel()
+            self.missile_model.load_state_dict(torch.load('missile_model.pth', map_location='cpu'))
+            self.missile_model.eval()
 
     def _apply_speed_variation(self) -> None:
         """Apply speed variation for player and enemy in training mode."""
