@@ -1,28 +1,24 @@
-import pygame
-import torch
-import random
 import math
-import logging
+import random
 from typing import Optional, Tuple
 
-from ai_platform_trainer.gameplay.config import config
-from ai_platform_trainer.entities.player_play import PlayerPlay
-from ai_platform_trainer.entities.player_training import PlayerTraining
+import pygame
+import torch
+import logging
+
+from ai_platform_trainer.core.logging_config import setup_logging
+from ai_platform_trainer.ai_model.model_definition.model import SimpleModel
+from ai_platform_trainer.core.data_logger import DataLogger
 from ai_platform_trainer.entities.enemy_play import EnemyPlay
 from ai_platform_trainer.entities.enemy_training import EnemyTrain
+from ai_platform_trainer.entities.player_play import PlayerPlay
+from ai_platform_trainer.entities.player_training import PlayerTraining
+from ai_platform_trainer.gameplay.config import config
 from ai_platform_trainer.gameplay.menu import Menu
 from ai_platform_trainer.gameplay.renderer import Renderer
-from ai_platform_trainer.core.data_logger import DataLogger
-from ai_platform_trainer.ai_model.model_definition.model import SimpleModel
 from ai_platform_trainer.gameplay.utils import (
     compute_normalized_direction,
     find_valid_spawn_position,
-)
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler("game.log"), logging.StreamHandler()],
 )
 
 
