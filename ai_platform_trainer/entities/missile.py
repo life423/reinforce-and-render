@@ -1,10 +1,21 @@
+# ai_platform_trainer/entities/missile.py
+
 import pygame
 import logging
+import random
+import math
 
 
 class Missile:
     def __init__(
-        self, x: int, y: int, speed: float = 5.0, vx: float = 5.0, vy: float = 0.0
+        self,
+        x: int,
+        y: int,
+        speed: float = 5.0,
+        vx: float = 5.0,
+        vy: float = 0.0,
+        birth_time: int = 0,
+        lifespan: int = 1000,  # default 1s if not overridden
     ):
         self.size = 10
         self.color = (255, 255, 0)  # Yellow
@@ -13,6 +24,10 @@ class Missile:
         # Velocity components for straight line movement
         self.vx = vx
         self.vy = vy
+
+        # New fields for matching training logic:
+        self.birth_time = birth_time
+        self.lifespan = lifespan
 
     def update(self) -> None:
         """
