@@ -8,7 +8,6 @@ import torch
 import logging
 
 from ai_platform_trainer.core.logging_config import setup_logging
-# from ai_platform_trainer.ai_model.model_definition.simple_model import SimpleModel
 from ai_platform_trainer.ai_model.model_definition.simple_model import SimpleModel
 
 from ai_platform_trainer.core.data_logger import DataLogger
@@ -37,6 +36,9 @@ class Game:
     """Main class to run the Pixel Pursuit game."""
 
     def __init__(self) -> None:
+        # -------------------------
+        # (A) Basic Game Setup
+        # -------------------------
         pygame.init()
         self.collision_count = 0
         self.screen = pygame.display.set_mode(config.SCREEN_SIZE)
@@ -53,13 +55,19 @@ class Game:
         self.menu_active: bool = True
         self.mode: Optional[str] = None
 
+        # -------------------------
+        # (B) Key Game Entities
+        # -------------------------
         self.player: Optional[PlayerPlay] = None
         self.enemy: Optional[EnemyPlay] = None
         self.data_logger: Optional[DataLogger] = None
-        self.missile_model: Optional[SimpleMissileModel] = (
-            None  # We'll store our missile AI here
-        )
 
+        # Store the missile AI model here if loaded
+        self.missile_model: Optional[SimpleMissileModel] = None
+
+        # -------------------------
+        # (C) Respawn & Timing
+        # -------------------------
         self.respawn_delay = 1000
         self.respawn_timer = 0
         self.is_respawning = False
@@ -84,6 +92,7 @@ class Game:
             pygame.display.flip()
             self.clock.tick(config.FRAME_RATE)
 
+        # Save any training data if we're in training mode
         if self.mode == "train" and self.data_logger:
             self.data_logger.save()
 
@@ -97,27 +106,33 @@ class Game:
         self.mode = mode
         logging.info(f"Starting game in '{mode}' mode.")
 
+        # -------------------------
+        # (A) TRAIN MODE
+        # -------------------------
         if mode == "train":
             self.data_logger = DataLogger(config.DATA_PATH)
             self.player = PlayerTraining(self.screen_width, self.screen_height)
             self.enemy = EnemyTrain(self.screen_width, self.screen_height)
 
+            # Flag indicating we're capturing missile data for training
             self.train_missile = True
 
             self._apply_speed_variation()
             self.player.reset()
             spawn_entities(self)
 
-            # Create a TrainingModeManager instance
+            # Create a TrainingModeManager for logging, etc.
             self.training_mode_manager = TrainingModeManager(self)
 
+        # -------------------------
+        # (B) PLAY MODE
+        # -------------------------
         else:
-            # Play mode
             self.player, self.enemy = self._init_play_mode()
             self.player.reset()
             spawn_entities(self)
 
-            # Check if the missile model file exists
+            # Check if there's a missile model we can use
             missile_model_path = "models/missile_model.pth"
             if os.path.isfile(missile_model_path):
                 logging.info(
@@ -159,10 +174,12 @@ class Game:
                 logging.info("Escape key pressed. Exiting game.")
                 self.running = False
             elif self.menu_active:
+                # Menu is active, handle menu input
                 selected_action = self.menu.handle_menu_events(event)
                 if selected_action:
                     self.check_menu_selection(selected_action)
             elif event.type == pygame.KEYDOWN:
+                # If user presses space, shoot a missile
                 if event.key == pygame.K_SPACE and self.player:
                     self.player.shoot_missile()
 
@@ -179,8 +196,7 @@ class Game:
     def _init_play_mode(self) -> Tuple[PlayerPlay, EnemyPlay]:
         """
         Initialize player and enemy for play mode.
-
-        :return: Tuple containing PlayerPlay and EnemyPlay instances
+        Loads the enemy AI model from config.MODEL_PATH if available.
         """
         model = SimpleModel(input_size=5, hidden_size=64, output_size=2)
         try:
@@ -201,21 +217,24 @@ class Game:
     def update(self, current_time: int) -> None:
         """Update game state depending on the mode."""
         if self.mode == "train":
+            # In training mode, the TrainingModeManager does missile + enemy logic
             self.training_mode_manager.update()
         elif self.mode == "play":
+            # In play mode, we do our usual game updates
             self.play_update(current_time)
             self.handle_respawn(current_time)
+
+            # If the enemy is fading in, keep updating fade
             if self.enemy and self.enemy.fading_in:
                 self.enemy.update_fade_in(current_time)
 
+            # Update missiles and check collisions each frame
             if self.player:
                 self.player.update_missiles()
             self.check_missile_collisions()
 
     def check_collision(self) -> bool:
-        """
-        Check if the player and enemy collide.
-        """
+        """Check if the player and enemy collide."""
         if not self.player or not self.enemy:
             return False
 
@@ -238,11 +257,17 @@ class Game:
 
     def play_update(self, current_time: int) -> None:
         """Update logic for play mode."""
+        # -------------------------
+        # (A) Player Input
+        # -------------------------
         if self.player and not self.player.handle_input():
             logging.info("Player requested to quit. Exiting game.")
             self.running = False
             return
 
+        # -------------------------
+        # (B) Enemy Movement
+        # -------------------------
         if self.enemy:
             try:
                 self.enemy.update_movement(
@@ -257,6 +282,9 @@ class Game:
                 self.running = False
                 return
 
+        # -------------------------
+        # (C) Check Player-Enemy Collision
+        # -------------------------
         if self.check_collision():
             logging.info("Collision detected!")
             if self.enemy:
@@ -264,6 +292,43 @@ class Game:
             self.is_respawning = True
             self.respawn_timer = current_time + self.respawn_delay
             logging.info(f"Enemy will respawn in {self.respawn_delay} ms.")
+
+        # -------------------------
+        # (D) Apply Missile AI (Optional)
+        # -------------------------
+        if self.missile_model and self.player and self.player.missiles:
+            # Loop over all active missiles
+            for missile in self.player.missiles:
+                # Suppose you want to feed [player_x, player_y, enemy_x, enemy_y, missile_x, missile_y, angle]
+                # If you track the missile's angle, you'd need to store it in missile or compute from vx, vy.
+                current_angle = math.atan2(missile.vy, missile.vx)
+
+                input_state = torch.tensor(
+                    [
+                        [
+                            self.player.position["x"],  # player_x
+                            self.player.position["y"],  # player_y
+                            self.enemy.pos["x"],  # enemy_x
+                            self.enemy.pos["y"],  # enemy_y
+                            missile.pos["x"],  # missile_x
+                            missile.pos["y"],  # missile_y
+                            current_angle,  # missile_angle
+                        ]
+                    ],
+                    dtype=torch.float32,
+                )
+
+                with torch.no_grad():
+                    predicted_action = self.missile_model(input_state)
+                angle_delta = predicted_action.item()
+
+                # Update missile's angle
+                new_angle = current_angle + angle_delta
+
+                # Example: fix speed or let speed vary
+                speed = 5.0
+                missile.vx = math.cos(new_angle) * speed
+                missile.vy = math.sin(new_angle) * speed
 
     def handle_respawn(self, current_time: int) -> None:
         """
@@ -275,7 +340,6 @@ class Game:
             and self.enemy
             and self.player
         ):
-            # Use respawn_enemy_with_fade_in to actually respawn the enemy
             respawn_enemy_with_fade_in(self, current_time)
 
     def check_missile_collisions(self) -> None:
