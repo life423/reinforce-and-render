@@ -1,5 +1,6 @@
 import math
 import random
+import os
 from typing import Optional, Tuple
 
 import pygame
@@ -17,9 +18,7 @@ from ai_platform_trainer.entities.player_training import PlayerTraining
 from ai_platform_trainer.gameplay.config import config
 from ai_platform_trainer.gameplay.menu import Menu
 from ai_platform_trainer.gameplay.renderer import Renderer
-from ai_platform_trainer.gameplay.collisions import (
-    handle_missile_collisions,
-)
+from ai_platform_trainer.gameplay.collisions import handle_missile_collisions
 from ai_platform_trainer.gameplay.spawner import (
     spawn_entities,
     respawn_enemy_with_fade_in,
@@ -31,6 +30,7 @@ from ai_platform_trainer.gameplay.utils import (
 
 from ai_platform_trainer.gameplay.modes.training_mode import TrainingModeManager
 from ai_platform_trainer.ai_model.train_missile_model import SimpleMissileModel
+
 
 class Game:
     """Main class to run the Pixel Pursuit game."""
@@ -55,6 +55,9 @@ class Game:
         self.player: Optional[PlayerPlay] = None
         self.enemy: Optional[EnemyPlay] = None
         self.data_logger: Optional[DataLogger] = None
+        self.missile_model: Optional[SimpleMissileModel] = (
+            None  # We'll store our missile AI here
+        )
 
         self.respawn_delay = 1000
         self.respawn_timer = 0
@@ -86,6 +89,10 @@ class Game:
         pygame.quit()
 
     def start_game(self, mode: str) -> None:
+        """
+        Starts the game in the specified mode (train or play).
+        If the missile model file exists, we load it; otherwise, we skip it.
+        """
         self.mode = mode
         logging.info(f"Starting game in '{mode}' mode.")
 
@@ -104,14 +111,31 @@ class Game:
             self.training_mode_manager = TrainingModeManager(self)
 
         else:
+            # Play mode
             self.player, self.enemy = self._init_play_mode()
             self.player.reset()
             spawn_entities(self)
-            
-                    
-            self.missile_model = SimpleMissileModel()
-            self.missile_model.load_state_dict(torch.load('missile_model.pth', map_location='cpu'))
-            self.missile_model.eval()
+
+            # Check if the missile model file exists
+            missile_model_path = "models/missile_model.pth"
+            if os.path.isfile(missile_model_path):
+                logging.info(
+                    f"Found missile model at '{missile_model_path}'. Loading it..."
+                )
+                try:
+                    self.missile_model = SimpleMissileModel()
+                    self.missile_model.load_state_dict(
+                        torch.load(missile_model_path, map_location="cpu")
+                    )
+                    self.missile_model.eval()
+                    logging.info("Missile model loaded successfully.")
+                except Exception as e:
+                    logging.error(f"Failed to load missile model: {e}")
+                    self.missile_model = None
+            else:
+                logging.warning(
+                    f"No missile model found at '{missile_model_path}'. Skipping missile AI."
+                )
 
     def _apply_speed_variation(self) -> None:
         """Apply speed variation for player and enemy in training mode."""
@@ -167,6 +191,7 @@ class Game:
             logging.error(f"Failed to load model from {config.MODEL_PATH}: {e}")
             raise e
         model.eval()
+
         player = PlayerPlay(self.screen_width, self.screen_height)
         enemy = EnemyPlay(self.screen_width, self.screen_height, model)
         logging.info("Initialized PlayerPlay and EnemyPlay for play mode.")
@@ -178,7 +203,7 @@ class Game:
             self.training_mode_manager.update()
         elif self.mode == "play":
             self.play_update(current_time)
-            self.handle_respawn(current_time)  # Re-added call to handle respawn
+            self.handle_respawn(current_time)
             if self.enemy and self.enemy.fading_in:
                 self.enemy.update_fade_in(current_time)
 
@@ -253,10 +278,12 @@ class Game:
             respawn_enemy_with_fade_in(self, current_time)
 
     def check_missile_collisions(self) -> None:
+        """
+        Check if a missile collides with the enemy, and trigger respawn if needed.
+        """
         if not self.enemy or not self.player:
             return
 
-        # Use the handle_missile_collisions function from collisions.py
         def respawn_callback():
             self.is_respawning = True
             self.respawn_timer = pygame.time.get_ticks() + self.respawn_delay
