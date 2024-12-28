@@ -73,7 +73,8 @@ def train_model(filename):
 
         print(f"Epoch {epoch}, Loss: {loss.item()}")
 
-    torch.save(model.state_dict(), "missile_model.pth")
+    # torch.save(model.state_dict(), "missile_model.pth")
+    torch.save(model.state_dict(), "models/missile_model.pth")
 
 
 if __name__ == "__main__":
