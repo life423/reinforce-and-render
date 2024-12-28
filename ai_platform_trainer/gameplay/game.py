@@ -8,7 +8,8 @@ import torch
 import logging
 
 from ai_platform_trainer.core.logging_config import setup_logging
-from ai_platform_trainer.ai_model.model_definition.model import SimpleModel
+# from ai_platform_trainer.ai_model.model_definition.simple_model import SimpleModel
+from ai_platform_trainer.ai_model.model_definition.simple_model import SimpleModel
 
 from ai_platform_trainer.core.data_logger import DataLogger
 from ai_platform_trainer.entities.enemy_play import EnemyPlay
