@@ -226,13 +226,10 @@ class Game:
 
         # If we have a missile AI model, apply it to any active missiles
         if self.missile_model and self.player and self.player.missiles:
-            max_turn = math.radians(3)  # clamp angle to 3 degrees if you want
-
-            # Prepare for the new 9D input
             for missile in self.player.missiles:
                 current_angle = math.atan2(missile.vy, missile.vx)
 
-                # 1) Distance from player to enemy (just like training_data.json uses).
+                # 1) Distance from player to enemy
                 px, py = self.player.position["x"], self.player.position["y"]
                 ex, ey = self.enemy.pos["x"], self.enemy.pos["y"]
                 dist_val = math.hypot(px - ex, py - ey)
@@ -258,16 +255,13 @@ class Game:
                     dtype=torch.float32,
                 )
 
+                # Let the model control angle_delta fully (no clamp)
                 with torch.no_grad():
                     angle_delta = self.missile_model(input_state).item()
 
-                # Optional clamp
-                if angle_delta > max_turn:
-                    angle_delta = max_turn
-                elif angle_delta < -max_turn:
-                    angle_delta = -max_turn
-
                 new_angle = current_angle + angle_delta
+
+                # Keep speed fixed at 5.0
                 speed = 5.0
                 missile.vx = math.cos(new_angle) * speed
                 missile.vy = math.sin(new_angle) * speed
