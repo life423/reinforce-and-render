@@ -74,11 +74,11 @@ class TrainingModeManager:
                     angle_diff -= 2 * math.pi
 
                 # Random noise
-                noise = random.uniform(-math.radians(5), math.radians(5))
+                noise = random.uniform(-math.radians(1), math.radians(1))
                 angle_diff += noise
 
                 # 10% chance of no turn
-                if random.random() < 0.1:
+                if random.random() < 0.0:
                     angle_diff = 0.0
 
                 # Limit angle change
@@ -92,11 +92,11 @@ class TrainingModeManager:
 
                 # slight sinusoidal offset for weaving
                 time_factor = current_time * 0.002
-                sine_offset = math.sin(time_factor) * math.radians(3)
-                new_angle += sine_offset
+                # sine_offset = math.sin(time_factor) * math.radians(3)
+                # new_angle += sine_offset
 
                 # random speed
-                speed = 5.0 * random.uniform(0.8, 1.0)
+                speed = 5.0
                 msl.vx = math.cos(new_angle) * speed
                 msl.vy = math.sin(new_angle) * speed
                 msl.update()
