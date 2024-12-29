@@ -1,5 +1,3 @@
-# ai_platform_trainer/gameplay/game.py
-
 import math
 import random
 import os
@@ -82,7 +80,7 @@ class Game:
             pygame.display.flip()
             self.clock.tick(config.FRAME_RATE)
 
-        # Save data if we were training
+        # If we were training, save the data
         if self.mode == "train" and self.data_logger:
             self.data_logger.save()
         pygame.quit()
@@ -133,7 +131,7 @@ class Game:
                 )
 
     def handle_events(self) -> None:
-        """Handle all window and menu-related events."""
+        """Handle window and menu-related events."""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 logging.info("Quit event detected. Exiting game.")
@@ -151,16 +149,20 @@ class Game:
                     self.player.shoot_missile()
 
     def check_menu_selection(self, selected_action: str) -> None:
-        """Handle menu actions."""
+        """Handle actions selected from the menu."""
         if selected_action == "exit":
             logging.info("Exit action selected from menu.")
             self.running = False
         elif selected_action in ["train", "play"]:
+            logging.info(f"'{selected_action}' selected from menu.")
             self.menu_active = False
             self.start_game(selected_action)
 
     def _init_play_mode(self) -> Tuple[PlayerPlay, EnemyPlay]:
-        """Initialize player/enemy for play mode, load enemy model if present."""
+        """
+        Initialize player and enemy for play mode,
+        load enemy model if present.
+        """
         model = SimpleModel(input_size=5, hidden_size=64, output_size=2)
         try:
             model.load_state_dict(torch.load(config.MODEL_PATH, map_location="cpu"))
@@ -194,7 +196,7 @@ class Game:
 
     def play_update(self, current_time: int) -> None:
         """Main update logic for play mode."""
-        # Player movement/inputs
+        # Player input
         if self.player and not self.player.handle_input():
             logging.info("Player requested to quit.")
             self.running = False
@@ -214,7 +216,7 @@ class Game:
                 self.running = False
                 return
 
-        # Check for collision between player and enemy
+        # Check collision between player and enemy
         if self.check_collision():
             if self.enemy:
                 self.enemy.hide()
@@ -226,22 +228,36 @@ class Game:
         if self.missile_model and self.player and self.player.missiles:
             max_turn = math.radians(3)  # clamp angle to 3 degrees if you want
 
+            # Prepare for the new 9D input
             for missile in self.player.missiles:
                 current_angle = math.atan2(missile.vy, missile.vx)
+
+                # 1) Distance from player to enemy (just like training_data.json uses).
+                px, py = self.player.position["x"], self.player.position["y"]
+                ex, ey = self.enemy.pos["x"], self.enemy.pos["y"]
+                dist_val = math.hypot(px - ex, py - ey)
+
+                # 2) Collision val is set to 0.0 here by default
+                collision_val = 0.0
+
+                # Build the 9-element state
                 input_state = torch.tensor(
                     [
                         [
-                            self.player.position["x"],
-                            self.player.position["y"],
-                            self.enemy.pos["x"],
-                            self.enemy.pos["y"],
-                            missile.pos["x"],
-                            missile.pos["y"],
-                            current_angle,
+                            px,  # player_x
+                            py,  # player_y
+                            ex,  # enemy_x
+                            ey,  # enemy_y
+                            missile.pos["x"],  # missile_x
+                            missile.pos["y"],  # missile_y
+                            current_angle,  # missile_angle
+                            dist_val,  # dist
+                            collision_val,  # missile_collision (placeholder)
                         ]
                     ],
                     dtype=torch.float32,
                 )
+
                 with torch.no_grad():
                     angle_delta = self.missile_model(input_state).item()
 
