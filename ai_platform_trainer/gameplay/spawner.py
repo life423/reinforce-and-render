@@ -4,6 +4,8 @@ from ai_platform_trainer.gameplay.utils import find_valid_spawn_position
 from ai_platform_trainer.gameplay.config import config
 
 
+
+
 def spawn_entities(game):
     """
     Spawn the player and enemy at random positions at the start of the game,
