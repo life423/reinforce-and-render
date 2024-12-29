@@ -114,6 +114,14 @@ class TrainingModeManager:
             ex = self.game.enemy.pos["x"] if self.game.enemy else 0
             ey = self.game.enemy.pos["y"] if self.game.enemy else 0
 
+            # Fix: replace None with 0.0
+            if missile_x is None:
+                missile_x = 0.0
+            if missile_y is None:
+                missile_y = 0.0
+            if missile_angle is None:
+                missile_angle = 0.0
+
             data_point = {
                 "mode": "train",
                 "player_x": px,
