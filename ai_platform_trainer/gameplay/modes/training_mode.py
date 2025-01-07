@@ -74,18 +74,18 @@ class TrainingMode:
                     angle_diff -= 2 * math.pi
 
                 # Random noise
-                noise = random.uniform(-math.radians(1), math.radians(1))
-                angle_diff += noise
+                # noise = random.uniform(-math.radians(1), math.radians(1))
+                # angle_diff += noise
 
                 # 10% chance of no turn
                 if random.random() < 0.0:
                     angle_diff = 0.0
 
                 # Limit angle change
-                if angle_diff > self.missile_turn_rate:
-                    angle_diff = self.missile_turn_rate
-                elif angle_diff < -self.missile_turn_rate:
-                    angle_diff = -self.missile_turn_rate
+                # if angle_diff > self.missile_turn_rate:
+                #     angle_diff = self.missile_turn_rate
+                # elif angle_diff < -self.missile_turn_rate:
+                #     angle_diff = -self.missile_turn_rate
 
                 missile_action = angle_diff
                 new_angle = current_angle + angle_diff
