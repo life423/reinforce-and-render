@@ -8,7 +8,7 @@ from ai_platform_trainer.gameplay.utils import compute_normalized_direction
 from ai_platform_trainer.gameplay.spawner import respawn_enemy_with_fade_in
 
 
-class TrainingModeManager:
+class TrainingMode:
     def __init__(self, game):
         self.game = game
         self.missile_cooldown = 0

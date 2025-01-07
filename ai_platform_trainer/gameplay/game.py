@@ -28,7 +28,7 @@ from ai_platform_trainer.gameplay.utils import (
     compute_normalized_direction,
     find_valid_spawn_position,
 )
-from ai_platform_trainer.gameplay.modes.training_mode import TrainingModeManager
+from ai_platform_trainer.gameplay.modes.training_mode import TrainingMode
 
 
 class Game:
@@ -102,7 +102,7 @@ class Game:
             spawn_entities(self)
             self.player.reset()
 
-            self.training_mode_manager = TrainingModeManager(self)
+            self.training_mode_manager = TrainingMode(self)
 
         else:
             # Play mode setup
@@ -234,7 +234,7 @@ class Game:
                 ex, ey = self.enemy.pos["x"], self.enemy.pos["y"]
                 dist_val = math.hypot(px - ex, py - ey)
 
-                # 2) Collision val is set to 0.0 here by default
+                # 2) Collision val is set to 0.0 by default for now
                 collision_val = 0.0
 
                 # Build the 9-element state
