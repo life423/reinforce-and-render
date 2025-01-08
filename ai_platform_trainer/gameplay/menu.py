@@ -4,8 +4,11 @@ import pygame
 class Menu:
     def __init__(self, screen_width, screen_height):
         # Menu options
-        self.menu_options = ["Play", "Train", "Exit"]
+        # self.menu_options = ["Play", "Train", "Exit"]
+        self.menu_options = ["Play", "Train", "Help", "Exit"]
         self.selected_option = 0
+        
+        self.show_help = False  
 
         # Screen dimensions
         self.screen_width = screen_width
@@ -22,6 +25,17 @@ class Menu:
         self.option_rects = {}  # Store rects for click detection
 
     def handle_menu_events(self, event):
+        if self.show_help:
+            if event.type == pygame.KEYDOWN and event.key in [pygame.K_ESCAPE, pygame.K_RETURN]:
+                self.show_help = False
+            return None
+        elif event.key in [pygame.K_RETURN, pygame.K_KP_ENTER]:
+            chosen = self.menu_options[self.selected_option]
+            if chosen == "Help":
+                self.show_help = True
+                return None  # Don’t return "help" if you handle it internally
+            else:
+                return chosen.lower()
         # Handle menu navigation using arrow keys or WASD
         if event.type == pygame.KEYDOWN:
             if event.key in [pygame.K_UP, pygame.K_w]:
