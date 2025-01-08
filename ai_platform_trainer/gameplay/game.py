@@ -167,6 +167,9 @@ class Game:
 
             elif event.type == pygame.KEYDOWN:
                 # If the menu is active, pass all keyboard events to the menu
+                if event.key == pygame.K_f:
+                    logging.debug("F pressed - toggling fullscreen.")
+                    self.toggle_fullscreen()
                 if self.menu_active:
                     selected_action = self.menu.handle_menu_events(event)
                     if selected_action:

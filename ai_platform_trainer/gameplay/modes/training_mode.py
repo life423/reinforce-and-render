@@ -73,8 +73,7 @@ class TrainingMode:
                             self.game.player.missiles.remove(missile)
                             del self.missile_lifespan[missile]
 
-                            # <-- Instead of self.game.respawner.respawn_enemy(current_time):
-                            # do the same approach as "play" mode
+                        
                             self.game.enemy.hide()
                             self.game.is_respawning = True
                             self.game.respawn_timer = (
