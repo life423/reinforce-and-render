@@ -14,7 +14,6 @@ class TrainingMode:
         self.missile_lifespan = {}
         self.missile_sequences = {}
 
-
     def update(self):
         """Handles updates specifically for training mode."""
         current_time = pygame.time.get_ticks()
@@ -33,15 +32,17 @@ class TrainingMode:
                 self.game.player.step,
             )
 
-            # Fire a missile occasionally
-            if random.random() < getattr(self, "missile_fire_prob", 0.02):
-                if self.missile_cooldown > 0:
-                    self.missile_cooldown -= 1
+            # Always decrement the missile cooldown each frame if > 0
+            if self.missile_cooldown > 0:
+                self.missile_cooldown -= 1
 
+            # Fire a missile occasionally (only if cooldown <= 0 AND no active missile)
+            if random.random() < getattr(self, "missile_fire_prob", 0.02):
                 if self.missile_cooldown <= 0 and len(self.game.player.missiles) == 0:
                     self.game.player.shoot_missile(enemy_x, enemy_y)
-                    self.missile_cooldown = 120
+                    self.missile_cooldown = 120  # Reset cooldown after firing
 
+                    # If a missile was spawned, track its lifespan
                     if self.game.player.missiles:
                         missile = self.game.player.missiles[0]
                         self.missile_lifespan[missile] = (
