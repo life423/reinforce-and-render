@@ -1,3 +1,4 @@
+import os
 import json
 import torch
 from torch.utils.data import Dataset, DataLoader
@@ -12,6 +13,7 @@ class MissileDataset(Dataset):
 
         self.samples = []
         self.weights = []  # store a weight per sample
+
         for entry in self.data:
             # We check for new keys:
             #   "player_x", "player_y", "enemy_x", "enemy_y",
@@ -44,10 +46,10 @@ class MissileDataset(Dataset):
                     entry["dist"],
                     collision_val,
                 ]
+                # The network will learn to match this single float action
                 action = [entry["missile_action"]]
 
                 # weight = 2.0 for collision frames, 1.0 for non-collision
-                # or tweak numbers to emphasize collisions more or less
                 wt = 2.0 if collision_val == 1.0 else 1.0
 
                 self.samples.append((state, action))
@@ -81,19 +83,22 @@ class SimpleMissileModel(nn.Module):
 
 
 def train_model(filename):
+    # 1) Load dataset
     dataset = MissileDataset(filename)
     dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
 
+    # 2) Initialize model and optimizer
     model = SimpleMissileModel(input_size=9, hidden_size=64, output_size=1)
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-    # We'll do a custom MSE that uses the sample weight
-    # rather than nn.MSELoss()
+    # 3) Training loop
     for epoch in range(20):
         running_loss = 0.0
         total_batches = 0
         for states, actions, weights in dataloader:
             optimizer.zero_grad()
+
+            # Forward pass
             preds = model(states).view(-1)  # shape: (batch_size,)
             actions = actions.view(-1)  # shape: (batch_size,)
             weights = weights.view(-1)  # shape: (batch_size,)
@@ -102,16 +107,26 @@ def train_model(filename):
             loss_per_sample = (preds - actions) ** 2 * weights
             loss = torch.mean(loss_per_sample)
 
+            # Backprop
             loss.backward()
             optimizer.step()
 
             running_loss += loss.item()
             total_batches += 1
 
+        # Print average loss per epoch
         avg_loss = running_loss / total_batches if total_batches > 0 else 0
         print(f"Epoch {epoch}, Avg Loss: {avg_loss:.4f}")
 
-    torch.save(model.state_dict(), "models/missile_model.pth")
+    # 4) Remove old model file if it exists (optional but helps ensure a fresh file)
+    model_path = "models/missile_model.pth"
+    if os.path.exists(model_path):
+        os.remove(model_path)
+        print(f"Removed old file at '{model_path}'.")
+
+    # 5) Save the newly trained model
+    torch.save(model.state_dict(), model_path)
+    print(f"Saved new model to '{model_path}'.")
 
 
 if __name__ == "__main__":
