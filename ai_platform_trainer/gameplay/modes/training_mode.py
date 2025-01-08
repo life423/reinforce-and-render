@@ -11,8 +11,8 @@ class TrainingMode:
     def __init__(self, game):
         self.game = game
         self.missile_cooldown = 0
-        self.missile_lifespan = {}  # missile -> (birth_time, lifespan)
-        self.missile_sequences = {}  # missile -> [list of data_points]
+        self.missile_lifespan = {}
+        self.missile_sequences = {}
 
     def update(self):
         """Handles updates specifically for training mode."""
@@ -22,14 +22,12 @@ class TrainingMode:
             enemy_x = self.game.enemy.pos["x"]
             enemy_y = self.game.enemy.pos["y"]
 
-            self.game.player.update(
-                enemy_x, enemy_y
-            )  # Always update player. Passing coordinates so that it can record training data.
+            self.game.player.update(enemy_x, enemy_y)
             self.game.enemy.update_movement(
                 self.game.player.position["x"],
                 self.game.player.position["y"],
                 self.game.player.step,
-            )  # Always update enemy
+            )
 
             if random.random() < getattr(self, "missile_fire_prob", 0.02):
                 if self.missile_cooldown > 0:
@@ -39,16 +37,12 @@ class TrainingMode:
                     self.game.player.shoot_missile(enemy_x, enemy_y)
                     self.missile_cooldown = 120
 
-                    if (
-                        self.game.player.missiles
-                    ):  # Only if a missile was actually shot:
+                    if self.game.player.missiles:
                         msl = self.game.player.missiles[0]
                         self.missile_lifespan[msl] = (msl.birth_time, msl.lifespan)
-                        self.missile_sequences[msl] = []  # Initialize missile_sequence
+                        self.missile_sequences[msl] = []
 
-        for missile in self.game.player.missiles[
-            :
-        ]:  # Iterate over a copy for safe removal
+        for missile in self.game.player.missiles[:]:
             if missile in self.missile_lifespan:
                 birth_time, lifespan = self.missile_lifespan[missile]
                 if current_time - birth_time >= lifespan:
@@ -56,11 +50,9 @@ class TrainingMode:
                     self.game.player.missiles.remove(missile)
                     del self.missile_lifespan[missile]
                     logging.debug("Training mode: Missile removed (lifespan expiry).")
-                else:  # Missile still active - update pos and check for collision/off-screen
+                else:
                     missile.update()
 
-                    # Simplified Missile Collision Handling
-                   # Simplified Missile Collision Handling
                 if self.game.enemy:
                     enemy_rect = pygame.Rect(
                         self.game.enemy.pos["x"],
@@ -69,17 +61,15 @@ class TrainingMode:
                         self.game.enemy.size,
                     )
 
-                    # Use "missile" consistently:
                     if missile.get_rect().colliderect(enemy_rect):
                         logging.info("Missile hit the enemy (training mode).")
                         self.finalize_missile_sequence(missile, success=True)
                         self.game.player.missiles.remove(missile)
 
-                        del self.missile_lifespan[missile]  # Remove from lifespan tracking
-                        self.game.respawner.respawn_enemy(current_time)  # Handle respawn
-                        break  # Only one hit can happen at a time
+                        del self.missile_lifespan[missile]
+                        self.game.respawner.respawn_enemy(current_time)
+                        break
 
-                    # Off-screen check (only if missile hasn't collided)
                     if not (
                         0 <= missile.pos["x"] <= self.game.screen_width
                         and 0 <= missile.pos["y"] <= self.game.screen_height
@@ -89,13 +79,9 @@ class TrainingMode:
                         del self.missile_lifespan[missile]
                         logging.debug("Training Mode: Missile left the screen.")
 
-        if (
-            self.game.is_respawning and current_time >= self.game.respawn_timer
-        ):  # Correctly reference respawn timer in self.game
+        if self.game.is_respawning and current_time >= self.game.respawn_timer:
             if self.game.enemy:
-                self.game.respawner.handle_respawn(
-                    current_time
-                )  # Correct call to handle respawn
+                self.game.respawner.handle_respawn(current_time)
 
     def finalize_missile_sequence(self, missile, success: bool) -> None:
         """
@@ -105,7 +91,7 @@ class TrainingMode:
         if missile not in self.missile_sequences:
             return
 
-        outcome_val = success  # True/False => 1.0/0.0 if you prefer
+        outcome_val = success
         frames = self.missile_sequences[missile]
 
         for frame_data in frames:
@@ -114,9 +100,7 @@ class TrainingMode:
             if self.game.data_logger:
                 self.game.data_logger.log(frame_data)
 
-        del self.missile_sequences[
-            missile
-        ]  # No need to check if key is in dict since it must be
+        del self.missile_sequences[missile]
         logging.debug(
             f"Finalized missile sequence with success={success}, frames={len(frames)}"
         )

@@ -157,6 +157,7 @@ class Game:
                     f"No missile model found at '{missile_model_path}'. Skipping missile AI."
                 )
 
+
     def handle_events(self) -> None:
         """Handle window and menu-related events."""
         for event in pygame.event.get():
@@ -165,14 +166,13 @@ class Game:
                 self.running = False
 
             elif event.type == pygame.KEYDOWN:
-                # 1) If the menu is active and possibly in help, let the menu handle ESC.
+                # If the menu is active, pass all keyboard events to the menu
                 if self.menu_active:
                     selected_action = self.menu.handle_menu_events(event)
                     if selected_action:
                         self.check_menu_selection(selected_action)
-
-                # 2) If the menu is NOT active, interpret ESC as exit game:
                 else:
+                    # Not in menu: interpret ESC as exit, F as fullscreen, SPACE as shoot
                     if event.key == pygame.K_ESCAPE:
                         logging.info("Escape key pressed. Exiting game.")
                         self.running = False
@@ -181,7 +181,20 @@ class Game:
                     elif event.key == pygame.K_SPACE and self.player:
                         self.player.shoot_missile()
 
-            # MOUSE, etc. can stay as-is
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                # Left-click
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                if self.menu_active:
+                    # Let the menu handle its own click detection
+                    selected_action = self.menu.handle_menu_events(event)
+                    if selected_action:
+                        self.check_menu_selection(selected_action)
+                else:
+                    # In-game mouse logic here if desired
+                    logging.debug(f"In-game left-click at ({mouse_x}, {mouse_y})")
+                    # e.g. move player, spawn something, etc.
+
+        # You could handle other mouse buttons or events (MOUSEMOTION, WHEEL, etc.) as needed
 
     def check_menu_selection(self, selected_action: str) -> None:
         """Handle actions selected from the menu."""
