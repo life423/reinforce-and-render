@@ -225,7 +225,7 @@ class PlayerTraining:
             else:
                 self.position["x"], self.position["y"] = new_x, new_y
         else:
-    # During cooldown, adjust movement to prevent moving off-screen
+            # During cooldown, adjust movement to prevent moving off-screen
             self.position["x"] = max(
                 0,
                 min(self.position["x"], self.screen_width - self.size)
@@ -236,18 +236,52 @@ class PlayerTraining:
             )
 
         if self.wrap_cooldown > 0:
-                    self.wrap_cooldown -= 1
+            self.wrap_cooldown -= 1
 
-    def shoot_missile(self) -> None:
-        if len(self.missiles) == 0:
+    # def shoot_missile(self) -> None:
+    #     if len(self.missiles) == 0:
+    #         missile_start_x = self.position["x"] + self.size // 2
+    #         missile_start_y = self.position["y"] + self.size // 2
+    #         missile = Missile(x=missile_start_x, y=missile_start_y, vx=5.0, vy=0.0)
+    #         self.missiles.append(missile)
+    #         logging.info("Training mode: Missile shot straight to the right.")
+    #     else:
+    #         logging.debug(
+    #             "Attempted to shoot a missile in training mode, but one is already active."
+    #         )
+    # entities/player_training.py
+
+    def shoot_missile(self, enemy_x: float, enemy_y: float) -> None:
+        if len(self.missiles) == 0:  # Keep limit of 1 missile at a time for now
             missile_start_x = self.position["x"] + self.size // 2
             missile_start_y = self.position["y"] + self.size // 2
-            missile = Missile(x=missile_start_x, y=missile_start_y, vx=5.0, vy=0.0)
+
+            # Calculate initial direction towards enemy
+            dx = enemy_x - missile_start_x
+            dy = enemy_y - missile_start_y
+            angle = math.atan2(dy, dx)
+
+            # Calculate velocity components
+            speed = 5.0  # Or whatever base speed you want for missiles
+            vx = math.cos(angle) * speed
+            vy = math.sin(angle) * speed
+
+            # Add random variation to missile lifespan (optional, but good for training)
+            lifespan = random.randint(500, 1500)  # Random lifespan 0.5s - 1.5s
+            birth_time = pygame.time.get_ticks()  # For tracking lifespan
+
+            missile = Missile(
+                missile_start_x,
+                missile_start_y,
+                speed=speed,
+                vx=vx,
+                vy=vy,
+                lifespan=lifespan,
+                birth_time=birth_time,
+            )
             self.missiles.append(missile)
-            logging.info("Training mode: Missile shot straight to the right.")
-        else:
-            logging.debug(
-                "Attempted to shoot a missile in training mode, but one is already active."
+            logging.info(
+                f"Training Mode: Missile shot towards enemy at angle: {math.degrees(angle)}"
             )
 
     def update_missiles(self) -> None:
