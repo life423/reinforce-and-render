@@ -165,24 +165,23 @@ class Game:
                 self.running = False
 
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    logging.info("Escape key pressed. Exiting game.")
-                    self.running = False
-
-                # Example fullscreen toggle with 'F'
-                elif event.key == pygame.K_f:
-                    self.toggle_fullscreen()
-
-                elif self.menu_active:
-                    # If the menu is up, let the menu handle its own key logic
+                # 1) If the menu is active and possibly in help, let the menu handle ESC.
+                if self.menu_active:
                     selected_action = self.menu.handle_menu_events(event)
                     if selected_action:
                         self.check_menu_selection(selected_action)
 
+                # 2) If the menu is NOT active, interpret ESC as exit game:
                 else:
-                    # If the menu is not active, handle in-game keys
-                    if event.key == pygame.K_SPACE and self.player:
+                    if event.key == pygame.K_ESCAPE:
+                        logging.info("Escape key pressed. Exiting game.")
+                        self.running = False
+                    elif event.key == pygame.K_f:
+                        self.toggle_fullscreen()
+                    elif event.key == pygame.K_SPACE and self.player:
                         self.player.shoot_missile()
+
+            # MOUSE, etc. can stay as-is
 
     def check_menu_selection(self, selected_action: str) -> None:
         """Handle actions selected from the menu."""
