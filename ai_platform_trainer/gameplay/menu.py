@@ -155,6 +155,7 @@ class Menu:
             "Press Arrow Keys or W/S to navigate menu.",
             "Press Enter to select.",
             "Press F to toggle fullscreen.",
+            "Press M to return to the menu.",
             "Press Escape to quit this help screen.",
         ]
 
