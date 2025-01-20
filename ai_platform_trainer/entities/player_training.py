@@ -22,6 +22,7 @@ class PlayerTraining:
         self.missiles = []
         logging.info("PlayerTraining initialized.")
 
+        # Desired distance logic for movement patterns
         self.desired_distance = 200
         self.margin = 20
 
@@ -34,19 +35,23 @@ class PlayerTraining:
         self.circle_radius = 100
         self.diagonal_direction = (1, 1)
 
-        # Wrap-around cooldown attributes
-        self.wrap_cooldown = 0
-        self.wrap_cooldown_frames = 120
+        # Remove wrap-around cooldown attributes altogether
+        # self.wrap_cooldown = 0
+        # self.wrap_cooldown_frames = 120
 
-        # Introduce a velocity vector for smoother movement (to reduce jitter)
+        # Velocity for smoother movement
         self.velocity = {"x": 0.0, "y": 0.0}
         self.velocity_blend_factor = (
             0.2  # Lower = smoother movement, Higher = more responsive
         )
 
+        # Initialize a random pattern
         self.switch_pattern()
 
     def switch_pattern(self):
+        """
+        Chooses a new random pattern that differs from the current one.
+        """
         new_pattern = self.current_pattern
         while new_pattern == self.current_pattern:
             new_pattern = random.choice(self.PATTERNS)
@@ -68,6 +73,9 @@ class PlayerTraining:
         logging.debug(f"Switched pattern to {self.current_pattern} at {self.position}")
 
     def reset(self) -> None:
+        """
+        Reset player position and missile list, then pick a new movement pattern.
+        """
         self.position = {
             "x": random.randint(0, self.screen_width - self.size),
             "y": random.randint(0, self.screen_height - self.size),
@@ -77,6 +85,10 @@ class PlayerTraining:
         logging.info("PlayerTraining has been reset.")
 
     def bias_angle_away_from_enemy(self, enemy_x, enemy_y, base_angle):
+        """
+        Adjusts the given angle away from the enemy if the player is too close,
+        or somewhat towards the enemy if the player is too far, adding realism.
+        """
         dx = enemy_x - self.position["x"]
         dy = enemy_y - self.position["y"]
         dist = math.hypot(dx, dy)
@@ -84,6 +96,7 @@ class PlayerTraining:
             return (base_angle + math.pi) % (2 * math.pi)
 
         enemy_angle = math.atan2(dy, dx)
+        # Decide how strongly to bias the angle
         if dist < self.desired_distance - self.margin:
             bias_strength = math.radians(30)
         elif dist > self.desired_distance + self.margin:
@@ -101,12 +114,13 @@ class PlayerTraining:
 
     def move_with_velocity(self, ndx, ndy):
         """
-        Use a velocity vector to reduce jitter.
-        Blend current velocity toward (ndx * step, ndy * step).
+        Smooth velocity-based movement. 'ndx' and 'ndy' are normalized direction components.
+        We blend current velocity toward (ndx * step, ndy * step).
         """
         target_vx = ndx * self.step
         target_vy = ndy * self.step
 
+        # Blend velocities to reduce jitter
         self.velocity["x"] = (1 - self.velocity_blend_factor) * self.velocity[
             "x"
         ] + self.velocity_blend_factor * target_vx
@@ -118,6 +132,10 @@ class PlayerTraining:
         self.position["y"] += self.velocity["y"]
 
     def random_walk_pattern(self, enemy_x, enemy_y):
+        """
+        Random angle movement that adjusts slightly away from the enemy if too close,
+        or more random if not near the enemy.
+        """
         if self.random_walk_timer <= 0:
             self.random_walk_angle = random.uniform(0, 2 * math.pi)
             self.random_walk_speed = self.step
@@ -135,6 +153,10 @@ class PlayerTraining:
         logging.debug(f"Random walk: pos={self.position}")
 
     def circle_pattern(self, enemy_x, enemy_y):
+        """
+        Moves in a rough circle around a center point, while also adjusting
+        away from the enemy if too close.
+        """
         angle_increment = 0.02
         self.circle_angle += angle_increment
 
@@ -154,6 +176,7 @@ class PlayerTraining:
         ndy = math.sin(final_angle)
         self.move_with_velocity(ndx, ndy)
 
+        # Occasionally adjust circle radius
         if random.random() < 0.01:
             self.circle_radius += random.randint(-2, 2)
             self.circle_radius = max(20, min(200, self.circle_radius))
@@ -163,6 +186,10 @@ class PlayerTraining:
         )
 
     def diagonal_pattern(self, enemy_x, enemy_y):
+        """
+        Moves diagonally, occasionally adjusting angle slightly.
+        Also biases away from or towards the enemy as needed.
+        """
         if random.random() < 0.02:
             angle = math.atan2(self.diagonal_direction[1], self.diagonal_direction[0])
             angle += random.uniform(-0.3, 0.3)
@@ -180,15 +207,21 @@ class PlayerTraining:
         )
 
     def update(self, enemy_x: float, enemy_y: float) -> None:
+        """
+        Main update method:
+        - Picks patterns based on distance to enemy
+        - Applies direct toroidal wrap every frame (Pac-Man style)
+        """
         dist = math.hypot(self.position["x"] - enemy_x, self.position["y"] - enemy_y)
         close_threshold = self.desired_distance - self.margin
         far_threshold = self.desired_distance + self.margin
 
+        # Decrement state_timer and switch pattern if needed
         self.state_timer -= 1
         if self.state_timer <= 0:
             self.switch_pattern()
 
-        # Distance-based pattern selection
+        # Choose movement pattern based on distance
         if dist < close_threshold:
             self.random_walk_pattern(enemy_x, enemy_y)
         elif dist > far_threshold:
@@ -205,6 +238,8 @@ class PlayerTraining:
                 self.circle_pattern(enemy_x, enemy_y)
             elif self.current_pattern == "diagonal_move":
                 self.diagonal_pattern(enemy_x, enemy_y)
+
+        # Perform direct wrap each frame
         new_x, new_y = wrap_position(
             self.position["x"],
             self.position["y"],
@@ -214,69 +249,31 @@ class PlayerTraining:
         )
         self.position["x"], self.position["y"] = new_x, new_y
 
-    # # Introduce wrap-around cooldown logic
-    # old_x, old_y = self.position["x"], self.position["y"]
-
-    # if self.wrap_cooldown == 0:
-    #     new_x, new_y = wrap_position(
-    #         self.position["x"],
-    #         self.position["y"],
-    #         self.screen_width,
-    #         self.screen_height,
-    #         self.size,
-    #     )
-
-    #     if (new_x, new_y) != (old_x, old_y):
-    #         self.wrap_cooldown = self.wrap_cooldown_frames
-    #         self.position["x"], self.position["y"] = new_x, new_y
-    #         logging.debug(f"Wrapped around: new pos={self.position}")
-    #     else:
-    #         self.position["x"], self.position["y"] = new_x, new_y
-    # else:
-    #     # During cooldown, adjust movement to prevent moving off-screen
-    #     self.position["x"] = max(
-    #         0,
-    #         min(self.position["x"], self.screen_width - self.size)
-    #     )
-    #     self.position["y"] = max(
-    #         0,
-    #         min(self.position["y"], self.screen_height - self.size)
-    #     )
-
-    # if self.wrap_cooldown > 0:
-    #     self.wrap_cooldown -= 1
-
-    # def shoot_missile(self) -> None:
-    #     if len(self.missiles) == 0:
-    #         missile_start_x = self.position["x"] + self.size // 2
-    #         missile_start_y = self.position["y"] + self.size // 2
-    #         missile = Missile(x=missile_start_x, y=missile_start_y, vx=5.0, vy=0.0)
-    #         self.missiles.append(missile)
-    #         logging.info("Training mode: Missile shot straight to the right.")
-    #     else:
-    #         logging.debug(
-    #             "Attempted to shoot a missile in training mode, but one is already active."
-    #         )
-    # entities/player_training.py
-
     def shoot_missile(self, enemy_x: float, enemy_y: float) -> None:
-        if len(self.missiles) == 0:  # Keep limit of 1 missile at a time for now
+        """
+        Fires a missile toward the enemy with a slight random angle offset
+        and a random lifespan. Only one missile at a time.
+        """
+        if len(self.missiles) == 0:
             missile_start_x = self.position["x"] + self.size // 2
             missile_start_y = self.position["y"] + self.size // 2
 
-            # Calculate initial direction towards enemy
+            # Compute base angle
             dx = enemy_x - missile_start_x
             dy = enemy_y - missile_start_y
             angle = math.atan2(dy, dx)
 
-            # Calculate velocity components
-            speed = 5.0  # Or whatever base speed you want for missiles
+            # NEW: Add a random offset to the angle for variety
+            offset_degrees = random.uniform(-10, 10)  # e.g., ±10 degrees
+            angle += math.radians(offset_degrees)
+
+            speed = 5.0
             vx = math.cos(angle) * speed
             vy = math.sin(angle) * speed
 
-            # Add random variation to missile lifespan (optional, but good for training)
-            lifespan = random.randint(500, 1500)  # Random lifespan 0.5s - 1.5s
-            birth_time = pygame.time.get_ticks()  # For tracking lifespan
+            # Random missile lifespan
+            lifespan = random.randint(500, 1500)  # 0.5s - 1.5s
+            birth_time = pygame.time.get_ticks()
 
             missile = Missile(
                 missile_start_x,
@@ -289,10 +286,13 @@ class PlayerTraining:
             )
             self.missiles.append(missile)
             logging.info(
-                f"Training Mode: Missile shot towards enemy at angle: {math.degrees(angle)}"
+                f"Training Mode: Missile shot with offset {offset_degrees:.1f}°, final angle: {math.degrees(angle):.1f}°"
             )
 
     def update_missiles(self) -> None:
+        """
+        Let each missile move and remove it if it goes off-screen.
+        """
         for missile in self.missiles[:]:
             missile.update()
             # Remove if off-screen
@@ -306,10 +306,16 @@ class PlayerTraining:
                 logging.debug("Missile removed for going off-screen.")
 
     def draw_missiles(self, screen: pygame.Surface) -> None:
+        """
+        Draw each missile on the given screen surface.
+        """
         for missile in self.missiles:
             missile.draw(screen)
 
     def draw(self, screen: pygame.Surface) -> None:
+        """
+        Draw the player (a rectangle) and any active missiles.
+        """
         pygame.draw.rect(
             screen,
             self.color,
