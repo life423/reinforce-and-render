@@ -157,7 +157,6 @@ class Game:
                     f"No missile model found at '{missile_model_path}'. Skipping missile AI."
                 )
 
-
     def handle_events(self) -> None:
         """Handle window and menu-related events."""
         for event in pygame.event.get():
