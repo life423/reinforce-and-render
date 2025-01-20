@@ -205,38 +205,46 @@ class PlayerTraining:
                 self.circle_pattern(enemy_x, enemy_y)
             elif self.current_pattern == "diagonal_move":
                 self.diagonal_pattern(enemy_x, enemy_y)
+        new_x, new_y = wrap_position(
+            self.position["x"],
+            self.position["y"],
+            self.screen_width,
+            self.screen_height,
+            self.size,
+        )
+        self.position["x"], self.position["y"] = new_x, new_y
 
-        # Introduce wrap-around cooldown logic
-        old_x, old_y = self.position["x"], self.position["y"]
+    # # Introduce wrap-around cooldown logic
+    # old_x, old_y = self.position["x"], self.position["y"]
 
-        if self.wrap_cooldown == 0:
-            new_x, new_y = wrap_position(
-                self.position["x"],
-                self.position["y"],
-                self.screen_width,
-                self.screen_height,
-                self.size,
-            )
+    # if self.wrap_cooldown == 0:
+    #     new_x, new_y = wrap_position(
+    #         self.position["x"],
+    #         self.position["y"],
+    #         self.screen_width,
+    #         self.screen_height,
+    #         self.size,
+    #     )
 
-            if (new_x, new_y) != (old_x, old_y):
-                self.wrap_cooldown = self.wrap_cooldown_frames
-                self.position["x"], self.position["y"] = new_x, new_y
-                logging.debug(f"Wrapped around: new pos={self.position}")
-            else:
-                self.position["x"], self.position["y"] = new_x, new_y
-        else:
-            # During cooldown, adjust movement to prevent moving off-screen
-            self.position["x"] = max(
-                0,
-                min(self.position["x"], self.screen_width - self.size)
-            )
-            self.position["y"] = max(
-                0,
-                min(self.position["y"], self.screen_height - self.size)
-            )
+    #     if (new_x, new_y) != (old_x, old_y):
+    #         self.wrap_cooldown = self.wrap_cooldown_frames
+    #         self.position["x"], self.position["y"] = new_x, new_y
+    #         logging.debug(f"Wrapped around: new pos={self.position}")
+    #     else:
+    #         self.position["x"], self.position["y"] = new_x, new_y
+    # else:
+    #     # During cooldown, adjust movement to prevent moving off-screen
+    #     self.position["x"] = max(
+    #         0,
+    #         min(self.position["x"], self.screen_width - self.size)
+    #     )
+    #     self.position["y"] = max(
+    #         0,
+    #         min(self.position["y"], self.screen_height - self.size)
+    #     )
 
-        if self.wrap_cooldown > 0:
-            self.wrap_cooldown -= 1
+    # if self.wrap_cooldown > 0:
+    #     self.wrap_cooldown -= 1
 
     # def shoot_missile(self) -> None:
     #     if len(self.missiles) == 0:
