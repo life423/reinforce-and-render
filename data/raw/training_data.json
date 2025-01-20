@@ -1,1 +1,920 @@
-[]
+[
+    {
+        "pos_x": 124.36029924857719,
+        "pos_y": 447.0400536942676,
+        "timestamp": 3233,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 128.95590094189018,
+        "pos_y": 445.0701691604894,
+        "timestamp": 3266,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 133.55150263520318,
+        "pos_y": 443.1002846267112,
+        "timestamp": 3299,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 138.14710432851618,
+        "pos_y": 441.130400092933,
+        "timestamp": 3332,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 142.74270602182918,
+        "pos_y": 439.16051555915476,
+        "timestamp": 3351,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 147.33830771514218,
+        "pos_y": 437.19063102537655,
+        "timestamp": 3368,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 151.93390940845518,
+        "pos_y": 435.22074649159833,
+        "timestamp": 3385,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 156.52951110176818,
+        "pos_y": 433.2508619578201,
+        "timestamp": 3402,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 161.12511279508118,
+        "pos_y": 431.2809774240419,
+        "timestamp": 3419,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 165.72071448839418,
+        "pos_y": 429.3110928902637,
+        "timestamp": 3436,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 170.31631618170718,
+        "pos_y": 427.3412083564855,
+        "timestamp": 3453,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 174.91191787502018,
+        "pos_y": 425.37132382270727,
+        "timestamp": 3470,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 179.50751956833318,
+        "pos_y": 423.40143928892905,
+        "timestamp": 3487,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 184.10312126164618,
+        "pos_y": 421.43155475515084,
+        "timestamp": 3504,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 188.69872295495918,
+        "pos_y": 419.46167022137263,
+        "timestamp": 3521,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 193.29432464827218,
+        "pos_y": 417.4917856875944,
+        "timestamp": 3538,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 197.88992634158518,
+        "pos_y": 415.5219011538162,
+        "timestamp": 3556,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 202.48552803489818,
+        "pos_y": 413.552016620038,
+        "timestamp": 3572,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 207.08112972821118,
+        "pos_y": 411.5821320862598,
+        "timestamp": 3588,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 211.67673142152418,
+        "pos_y": 409.61224755248156,
+        "timestamp": 3605,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 216.27233311483718,
+        "pos_y": 407.64236301870335,
+        "timestamp": 3621,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 220.86793480815018,
+        "pos_y": 405.67247848492514,
+        "timestamp": 3638,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 225.46353650146318,
+        "pos_y": 403.7025939511469,
+        "timestamp": 3655,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 230.05913819477618,
+        "pos_y": 401.7327094173687,
+        "timestamp": 3672,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 234.65473988808918,
+        "pos_y": 399.7628248835905,
+        "timestamp": 3689,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 239.25034158140218,
+        "pos_y": 397.7929403498123,
+        "timestamp": 3706,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 243.84594327471518,
+        "pos_y": 395.82305581603407,
+        "timestamp": 3724,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 248.44154496802818,
+        "pos_y": 393.85317128225586,
+        "timestamp": 3740,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 253.03714666134118,
+        "pos_y": 391.88328674847764,
+        "timestamp": 3757,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 257.63274835465415,
+        "pos_y": 389.91340221469943,
+        "timestamp": 3774,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 262.2283500479671,
+        "pos_y": 387.9435176809212,
+        "timestamp": 3791,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 266.8239517412801,
+        "pos_y": 385.973633147143,
+        "timestamp": 3808,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 271.41955343459307,
+        "pos_y": 384.0037486133648,
+        "timestamp": 3825,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 276.01515512790604,
+        "pos_y": 382.0338640795866,
+        "timestamp": 3842,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 280.610756821219,
+        "pos_y": 380.06397954580837,
+        "timestamp": 3859,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 285.206358514532,
+        "pos_y": 378.09409501203015,
+        "timestamp": 3876,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 289.80196020784496,
+        "pos_y": 376.12421047825194,
+        "timestamp": 3892,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 294.3975619011579,
+        "pos_y": 374.1543259444737,
+        "timestamp": 3909,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 298.9931635944709,
+        "pos_y": 372.1844414106955,
+        "timestamp": 3926,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 303.5887652877839,
+        "pos_y": 370.2145568769173,
+        "timestamp": 3944,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 308.18436698109684,
+        "pos_y": 368.2446723431391,
+        "timestamp": 3960,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 312.7799686744098,
+        "pos_y": 366.2747878093609,
+        "timestamp": 3977,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 317.3755703677228,
+        "pos_y": 364.30490327558266,
+        "timestamp": 3995,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 321.97117206103576,
+        "pos_y": 362.33501874180445,
+        "timestamp": 4011,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 326.56677375434873,
+        "pos_y": 360.36513420802623,
+        "timestamp": 4027,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 331.1623754476617,
+        "pos_y": 358.395249674248,
+        "timestamp": 4050,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 335.7579771409747,
+        "pos_y": 356.4253651404698,
+        "timestamp": 4083,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 340.35357883428765,
+        "pos_y": 354.4554806066916,
+        "timestamp": 4116,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 344.9491805276006,
+        "pos_y": 352.4855960729134,
+        "timestamp": 4149,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 349.5447822209136,
+        "pos_y": 350.51571153913517,
+        "timestamp": 4182,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 144.90471657826535,
+        "pos_y": 29.61390227355789,
+        "timestamp": 5955,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 146.83134726681396,
+        "pos_y": 34.22780454711578,
+        "timestamp": 5973,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 148.75797795536258,
+        "pos_y": 38.84170682067367,
+        "timestamp": 5992,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 150.6846086439112,
+        "pos_y": 43.45560909423156,
+        "timestamp": 6006,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 152.6112393324598,
+        "pos_y": 48.06951136778945,
+        "timestamp": 6029,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 154.53787002100842,
+        "pos_y": 52.68341364134734,
+        "timestamp": 6048,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 156.46450070955703,
+        "pos_y": 57.297315914905234,
+        "timestamp": 7041,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 158.39113139810564,
+        "pos_y": 61.911218188463124,
+        "timestamp": 7087,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 160.31776208665426,
+        "pos_y": 66.52512046202101,
+        "timestamp": 7088,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 162.24439277520287,
+        "pos_y": 71.13902273557889,
+        "timestamp": 7105,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 164.17102346375148,
+        "pos_y": 75.75292500913677,
+        "timestamp": 7122,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 166.0976541523001,
+        "pos_y": 80.36682728269466,
+        "timestamp": 7139,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 168.0242848408487,
+        "pos_y": 84.98072955625254,
+        "timestamp": 7156,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 26.576898973855023,
+        "pos_y": 570.2551723291299,
+        "timestamp": 9279,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 28.153797947710046,
+        "pos_y": 565.5103446582598,
+        "timestamp": 9296,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 29.73069692156507,
+        "pos_y": 560.7655169873897,
+        "timestamp": 9313,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 31.307595895420093,
+        "pos_y": 556.0206893165196,
+        "timestamp": 9330,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 32.884494869275116,
+        "pos_y": 551.2758616456495,
+        "timestamp": 9347,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 34.46139384313014,
+        "pos_y": 546.5310339747793,
+        "timestamp": 9364,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 36.03829281698516,
+        "pos_y": 541.7862063039092,
+        "timestamp": 9381,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 37.615191790840186,
+        "pos_y": 537.0413786330391,
+        "timestamp": 9398,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 39.19209076469521,
+        "pos_y": 532.296550962169,
+        "timestamp": 9415,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 40.76898973855023,
+        "pos_y": 527.5517232912989,
+        "timestamp": 9432,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 42.345888712405255,
+        "pos_y": 522.8068956204288,
+        "timestamp": 9450,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 43.92278768626028,
+        "pos_y": 518.0620679495587,
+        "timestamp": 9466,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 45.4996866601153,
+        "pos_y": 513.3172402786886,
+        "timestamp": 9483,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 47.076585633970325,
+        "pos_y": 508.5724126078184,
+        "timestamp": 9500,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 48.65348460782535,
+        "pos_y": 503.82758493694826,
+        "timestamp": 9517,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 50.23038358168037,
+        "pos_y": 499.0827572660781,
+        "timestamp": 9534,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 51.807282555535394,
+        "pos_y": 494.3379295952079,
+        "timestamp": 9551,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 53.38418152939042,
+        "pos_y": 489.59310192433776,
+        "timestamp": 9568,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 54.96108050324544,
+        "pos_y": 484.8482742534676,
+        "timestamp": 9585,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 56.537979477100464,
+        "pos_y": 480.1034465825974,
+        "timestamp": 9602,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 58.11487845095549,
+        "pos_y": 475.35861891172726,
+        "timestamp": 9619,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 59.69177742481051,
+        "pos_y": 470.6137912408571,
+        "timestamp": 9636,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 61.268676398665534,
+        "pos_y": 465.86896356998693,
+        "timestamp": 9653,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 62.84557537252056,
+        "pos_y": 461.12413589911677,
+        "timestamp": 9671,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 64.42247434637558,
+        "pos_y": 456.3793082282466,
+        "timestamp": 9688,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 65.9993733202306,
+        "pos_y": 451.63448055737643,
+        "timestamp": 9706,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 67.57627229408563,
+        "pos_y": 446.88965288650627,
+        "timestamp": 9722,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 69.15317126794065,
+        "pos_y": 442.1448252156361,
+        "timestamp": 9739,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 70.73007024179567,
+        "pos_y": 437.39999754476594,
+        "timestamp": 9756,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 72.3069692156507,
+        "pos_y": 432.6551698738958,
+        "timestamp": 9773,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 73.88386818950572,
+        "pos_y": 427.9103422030256,
+        "timestamp": 9790,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 75.46076716336074,
+        "pos_y": 423.16551453215544,
+        "timestamp": 9807,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 77.03766613721577,
+        "pos_y": 418.4206868612853,
+        "timestamp": 9824,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 78.61456511107079,
+        "pos_y": 413.6758591904151,
+        "timestamp": 9841,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 80.19146408492581,
+        "pos_y": 408.93103151954494,
+        "timestamp": 9858,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 81.76836305878084,
+        "pos_y": 404.1862038486748,
+        "timestamp": 9875,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 83.34526203263586,
+        "pos_y": 399.4413761778046,
+        "timestamp": 9892,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 84.92216100649088,
+        "pos_y": 394.69654850693445,
+        "timestamp": 9909,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 86.4990599803459,
+        "pos_y": 389.9517208360643,
+        "timestamp": 9926,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 28.893263233246326,
+        "pos_y": 28.13727611100017,
+        "timestamp": 13519,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 32.78652646649265,
+        "pos_y": 31.274552222000338,
+        "timestamp": 13536,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 36.67978969973898,
+        "pos_y": 34.41182833300051,
+        "timestamp": 13553,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 40.57305293298531,
+        "pos_y": 37.549104444000676,
+        "timestamp": 13570,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 44.46631616623164,
+        "pos_y": 40.686380555000845,
+        "timestamp": 13587,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 48.35957939947797,
+        "pos_y": 43.823656666001014,
+        "timestamp": 13604,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 52.2528426327243,
+        "pos_y": 46.96093277700118,
+        "timestamp": 13621,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 56.14610586597063,
+        "pos_y": 50.09820888800135,
+        "timestamp": 13638,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 60.03936909921696,
+        "pos_y": 53.23548499900152,
+        "timestamp": 13655,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 63.93263233246329,
+        "pos_y": 56.37276111000169,
+        "timestamp": 13672,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 67.82589556570962,
+        "pos_y": 59.51003722100186,
+        "timestamp": 13689,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 71.71915879895595,
+        "pos_y": 62.64731333200203,
+        "timestamp": 13706,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 75.61242203220228,
+        "pos_y": 65.7845894430022,
+        "timestamp": 13723,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 79.5056852654486,
+        "pos_y": 68.92186555400238,
+        "timestamp": 13740,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 83.39894849869493,
+        "pos_y": 72.05914166500256,
+        "timestamp": 13758,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 87.29221173194126,
+        "pos_y": 75.19641777600273,
+        "timestamp": 13775,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 91.1854749651876,
+        "pos_y": 78.33369388700291,
+        "timestamp": 13792,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 95.07873819843392,
+        "pos_y": 81.47096999800308,
+        "timestamp": 13809,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 98.97200143168025,
+        "pos_y": 84.60824610900326,
+        "timestamp": 13826,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 102.86526466492658,
+        "pos_y": 87.74552222000344,
+        "timestamp": 13843,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 106.75852789817291,
+        "pos_y": 90.88279833100361,
+        "timestamp": 13860,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 110.65179113141924,
+        "pos_y": 94.02007444200379,
+        "timestamp": 13886,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 114.54505436466557,
+        "pos_y": 97.15735055300397,
+        "timestamp": 13894,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 118.4383175979119,
+        "pos_y": 100.29462666400414,
+        "timestamp": 13910,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 122.33158083115823,
+        "pos_y": 103.43190277500432,
+        "timestamp": 13927,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 126.22484406440456,
+        "pos_y": 106.5691788860045,
+        "timestamp": 13949,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 130.11810729765088,
+        "pos_y": 109.70645499700467,
+        "timestamp": 13983,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 134.0113705308972,
+        "pos_y": 112.84373110800485,
+        "timestamp": 14000,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 137.90463376414354,
+        "pos_y": 115.98100721900502,
+        "timestamp": 14017,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 141.79789699738987,
+        "pos_y": 119.1182833300052,
+        "timestamp": 14034,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 145.6911602306362,
+        "pos_y": 122.25555944100537,
+        "timestamp": 14051,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 149.58442346388253,
+        "pos_y": 125.39283555200555,
+        "timestamp": 14067,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 153.47768669712886,
+        "pos_y": 128.53011166300573,
+        "timestamp": 14083,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 157.3709499303752,
+        "pos_y": 131.6673877740059,
+        "timestamp": 14117,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 161.26421316362152,
+        "pos_y": 134.80466388500608,
+        "timestamp": 14149,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 165.15747639686785,
+        "pos_y": 137.94193999600625,
+        "timestamp": 14182,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 169.05073963011418,
+        "pos_y": 141.07921610700643,
+        "timestamp": 14216,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 172.9440028633605,
+        "pos_y": 144.2164922180066,
+        "timestamp": 14249,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 176.83726609660684,
+        "pos_y": 147.35376832900678,
+        "timestamp": 14287,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 180.73052932985317,
+        "pos_y": 150.49104444000696,
+        "timestamp": 14316,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 184.6237925630995,
+        "pos_y": 153.62832055100714,
+        "timestamp": 14350,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 188.51705579634583,
+        "pos_y": 156.7655966620073,
+        "timestamp": 14383,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 192.41031902959216,
+        "pos_y": 159.9028727730075,
+        "timestamp": 14417,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 196.3035822628385,
+        "pos_y": 163.04014888400766,
+        "timestamp": 14450,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 200.19684549608482,
+        "pos_y": 166.17742499500784,
+        "timestamp": 14484,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 204.09010872933115,
+        "pos_y": 169.31470110600802,
+        "timestamp": 14517,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 207.98337196257748,
+        "pos_y": 172.4519772170082,
+        "timestamp": 14550,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 211.8766351958238,
+        "pos_y": 175.58925332800837,
+        "timestamp": 14584,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 215.76989842907014,
+        "pos_y": 178.72652943900854,
+        "timestamp": 14617,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 219.66316166231647,
+        "pos_y": 181.86380555000872,
+        "timestamp": 14649,
+        "missile_collision": false
+    },
+    {
+        "pos_x": 223.5564248955628,
+        "pos_y": 185.0010816610089,
+        "timestamp": 14683,
+        "missile_collision": false
+    }
+]

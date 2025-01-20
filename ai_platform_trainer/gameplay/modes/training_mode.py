@@ -58,6 +58,13 @@ class TrainingMode:
                     logging.debug("Training mode: Missile removed (lifespan expiry).")
                 else:
                     missile.update()
+                    if missile in self.missile_sequences:
+                        self.missile_sequences[missile].append({
+                            "pos_x": missile.pos["x"],
+                            "pos_y": missile.pos["y"],
+                            "timestamp": current_time,
+                            # possibly more fields
+                        })
 
                     # Collision with enemy
                     if self.game.enemy:
