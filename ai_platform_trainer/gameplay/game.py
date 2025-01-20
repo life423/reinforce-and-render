@@ -7,6 +7,7 @@ from typing import Optional, Tuple
 import pygame
 import torch
 
+# Logging setup (optional)
 from ai_platform_trainer.core.logging_config import setup_logging
 
 # AI and model imports
@@ -33,9 +34,7 @@ from ai_platform_trainer.gameplay.spawner import (
     respawn_enemy_with_fade_in,
 )
 
-# from ai_platform_trainer.gameplay.utils import compute_normalized_direction, find_valid_spawn_position
-
-# Configuration manager imports
+# Configuration manager imports for fullscreen settings
 from config_manager import load_settings, save_settings
 
 
@@ -49,7 +48,7 @@ class Game:
     def __init__(self) -> None:
         """
         Initialize pygame, set up logging, load settings, configure display,
-        and load the missile model once for the session.
+        and load the missile model exactly once for the entire session.
         """
         setup_logging()
         pygame.init()
@@ -58,7 +57,7 @@ class Game:
         self.menu_active: bool = True
         self.mode: Optional[str] = None
 
-        # 1) Load settings (fullscreen, etc.)
+        # 1) Load user settings (fullscreen, etc.)
         settings = load_settings("settings.json")
 
         # 2) Initialize display based on settings
@@ -70,7 +69,7 @@ class Game:
         # Optional window caption
         pygame.display.set_caption(config.WINDOW_TITLE)
 
-        # 3) Store screen dimensions, create clock
+        # 3) Store screen dimensions, create a clock
         self.screen_width, self.screen_height = self.screen.get_size()
         self.clock = pygame.time.Clock()
 
@@ -83,7 +82,7 @@ class Game:
         self.enemy: Optional[EnemyPlay] = None
         self.data_logger: Optional[DataLogger] = None
 
-        # Load missile model only once
+        # Load missile model once
         self.missile_model: Optional[SimpleMissileModel] = None
         self._load_missile_model_once()
 
@@ -99,7 +98,8 @@ class Game:
 
     def _load_missile_model_once(self) -> None:
         """
-        Attempt to load the missile model at initialization, only once.
+        Attempt to load the missile model at initialization,
+        so it's only done once per session.
         """
         missile_model_path = "models/missile_model.pth"
         if os.path.isfile(missile_model_path):
@@ -118,7 +118,8 @@ class Game:
                 self.missile_model = None
         else:
             logging.warning(
-                f"No missile model found at '{missile_model_path}'. Skipping missile AI."
+                f"No missile model found at '{missile_model_path}'. "
+                "Skipping missile AI."
             )
 
     def run(self) -> None:
@@ -141,7 +142,7 @@ class Game:
             pygame.display.flip()
             self.clock.tick(config.FRAME_RATE)
 
-        # Save data if training mode
+        # Save data if we were in training mode
         if self.mode == "train" and self.data_logger:
             self.data_logger.save()
 
@@ -150,7 +151,8 @@ class Game:
 
     def start_game(self, mode: str) -> None:
         """
-        Set up the game in 'train' or 'play' mode.
+        Start the game in 'train' or 'play' mode.
+        Initializes relevant entities, data logging, and spawns as needed.
         """
         self.mode = mode
         logging.info(f"Starting game in '{mode}' mode.")
@@ -171,7 +173,8 @@ class Game:
 
     def _init_play_mode(self) -> Tuple[PlayerPlay, EnemyPlay]:
         """
-        Loads an EnemyMovementModel for AI-based movement in play mode.
+        Initialize player and enemy in 'play' mode.
+        Tries to load an EnemyMovementModel for AI-based enemy movement.
         """
         model = EnemyMovementModel(input_size=5, hidden_size=64, output_size=2)
         try:
@@ -201,6 +204,7 @@ class Game:
                 self.running = False
 
             elif event.type == pygame.KEYDOWN:
+                # Fullscreen toggle is always possible
                 if event.key == pygame.K_f:
                     logging.debug("F pressed - toggling fullscreen.")
                     self.toggle_fullscreen()
@@ -224,6 +228,7 @@ class Game:
                         self.reset_game_state()
 
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                # Left-click
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 if self.menu_active:
                     selected_action = self.menu.handle_menu_events(event)
@@ -247,7 +252,7 @@ class Game:
     def toggle_fullscreen(self) -> None:
         """
         Toggle fullscreen by flipping the 'fullscreen' key in settings.json,
-        reinitializing the display, and re-updating relevant entities.
+        reinitializing the display, and optionally reinitializing the current game state.
         """
         settings = load_settings("settings.json")
         is_fullscreen = settings.get("fullscreen", False)
@@ -259,40 +264,26 @@ class Game:
         else:
             self.screen = pygame.display.set_mode(config.SCREEN_SIZE)
 
-        # CRUCIAL: Re-query the updated display size
+        # Update display size
         self.screen_width, self.screen_height = self.screen.get_size()
         logging.info(
-            f"Display resolution is now {self.screen_width}x{self.screen_height}."
+            f"Fullscreen toggled to {settings['fullscreen']}. "
+            f"New display resolution: {self.screen_width}x{self.screen_height}."
         )
 
-        # Update the menu
+        # Update menu for new resolution
         self.menu = Menu(self.screen_width, self.screen_height)
 
-        # If you want to scale or re-init game entities:
-        self.update_entities_for_new_resolution()
+        # Possibly re-init game if we're not in the menu
+        if not self.menu_active:
+            current_mode = self.mode
+            self.reset_game_state()  # Clear entities, state, etc.
+            self.start_game(
+                current_mode
+            )  # Re-initialize the same mode with new dimensions
 
         # Save updated preference
         save_settings(settings, "settings.json")
-        logging.info(f"Fullscreen toggled to {settings['fullscreen']}.")
-
-    def update_entities_for_new_resolution(self) -> None:
-        """
-        Optionally update player, enemy, or other entities to reflect the new resolution.
-        For advanced scaling, you'd handle it here.
-        """
-        # If the player or enemy exist, update their stored screen dimensions.
-        if self.player:
-            self.player.screen_width = self.screen_width
-            self.player.screen_height = self.screen_height
-
-        if self.enemy:
-            self.enemy.screen_width = self.screen_width
-            self.enemy.screen_height = self.screen_height
-
-        # If you have a missile manager or other screen-based logic, update them too.
-        # e.g. self.missile_manager.update_screen_dimensions(self.screen_width, self.screen_height)
-
-        logging.info("Entities updated for new resolution.")
 
     def update(self, current_time: int) -> None:
         """
@@ -313,8 +304,11 @@ class Game:
 
     def play_update(self, current_time: int) -> None:
         """
-        Main update logic for 'play' mode, including player and enemy updates,
-        plus missile AI if present.
+        Main update logic for 'play' mode:
+        - Handle player movement/input
+        - Update enemy via AI
+        - Check collision
+        - Apply missile AI if present
         """
         if self.player and not self.player.handle_input():
             logging.info("Player requested to quit.")
@@ -334,7 +328,7 @@ class Game:
                 self.running = False
                 return
 
-        # Player-Enemy collision
+        # Check collision between player and enemy
         if self.check_collision():
             logging.info("Collision detected between player and enemy.")
             if self.enemy:
@@ -343,7 +337,7 @@ class Game:
             self.respawn_timer = current_time + self.respawn_delay
             logging.info("Player-Enemy collision in play mode.")
 
-        # Apply missile AI
+        # Apply missile AI if available
         if self.missile_model and self.player and self.player.missiles:
             for missile in self.player.missiles:
                 current_angle = math.atan2(missile.vy, missile.vx)
@@ -419,7 +413,8 @@ class Game:
 
     def reset_game_state(self) -> None:
         """
-        Reset the game state when returning to the menu.
+        Reset the in-game state when returning to the menu
+        or re-initializing for fullscreen toggles.
         Clears entities, data loggers, etc.
         """
         self.player = None

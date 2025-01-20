@@ -272,7 +272,7 @@ class PlayerTraining:
             vy = math.sin(angle) * speed
 
             # Random missile lifespan
-            lifespan = random.randint(500, 1500)  # 0.5s - 1.5s
+            lifespan = random.randint(500, 3000)  # 0.5s - 1.5s
             birth_time = pygame.time.get_ticks()
 
             missile = Missile(
