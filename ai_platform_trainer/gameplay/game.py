@@ -47,8 +47,8 @@ class Game:
 
     def __init__(self) -> None:
         """
-        Initialize pygame, set up logging, load settings, configure display,
-        and load the missile model exactly once for the entire session.
+        Initialize pygame, set up logging, load settings, and configure display.
+        Load the missile model exactly once for the entire session.
         """
         setup_logging()
         pygame.init()
@@ -58,18 +58,18 @@ class Game:
         self.mode: Optional[str] = None
 
         # 1) Load user settings (fullscreen, etc.)
-        settings = load_settings("settings.json")
+        self.settings = load_settings("settings.json")
 
         # 2) Initialize display based on settings
-        if settings.get("fullscreen", False):
+        if self.settings.get("fullscreen", False):
             self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         else:
             self.screen = pygame.display.set_mode(config.SCREEN_SIZE)
 
-        # Optional window caption
+        # Optional: set window caption
         pygame.display.set_caption(config.WINDOW_TITLE)
 
-        # 3) Store screen dimensions, create a clock
+        # 3) Store screen dimensions, create clock
         self.screen_width, self.screen_height = self.screen.get_size()
         self.clock = pygame.time.Clock()
 
@@ -98,8 +98,7 @@ class Game:
 
     def _load_missile_model_once(self) -> None:
         """
-        Attempt to load the missile model at initialization,
-        so it's only done once per session.
+        Attempt to load the missile model at initialization, so it's only done once.
         """
         missile_model_path = "models/missile_model.pth"
         if os.path.isfile(missile_model_path):
@@ -118,14 +117,13 @@ class Game:
                 self.missile_model = None
         else:
             logging.warning(
-                f"No missile model found at '{missile_model_path}'. "
-                "Skipping missile AI."
+                f"No missile model found at '{missile_model_path}'. Skipping missile AI."
             )
 
     def run(self) -> None:
         """
         Main game loop. Processes events, updates logic, and renders frames.
-        Saves training data if 'train' mode on exit.
+        If in training mode, also saves data upon exit.
         """
         while self.running:
             current_time = pygame.time.get_ticks()
@@ -204,7 +202,6 @@ class Game:
                 self.running = False
 
             elif event.type == pygame.KEYDOWN:
-                # Fullscreen toggle is always possible
                 if event.key == pygame.K_f:
                     logging.debug("F pressed - toggling fullscreen.")
                     self.toggle_fullscreen()
@@ -214,7 +211,7 @@ class Game:
                     if selected_action:
                         self.check_menu_selection(selected_action)
                 else:
-                    # In-game keys
+                    # In-game key logic
                     if event.key == pygame.K_ESCAPE:
                         logging.info("Escape key pressed. Exiting game.")
                         self.running = False
@@ -228,7 +225,6 @@ class Game:
                         self.reset_game_state()
 
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                # Left-click
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 if self.menu_active:
                     selected_action = self.menu.handle_menu_events(event)
@@ -251,39 +247,38 @@ class Game:
 
     def toggle_fullscreen(self) -> None:
         """
-        Toggle fullscreen by flipping the 'fullscreen' key in settings.json,
-        reinitializing the display, and optionally reinitializing the current game state.
+        Toggle fullscreen by flipping the 'fullscreen' setting,
+        creating the display surface exactly once, and re-initializing if necessary.
+        This approach prevents flicker and maintains correct resolution.
         """
-        settings = load_settings("settings.json")
-        is_fullscreen = settings.get("fullscreen", False)
-        settings["fullscreen"] = not is_fullscreen
+        # Toggle setting
+        self.settings["fullscreen"] = not self.settings.get("fullscreen", False)
+        save_settings(self.settings, "settings.json")
 
-        # Actually set fullscreen or windowed
-        if settings["fullscreen"]:
-            self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        # Determine flags
+        flags = pygame.FULLSCREEN if self.settings["fullscreen"] else 0
+
+        # Create display surface only once, eliminating flicker
+        if self.settings["fullscreen"]:
+            self.screen = pygame.display.set_mode((0, 0), flags)
         else:
-            self.screen = pygame.display.set_mode(config.SCREEN_SIZE)
+            self.screen = pygame.display.set_mode(config.SCREEN_SIZE, flags)
 
-        # Update display size
+        # Re-query the new display size
         self.screen_width, self.screen_height = self.screen.get_size()
         logging.info(
-            f"Fullscreen toggled to {settings['fullscreen']}. "
+            f"Fullscreen toggled to {self.settings['fullscreen']}. "
             f"New display resolution: {self.screen_width}x{self.screen_height}."
         )
 
         # Update menu for new resolution
         self.menu = Menu(self.screen_width, self.screen_height)
 
-        # Possibly re-init game if we're not in the menu
+        # If we're in a game mode (play or train), reset and restart to avoid mismatches
         if not self.menu_active:
             current_mode = self.mode
-            self.reset_game_state()  # Clear entities, state, etc.
-            self.start_game(
-                current_mode
-            )  # Re-initialize the same mode with new dimensions
-
-        # Save updated preference
-        save_settings(settings, "settings.json")
+            self.reset_game_state()  # Clear entities, etc.
+            self.start_game(current_mode)  # Re-init the same mode at new resolution
 
     def update(self, current_time: int) -> None:
         """
@@ -305,10 +300,10 @@ class Game:
     def play_update(self, current_time: int) -> None:
         """
         Main update logic for 'play' mode:
-        - Handle player movement/input
-        - Update enemy via AI
-        - Check collision
-        - Apply missile AI if present
+         - Handle player input
+         - Update enemy via AI
+         - Check collision
+         - Apply missile AI if present
         """
         if self.player and not self.player.handle_input():
             logging.info("Player requested to quit.")
@@ -346,6 +341,7 @@ class Game:
                 ex, ey = self.enemy.pos["x"], self.enemy.pos["y"]
                 dist_val = math.hypot(px - ex, py - ey)
 
+                # Reuse the class-level input tensor
                 self._missile_input[0, 0] = px
                 self._missile_input[0, 1] = py
                 self._missile_input[0, 2] = ex
@@ -354,7 +350,7 @@ class Game:
                 self._missile_input[0, 5] = missile.pos["y"]
                 self._missile_input[0, 6] = current_angle
                 self._missile_input[0, 7] = dist_val
-                self._missile_input[0, 8] = 0.0  # collision_val placeholder
+                self._missile_input[0, 8] = 0.0
 
                 with torch.no_grad():
                     angle_delta = self.missile_model(self._missile_input).item()
@@ -378,10 +374,7 @@ class Game:
             self.player.size,
         )
         enemy_rect = pygame.Rect(
-            self.enemy.pos["x"],
-            self.enemy.pos["y"],
-            self.enemy.size,
-            self.enemy.size,
+            self.enemy.pos["x"], self.enemy.pos["y"], self.enemy.size, self.enemy.size
         )
         return player_rect.colliderect(enemy_rect)
 
