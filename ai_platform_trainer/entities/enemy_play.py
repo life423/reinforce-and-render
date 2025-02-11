@@ -28,16 +28,29 @@ class EnemyPlay:
         self.surface = pygame.Surface((self.size, self.size), pygame.SRCALPHA)
         self.surface.fill((*self.color, 255))
 
+    # def wrap_position(self, x: float, y: float) -> Tuple[float, float]:
+    #     if x < -self.size:
+    #         x = self.screen_width
+    #     elif x > self.screen_width:
+    #         x = -self.size
+    #     if y < -self.size:
+    #         y = self.screen_height
+    #     elif y > self.screen_height:
+    #         y = -self.size
+    #     return x, y
+    
     def wrap_position(self, x: float, y: float) -> Tuple[float, float]:
-        if x < -self.size:
-            x = self.screen_width
-        elif x > self.screen_width:
-            x = -self.size
-        if y < -self.size:
-            y = self.screen_height
-        elif y > self.screen_height:
-            y = -self.size
-        return x, y
+        def wrap(val: float, lower: float, upper: float) -> float:
+            if val < lower:
+                return upper
+            elif val > upper:
+                return lower
+            return val
+
+        new_x = wrap(x, -self.size, self.screen_width)
+        new_y = wrap(y, -self.size, self.screen_height)
+        return new_x, new_y
+
 
     def update_movement(
         self, player_x: float, player_y: float, player_speed: int, current_time: int
