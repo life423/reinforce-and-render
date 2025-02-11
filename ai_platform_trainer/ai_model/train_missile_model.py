@@ -6,7 +6,7 @@ import torch.nn as nn
 import torch.optim as optim
 
 
-class MissileDataset(Dataset):
+class TrainMissileModel(Dataset):
     def __init__(self, filename):
         with open(filename, "r") as f:
             self.data = json.load(f)
@@ -84,7 +84,7 @@ class SimpleMissileModel(nn.Module):
 
 def train_model(filename):
     # 1) Load dataset
-    dataset = MissileDataset(filename)
+    dataset = TrainMissileModel(filename)
     dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
 
     # 2) Initialize model and optimizer
