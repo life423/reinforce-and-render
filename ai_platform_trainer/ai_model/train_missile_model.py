@@ -1,133 +1,95 @@
 import os
-import json
 import torch
-from torch.utils.data import Dataset, DataLoader
-import torch.nn as nn
 import torch.optim as optim
+from torch.utils.data import DataLoader
+
+from ai_platform_trainer.ai_model.missile_dataset import MissileDataset
+from ai_platform_trainer.ai_model.simple_missile_model import SimpleMissileModel
 
 
-class MissileDataset(Dataset):
-    def __init__(self, filename):
-        with open(filename, "r") as f:
-            self.data = json.load(f)
+class MissileTrainer:
+    """
+    A class encapsulating the training logic for SimpleMissileModel.
+    Useful when you want to preserve OOP style, store training state,
+    or easily extend functionality (e.g. custom callbacks, advanced
+    logging, checkpointing, etc.).
+    """
 
-        self.samples = []
-        self.weights = []  # store a weight per sample
+    def __init__(
+        self,
+        filename: str = "data/raw/training_data.json",
+        epochs: int = 20,
+        batch_size: int = 32,
+        lr: float = 0.001,
+        model_save_path: str = "models/missile_model.pth",
+    ) -> None:
+        """
+        Initialize the dataset, model, and other resources for training.
+        
+        :param filename: Path to the JSON dataset.
+        :param epochs: Number of training epochs.
+        :param batch_size: Training batch size.
+        :param lr: Learning rate for the optimizer.
+        :param model_save_path: Where to save the trained model weights.
+        """
+        self.filename = filename
+        self.epochs = epochs
+        self.batch_size = batch_size
+        self.lr = lr
+        self.model_save_path = model_save_path
 
-        for entry in self.data:
-            # We check for new keys:
-            #   "player_x", "player_y", "enemy_x", "enemy_y",
-            #   "missile_x", "missile_y", "missile_angle", "dist",
-            #   "missile_collision", "missile_action"
-            needed_keys = [
-                "player_x",
-                "player_y",
-                "enemy_x",
-                "enemy_y",
-                "missile_x",
-                "missile_y",
-                "missile_angle",
-                "dist",
-                "missile_collision",
-                "missile_action",
-            ]
-            if all(k in entry for k in needed_keys):
-                # Convert boolean collision => float
-                collision_val = 1.0 if entry["missile_collision"] else 0.0
-                # Build a 9-element state
-                state = [
-                    entry["player_x"],
-                    entry["player_y"],
-                    entry["enemy_x"],
-                    entry["enemy_y"],
-                    entry["missile_x"],
-                    entry["missile_y"],
-                    entry["missile_angle"],
-                    entry["dist"],
-                    collision_val,
-                ]
-                # The network will learn to match this single float action
-                action = [entry["missile_action"]]
+        # Initialize dataset and loader
+        self.dataset = MissileDataset(filename=self.filename)
+        self.dataloader = DataLoader(self.dataset, batch_size=self.batch_size, shuffle=True)
 
-                # weight = 2.0 for collision frames, 1.0 for non-collision
-                wt = 2.0 if collision_val == 1.0 else 1.0
+        # Initialize model and optimizer
+        self.model = SimpleMissileModel(input_size=9, hidden_size=64, output_size=1)
+        self.optimizer = optim.Adam(self.model.parameters(), lr=self.lr)
 
-                self.samples.append((state, action))
-                self.weights.append(wt)
+    def run_training(self) -> None:
+        """
+        Execute the main training loop, saving the model when complete.
+        """
+        for epoch in range(self.epochs):
+            running_loss = 0.0
+            total_batches = 0
 
-    def __len__(self):
-        return len(self.samples)
+            for states, actions, weights in self.dataloader:
+                self.optimizer.zero_grad()
 
-    def __getitem__(self, idx):
-        state, action = self.samples[idx]
-        weight = self.weights[idx]
-        return (
-            torch.tensor(state, dtype=torch.float32),
-            torch.tensor(action, dtype=torch.float32),
-            torch.tensor(weight, dtype=torch.float32),
-        )
+                preds = self.model(states).view(-1)
+                actions = actions.view(-1)
+                weights = weights.view(-1)
 
+                # Weighted MSE
+                loss_per_sample = (preds - actions)**2 * weights
+                loss = loss_per_sample.mean()
 
-class SimpleMissileModel(nn.Module):
-    def __init__(self, input_size=9, hidden_size=64, output_size=1):
-        super(SimpleMissileModel, self).__init__()
-        self.fc1 = nn.Linear(input_size, hidden_size)
-        self.fc2 = nn.Linear(hidden_size, hidden_size)
-        self.fc3 = nn.Linear(hidden_size, output_size)
+                loss.backward()
+                self.optimizer.step()
 
-    def forward(self, x):
-        x = torch.relu(self.fc1(x))
-        x = torch.relu(self.fc2(x))
-        x = self.fc3(x)
-        return x
+                running_loss += loss.item()
+                total_batches += 1
 
+            avg_loss = running_loss / total_batches if total_batches > 0 else 0
+            print(f"Epoch {epoch}/{self.epochs - 1}, Avg Loss: {avg_loss:.4f}")
 
-def train_model(filename):
-    # 1) Load dataset
-    dataset = MissileDataset(filename)
-    dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
+        # Optionally remove old file
+        if os.path.exists(self.model_save_path):
+            os.remove(self.model_save_path)
+            print(f"Removed old file at '{self.model_save_path}'.")
 
-    # 2) Initialize model and optimizer
-    model = SimpleMissileModel(input_size=9, hidden_size=64, output_size=1)
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
-
-    # 3) Training loop
-    for epoch in range(20):
-        running_loss = 0.0
-        total_batches = 0
-        for states, actions, weights in dataloader:
-            optimizer.zero_grad()
-
-            # Forward pass
-            preds = model(states).view(-1)  # shape: (batch_size,)
-            actions = actions.view(-1)  # shape: (batch_size,)
-            weights = weights.view(-1)  # shape: (batch_size,)
-
-            # Weighted MSE
-            loss_per_sample = (preds - actions) ** 2 * weights
-            loss = torch.mean(loss_per_sample)
-
-            # Backprop
-            loss.backward()
-            optimizer.step()
-
-            running_loss += loss.item()
-            total_batches += 1
-
-        # Print average loss per epoch
-        avg_loss = running_loss / total_batches if total_batches > 0 else 0
-        print(f"Epoch {epoch}, Avg Loss: {avg_loss:.4f}")
-
-    # 4) Remove old model file if it exists (optional but helps ensure a fresh file)
-    model_path = "models/missile_model.pth"
-    if os.path.exists(model_path):
-        os.remove(model_path)
-        print(f"Removed old file at '{model_path}'.")
-
-    # 5) Save the newly trained model
-    torch.save(model.state_dict(), model_path)
-    print(f"Saved new model to '{model_path}'.")
+        # Save the model
+        torch.save(self.model.state_dict(), self.model_save_path)
+        print(f"Saved new model to '{self.model_save_path}'.")
 
 
 if __name__ == "__main__":
-    train_model("data/raw/training_data.json")
+    trainer = MissileTrainer(
+        filename="data/raw/training_data.json",
+        epochs=20,
+        batch_size=32,
+        lr=0.001,
+        model_save_path="models/missile_model.pth"
+    )
+    trainer.run_training()

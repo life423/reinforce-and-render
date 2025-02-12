@@ -1,11 +1,12 @@
 # ai_platform_trainer/entities/enemy_play.py
 
-import torch
 import math
 import pygame
 import logging
 from typing import Optional, Tuple
 
+import torch  # Possibly no longer needed if we fully delegate AI logic
+from ai_platform_trainer.gameplay.ai.enemy_ai_controller import update_enemy_movement
 
 class EnemyPlay:
     def __init__(self, screen_width: int, screen_height: int, model):
@@ -29,51 +30,39 @@ class EnemyPlay:
         self.surface.fill((*self.color, 255))
 
     def wrap_position(self, x: float, y: float) -> Tuple[float, float]:
-        if x < -self.size:
-            x = self.screen_width
-        elif x > self.screen_width:
-            x = -self.size
-        if y < -self.size:
-            y = self.screen_height
-        elif y > self.screen_height:
-            y = -self.size
-        return x, y
+        """
+        Example wrap-around logic. 
+        You might unify this in a separate utils file if used by multiple entities.
+        """
+        def wrap(val: float, lower: float, upper: float) -> float:
+            if val < lower:
+                return upper
+            elif val > upper:
+                return lower
+            return val
+
+        new_x = wrap(x, -self.size, self.screen_width)
+        new_y = wrap(y, -self.size, self.screen_height)
+        return new_x, new_y
 
     def update_movement(
-        self, player_x: float, player_y: float, player_speed: int, current_time: int
+        self,
+        player_x: float,
+        player_y: float,
+        player_speed: int,
+        current_time: int
     ):
-        if not self.visible:
-            return
-
-        # Example movement logic
-        # Replace with your actual AI movement logic
-        dist = math.sqrt(
-            (player_x - self.pos["x"]) ** 2 + (player_y - self.pos["y"]) ** 2
+        """
+        Delegates AI movement logic to the 'enemy_ai_controller.update_enemy_movement'
+        function, keeping EnemyPlay simpler.
+        """
+        update_enemy_movement(
+            self,
+            player_x=player_x,
+            player_y=player_y,
+            player_speed=player_speed,
+            current_time=current_time,
         )
-        state = torch.tensor(
-            [[player_x, player_y, self.pos["x"], self.pos["y"], dist]],
-            dtype=torch.float32,
-        )
-
-        with torch.no_grad():
-            action = self.model(state)
-
-        action_dx, action_dy = action[0].tolist()
-
-        # Normalize action vector
-        action_len = math.sqrt(action_dx**2 + action_dy**2)
-        if action_len > 0:
-            action_dx /= action_len
-            action_dy /= action_len
-        else:
-            action_dx, action_dy = 0.0, 0.0
-
-        speed = player_speed * 0.7
-        self.pos["x"] += action_dx * speed
-        self.pos["y"] += action_dy * speed
-
-        # Reintroduce wrap-around logic
-        self.pos["x"], self.pos["y"] = self.wrap_position(self.pos["x"], self.pos["y"])
 
     def draw(self, screen: pygame.Surface) -> None:
         if self.visible:
