@@ -4,19 +4,6 @@ from typing import Optional, Tuple
 
 from ai_platform_trainer.gameplay.config import config
 
-
-def compute_normalized_direction(
-    px: float, py: float, ex: float, ey: float
-) -> Tuple[float, float]:
-    direction_x = px - ex
-    direction_y = py - ey
-    dist = math.hypot(direction_x, direction_y)
-    if dist > 0:
-        return direction_x / dist, direction_y / dist
-    else:
-        return 0.0, 0.0
-
-
 def find_valid_spawn_position(
     screen_width: int,
     screen_height: int,
@@ -25,6 +12,10 @@ def find_valid_spawn_position(
     min_dist: int = config.MIN_DISTANCE,
     other_pos: Optional[Tuple[int, int]] = None,
 ) -> Tuple[int, int]:
+    """
+    Returns a random (x, y) within the screen boundaries, ensuring optional
+    minimum distance from another position. 
+    """
     x_min = margin
     x_max = screen_width - entity_size - margin
     y_min = margin
@@ -37,17 +28,20 @@ def find_valid_spawn_position(
         if other_pos:
             dist = math.hypot(x - other_pos[0], y - other_pos[1])
             if dist >= min_dist:
-                return x, y
+                return (x, y)
         else:
-            return x, y
+            return (x, y)
 
 
 def find_enemy_spawn_position(
     screen_width: int,
     screen_height: int,
     enemy_size: int,
-    player_pos: Tuple[float, float],
+    player_pos: Tuple[float, float]
 ) -> Tuple[int, int]:
+    """
+    Specialized helper for spawning an enemy, ensuring min distance from the player.
+    """
     return find_valid_spawn_position(
         screen_width=screen_width,
         screen_height=screen_height,

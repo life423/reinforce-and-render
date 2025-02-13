@@ -6,7 +6,8 @@ import random
 import pygame
 from ai_platform_trainer.entities.missile import Missile
 from ai_platform_trainer.utils.helpers import wrap_position
-from ai_platform_trainer.gameplay.utils import compute_normalized_direction
+# 
+from ai_platform_trainer.gameplay.common_utils import compute_normalized_direction
 
 
 class TrainingMode:
