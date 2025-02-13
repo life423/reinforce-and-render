@@ -224,14 +224,12 @@ class Game:
         if self.mode == "train" and self.training_mode_manager:
             self.training_mode_manager.update()
         elif self.mode == "play":
-            self.play_update(current_time)
-            self.check_missile_collisions()
-            self.handle_respawn(current_time)
+    # If we haven't created a play_mode_manager yet, do so now
+            if not hasattr(self, 'play_mode_manager') or self.play_mode_manager is None:
+                from ai_platform_trainer.gameplay.modes.play_mode import PlayMode
+                self.play_mode_manager = PlayMode(self)
 
-            if self.enemy and self.enemy.fading_in:
-                self.enemy.update_fade_in(current_time)
-            if self.player:
-                self.player.update_missiles()
+            self.play_mode_manager.update(current_time)
 
     def play_update(self, current_time: int) -> None:
         """
@@ -273,6 +271,7 @@ class Game:
                 self._missile_input,
                 self.missile_model
             )
+      
 
     def check_collision(self) -> bool:
         if not (self.player and self.enemy):
