@@ -17,7 +17,7 @@ class MissileTrainer:
 
     def __init__(
         self,
-        json_file: str = "data/raw/training_data.json",
+        filename: str = "data/raw/training_data.json",
         epochs: int = 20,
         batch_size: int = 32,
         lr: float = 0.001,
@@ -39,7 +39,8 @@ class MissileTrainer:
         self.model_save_path = model_save_path
 
         # Initialize dataset and loader
-        self.dataset = MissileDataset(filename=self.filename)
+        self.dataset = MissileDataset(json_file=self.filename)
+
         self.dataloader = DataLoader(self.dataset, batch_size=self.batch_size, shuffle=True)
 
         # Initialize model and optimizer
