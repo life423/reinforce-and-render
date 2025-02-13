@@ -1,20 +1,51 @@
-on: [push, pull_request]
+name: Build Mac App
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
-  build-and-package:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest, windows-latest]
+  build-macos:
+    runs-on: macos-latest
+
     steps:
+      # 1. Check out your code
       - uses: actions/checkout@v3
+
+      # 2. Set up Python (e.g., 3.10)
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-      - name: Install Dependencies
-        run: pip install -r requirements.txt
-      - name: Build Executable
+
+      # 3. Install dependencies
+      - name: Install dependencies
         run: |
-          # On Windows, use PyInstaller or Nuitka to create a .exe
-          # On macOS, produce a .app or .dmg
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 4. Build .app with PyInstaller
+      #    --windowed or --noconsole tells PyInstaller to build a GUI app.
+      #    If your app is CLI-only, you can skip --windowed or do --onefile for a single Mach-O.
+      - name: Build Mac .app
+        run: |
+          pip install pyinstaller
+          pyinstaller main.py --name MyProject --windowed
+          # This creates dist/MyProject.app
+
+      # 5. Create a .dmg from the .app for easy "double-click" distribution
+      - name: Create DMG
+        run: |
+          # Make sure dist/MyProject.app exists, or rename if your PyInstaller output is different
+          hdiutil create MyProject.dmg -volname MyProject \
+            -srcfolder dist/MyProject.app \
+            -ov -format UDZO
+
+      # 6. Upload the .dmg as an artifact so you can download it from GitHub Actions UI
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: mac-app
+          path: MyProject.dmg
