@@ -28,22 +28,22 @@ jobs:
 
       # 4. Build .app with PyInstaller
       #    We explicitly point to ai_platform_trainer/main.py
-      - name: Build Mac .app
+      - name: Build ai_platform_tainer.app
         run: |
           pip install pyinstaller
-          pyinstaller ai_platform_trainer/main.py --windowed --name MyProject
-          # This creates dist/MyProject.app
+          pyinstaller ai_platform_trainer/main.py --windowed --name ai_platform_trainer
+          # This creates dist/ai_platform_trainer.app
 
       # 5. Create a .dmg from the .app
       - name: Create DMG
         run: |
-          hdiutil create MyProject.dmg -volname MyProject \
-            -srcfolder dist/MyProject.app \
+          hdiutil create ai_platform_trainer.dmg -volname ai_platform_trainer \
+            -srcfolder dist/ai_platform_trainer.app \
             -ov -format UDZO
 
       # 6. Upload the .dmg so you can download it from the Actions UI
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4  # Note: use @v4 or latest
         with:
-          name: mac-app
-          path: MyProject.dmg
+          name: AI Platform Trainer macOS
+          path: ai_platform_trainer.dmg
