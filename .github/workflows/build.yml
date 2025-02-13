@@ -1,3 +1,5 @@
+on: [push, pull_request]
+
 jobs:
   build-and-package:
     runs-on: ${{ matrix.os }}
