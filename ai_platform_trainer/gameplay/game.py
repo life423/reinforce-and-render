@@ -176,7 +176,7 @@ class Game:
                         logging.info("Escape key pressed. Exiting game.")
                         self.running = False
                     elif event.key == pygame.K_SPACE and self.player:
-                        self.player.shoot_missile()
+                        self.player.shoot_missile(self.enemy.pos)
                     elif event.key == pygame.K_m:
                         logging.info("M key pressed. Returning to menu.")
                         self.menu_active = True
