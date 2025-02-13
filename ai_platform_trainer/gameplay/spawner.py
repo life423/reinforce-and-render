@@ -1,6 +1,7 @@
 # ai_platform_trainer/gameplay/spawner.py
 import logging
-from ai_platform_trainer.gameplay.utils import find_valid_spawn_position
+# from ai_platform_trainer.gameplay.utils import find_valid_spawn_position
+from ai_platform_trainer.gameplay.common_utils import find_valid_spawn_position
 from ai_platform_trainer.gameplay.config import config
 
 
