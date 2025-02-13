@@ -10,47 +10,36 @@ def update_missile_ai(
     player_pos: Dict[str, float],
     enemy_pos: Optional[Dict[str, float]],
     shared_input_tensor: torch.Tensor,
-    missile_model: SimpleMissileModel
+    missile_model: SimpleMissileModel,
+    model_blend_factor: float = 0.5,
+    max_turn_rate: float = 5.0,
 ) -> None:
-    if not enemy_pos:
-        return
-
+    
     for missile in missiles:
         current_angle = math.atan2(missile.vy, missile.vx)
 
-        px, py = player_pos["x"], player_pos["y"]
-        ex, ey = enemy_pos["x"], enemy_pos["y"]
-        dist_val = math.hypot(px - ex, py - ey)
+        if enemy_pos is None:  # Handle case where enemy is not present
+            target_angle = current_angle
+        else:
+            target_angle = math.atan2(enemy_pos["y"] - missile.pos["y"], enemy_pos["x"] - missile.pos["x"])
 
-        # Prepare model input
-        shared_input_tensor[0, 0] = px
-        shared_input_tensor[0, 1] = py
-        shared_input_tensor[0, 2] = ex
-        shared_input_tensor[0, 3] = ey
-        shared_input_tensor[0, 4] = missile.pos["x"]
-        shared_input_tensor[0, 5] = missile.pos["y"]
-        shared_input_tensor[0, 6] = current_angle
-        shared_input_tensor[0, 7] = dist_val
-        shared_input_tensor[0, 8] = 0.0
+        px, py = player_pos["x"], player_pos["y"]
+        # If no enemy, use projected missile position as a target to keep it moving forward.
+        ex, ey = enemy_pos["x"] if enemy_pos else missile.pos["x"] + missile.vx, enemy_pos["y"] if enemy_pos else missile.pos["y"] + missile.vy  
+        dist_val = math.hypot(missile.pos['x'] - ex, missile.pos["y"] - ey)
+
+        shared_input_tensor[0] = torch.tensor([px, py, ex, ey, missile.pos["x"], missile.pos["y"], current_angle, dist_val, 0.0]) 
 
         with torch.no_grad():
-            angle_delta = missile_model(shared_input_tensor).item()
+            turn_rate = missile_model(shared_input_tensor).item()
 
-        # Print the raw model output for debugging
-        print("angle_delta from model =", angle_delta)
 
-        # Apply the angle delta
-        desired_angle = math.atan2(enemy_pos["y"] - missile.pos["y"], enemy_pos["x"] - missile.pos["x"])
-        # Compute the difference between the desired angle and the current angle.
-        angle_diff = desired_angle - current_angle
-        # Blend the model's output with the actual target difference (using a factor for tuning).
-        blended_delta = 0.5 * angle_diff + 0.5 * angle_delta
-        max_delta = math.radians(5)  # maximum 5° per frame
-        constrained_delta = max(-max_delta, min(max_delta, blended_delta))
-        new_angle = current_angle + constrained_delta
-        speed = math.hypot(missile.vx, missile.vy)
-        missile.vx = math.cos(new_angle) * speed
-        missile.vy = math.sin(new_angle) * speed
+        angle_diff = math.degrees(target_angle - current_angle) 
+        blended_turn_rate = model_blend_factor * turn_rate + (1 - model_blend_factor) * angle_diff
 
-        # Also store angle_delta on the missile object if you want to log it later
-        missile.last_action = angle_delta
+        constrained_turn_rate = max(-max_turn_rate, min(max_turn_rate, blended_turn_rate))
+
+        new_angle = current_angle + math.radians(constrained_turn_rate)
+        missile.vx = missile.speed * math.cos(new_angle)
+        missile.vy = missile.speed * math.sin(new_angle)
+        missile.last_action = turn_rate 
