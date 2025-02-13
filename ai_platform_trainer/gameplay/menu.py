@@ -153,10 +153,12 @@ class Menu:
         # Text lines describing the controls and how to exit
         controls_text = [
             "Press Arrow Keys or W/S to navigate menu.",
+            "Control Player with Arrow Keys or WASD.",
+            "Press Space to shoot missiles.",
             "Press Enter to select.",
             "Press F to toggle fullscreen.",
             "Press M to return to the menu.",
-            "Press Escape to quit this help screen.",
+            "Press Escape to quit this help screen or the game.",
         ]
 
         # Draw each line of text, spacing them out vertically

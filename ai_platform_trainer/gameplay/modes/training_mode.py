@@ -6,8 +6,7 @@ import random
 import pygame
 from ai_platform_trainer.entities.missile import Missile
 from ai_platform_trainer.utils.helpers import wrap_position
-# 
-from ai_platform_trainer.gameplay.common_utils import compute_normalized_direction
+# If you have other utilities, import them here as needed
 
 
 class TrainingMode:
@@ -82,9 +81,12 @@ class TrainingMode:
                         # If you have vx, vy in your missile, you can compute an angle:
                         # angle = math.atan2(missile.vy, missile.vx) if you store those in the missile.
 
-                        # This is an example, you might have your own model-based action
-                        missile_angle = 0.0
-                        missile_action = 0.0
+                        # This is an example placeholder for model-based action
+                        # missile_angle = 0.0
+                        # missile_action = 0.0
+                        
+                        missile_angle = math.atan2(missile.vy, missile.vx)
+                        missile_action = getattr(missile, "last_action", 0.0)
 
                         self.missile_sequences[missile].append(
                             {
@@ -123,8 +125,7 @@ class TrainingMode:
                             self.game.respawn_timer = (
                                 current_time + self.game.respawn_delay
                             )
-
-                            break  # only handle one collision per frame
+                            break  # Only handle one collision per frame
 
                     # Off-screen check
                     if not (

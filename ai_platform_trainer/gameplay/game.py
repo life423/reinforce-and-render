@@ -271,6 +271,7 @@ class Game:
                 self._missile_input,
                 self.missile_model
             )
+      
 
     def check_collision(self) -> bool:
         if not (self.player and self.enemy):
