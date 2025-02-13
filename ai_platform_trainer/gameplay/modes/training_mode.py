@@ -71,12 +71,12 @@ class TrainingMode:
                         enemy_y = self.game.enemy.pos["y"]
 
                         # Example distances
-                        dist_player_enemy = math.hypot(
-                            enemy_x - player_x, enemy_y - player_y
-                        )
-                        dist_missile_enemy = math.hypot(
-                            enemy_x - missile.pos["x"], enemy_y - missile.pos["y"]
-                        )
+                        # dist_player_enemy = math.hypot(
+                        #     enemy_x - player_x, enemy_y - player_y
+                        # )
+                        # dist_missile_enemy = math.hypot(
+                        #     enemy_x - missile.pos["x"], enemy_y - missile.pos["y"]
+                        # )
 
                         # If you have vx, vy in your missile, you can compute an angle:
                         # angle = math.atan2(missile.vy, missile.vx) if you store those in the missile.
@@ -97,11 +97,11 @@ class TrainingMode:
                                 "missile_x": missile.pos["x"],
                                 "missile_y": missile.pos["y"],
                                 "missile_angle": missile_angle,
-                                "dist": dist_missile_enemy,  # or 'dist_missile_enemy'
+                                
                                 "missile_collision": False,  # Will be updated at finalize
                                 "missile_action": missile_action,
                                 "timestamp": current_time,
-                                "dist_player_enemy": dist_player_enemy,
+                                
                             }
                         )
                     # ----------------------
