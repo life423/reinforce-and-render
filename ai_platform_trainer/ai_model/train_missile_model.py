@@ -17,7 +17,7 @@ class MissileTrainer:
 
     def __init__(
         self,
-        filename: str = "data/raw/training_data.json",
+        json_file: str = "data/raw/training_data.json",
         epochs: int = 20,
         batch_size: int = 32,
         lr: float = 0.001,

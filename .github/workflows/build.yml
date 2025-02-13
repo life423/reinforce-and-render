@@ -27,25 +27,23 @@ jobs:
           pip install -r requirements.txt
 
       # 4. Build .app with PyInstaller
-      #    --windowed or --noconsole tells PyInstaller to build a GUI app.
-      #    If your app is CLI-only, you can skip --windowed or do --onefile for a single Mach-O.
+      #    We explicitly point to ai_platform_trainer/main.py
       - name: Build Mac .app
         run: |
           pip install pyinstaller
-          pyinstaller main.py --name MyProject --windowed
+          pyinstaller ai_platform_trainer/main.py --windowed --name MyProject
           # This creates dist/MyProject.app
 
-      # 5. Create a .dmg from the .app for easy "double-click" distribution
+      # 5. Create a .dmg from the .app
       - name: Create DMG
         run: |
-          # Make sure dist/MyProject.app exists, or rename if your PyInstaller output is different
           hdiutil create MyProject.dmg -volname MyProject \
             -srcfolder dist/MyProject.app \
             -ov -format UDZO
 
-      # 6. Upload the .dmg as an artifact so you can download it from GitHub Actions UI
+      # 6. Upload the .dmg so you can download it from the Actions UI
       - name: Upload macOS artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4  # Note: use @v4 or latest
         with:
           name: mac-app
           path: MyProject.dmg
