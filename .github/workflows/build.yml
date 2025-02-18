@@ -45,3 +45,22 @@ jobs:
         with:
           name: AI Platform Trainer Windows
           path: dist/ai_platform_trainer.exe
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        if: success()   # only run if build succeeded
+        with:
+          # We set a dynamic tag so each run can have a unique version
+          # You could also use a fixed tag if you want to overwrite the same release
+          tag_name: "v0.1.${{ github.run_number }}"
+          release_name: "AI Platform Trainer v0.1.${{ github.run_number }}"
+
+          # We attach the .exe file we just built
+          files: "dist/ai_platform_trainer.exe"
+
+          # Set to false if you want this to be a "final" release
+          draft: false
+          prerelease: false
+        env:
+          # This is required so the action can create a release
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

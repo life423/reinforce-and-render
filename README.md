@@ -167,7 +167,7 @@ Contributions are welcome! Feel free to sbmit a pull request or open an issue to
 
 ## Contact
 
----
+----
 
 If you have any questions or feedback, please contact us at: [drew@drewclark.io](mailto:drew@drewclark.io)
 
