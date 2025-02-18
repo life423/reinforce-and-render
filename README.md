@@ -8,7 +8,7 @@ This project is a 2D platformer game created using Python and Pygame, with an in
 
 The project is organized into several directories and Python scripts:
 
-```
+```plaintext
 ├── ai_model
 │   ├── model.py           # Defines the AI model for controlling the enemy
 │   ├── train.py           # Script to train the AI model
@@ -33,10 +33,10 @@ The project is organized into several directories and Python scripts:
 
 ---
 
--   **AI Integration**: The game includes an AI-controlled enemy that attempts to track and reach the player. The AI model is built and trained using PyTorch.
--   **Dynamic Player Movement**: The player can move around the game area with random or manual movement based on the game mode.
--   **Collision Logging**: Collision data between the player and the enemy is logged to help train the AI model.
--   **Flexible Modes**: The game can be run in either "training" or "play" mode.
+- **AI Integration**: The game includes an AI-controlled enemy that attempts to track and reach the player. The AI model is built and trained using PyTorch.
+- **Dynamic Player Movement**: The player can move around the game area with random or manual movement based on the game mode.
+- **Collision Logging**: Collision data between the player and the enemy is logged to help train the AI model.
+- **Flexible Modes**: The game can be run in either "training" or "play" mode.
 
 ## Installation
 
@@ -46,8 +46,8 @@ The project is organized into several directories and Python scripts:
 
 ---
 
--   Python 3.9 or above
--   Virtual Environment (optional but recommended)
+- Python 3.9 or above
+- Virtual Environment (optional but recommended)
 
 ### Setup Instructions
 
@@ -97,15 +97,15 @@ The project is organized into several directories and Python scripts:
 
 ---
 
--   **Movement**: Use the arrow keys (`UP`, `DOWN`, `LEFT`, `RIGHT`) or `WASD` keys to move the player around the screen.
--   **Quit**: Press `ESC` or `Q` to quit the game.
+- **Movement**: Use the arrow keys (`UP`, `DOWN`, `LEFT`, `RIGHT`) or `WASD` keys to move the player around the screen.
+- **Quit**: Press `ESC` or `Q` to quit the game.
 
 ## Game Modes
 
 ---
 
--   **Training Mode**: The player moves randomly, and collision data is logged for AI training purposes.
--   **Play Mode**: The player is controlled manually, and the AI controls the enemy.
+- **Training Mode**: The player moves randomly, and collision data is logged for AI training purposes.
+- **Play Mode**: The player is controlled manually, and the AI controls the enemy.
 
 To switch between modes, modify the `mode` variable in `gameplay/main.py`:
 
@@ -136,15 +136,15 @@ To train the AI model:
 
 ---
 
--   **Configuration**: Game settings, such as screen size, player speed, and colors, are managed in `core/config.py`.
--   **AI Behavior**: The behavior of the AI enemy can be adjusted in `entities/enemy.py` by modifying the logic and model integration.
+- **Configuration**: Game settings, such as screen size, player speed, and colors, are managed in `core/config.py`.
+- **AI Behavior**: The behavior of the AI enemy can be adjusted in `entities/enemy.py` by modifying the logic and model integration.
 
 ## Troubleshooting
 
 ---
 
--   **Missing Pygame or Torch**: Ensure that `pygame` and `torch` are installed using `pip install pygame torch`.
--   **Virtual Environment Not Activated**: Always activate your virtual environment before running or installing dependencies.
+- **Missing Pygame or Torch**: Ensure that `pygame` and `torch` are installed using `pip install pygame torch`.
+- **Virtual Environment Not Activated**: Always activate your virtual environment before running or installing dependencies.
 
 ## License
 
@@ -156,17 +156,19 @@ This project is licensed under the MIT License.
 
 ---
 
-Contributions are welcome! Feel free to submit a pull request or open an issue to report bugs or suggest improvements.
+Contributions are welcome! Feel free to sbmit a pull request or open an issue to report bugs or suggest improvements.
 
 ## Acknowledgments
 
 ---
 
--   **Pygame**: For the 2D graphics and game engine.
--   **PyTorch**: For building and training the AI model.
+- **Pygame**: For the 2D graphics and game engine.
+- **PyTorch**: For building and training the AI model.
 
 ## Contact
 
 ---
 
-If you have any questions or feedback, please contact us at: aiandrew631@gmail.com
+If you have any questions or feedback, please contact us at: [drew@drewclark.io](mailto:drew@drewclark.io)
+
+[Download the latest release here](https://github.com/life423/ai-platform-trainer/releases/tag/v0.1.0)
