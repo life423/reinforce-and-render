@@ -1,4 +1,4 @@
-name: Build Mac App
+name: Build Windows App
 
 on:
   push:
@@ -7,8 +7,8 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-macos:
-    runs-on: macos-latest
+  build-windows:
+    runs-on: windows-latest
 
     steps:
       # 1. Check out your code
@@ -23,27 +23,20 @@ jobs:
       # 3. Install dependencies
       - name: Install dependencies
         run: |
-          pip install --upgrade pip
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 4. Build .app with PyInstaller
+      # 4. Build .exe with PyInstaller
       #    We explicitly point to ai_platform_trainer/main.py
-      - name: Build ai_platform_tainer.app
+      - name: Build ai_platform_trainer.exe
         run: |
           pip install pyinstaller
-          pyinstaller ai_platform_trainer/main.py --windowed --name ai_platform_trainer
-          # This creates dist/ai_platform_trainer.app
+          pyinstaller ai_platform_trainer/main.py --onefile --name ai_platform_trainer
+          # This creates dist/ai_platform_trainer.exe
 
-      # 5. Create a .dmg from the .app
-      - name: Create DMG
-        run: |
-          hdiutil create ai_platform_trainer.dmg -volname ai_platform_trainer \
-            -srcfolder dist/ai_platform_trainer.app \
-            -ov -format UDZO
-
-      # 6. Upload the .dmg so you can download it from the Actions UI
-      - name: Upload macOS artifact
+      # 5. Upload the .exe so you can download it from the Actions UI
+      - name: Upload Windows artifact
         uses: actions/upload-artifact@v4  # Note: use @v4 or latest
         with:
-          name: AI Platform Trainer macOS
-          path: ai_platform_trainer.dmg
+          name: AI Platform Trainer Windows
+          path: dist/ai_platform_trainer.exe
