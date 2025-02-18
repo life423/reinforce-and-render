@@ -26,7 +26,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 4. Build .exe with PyInstaller
+      # 4. Set up environment variables for PyInstaller
+      - name: Set up environment variables
+        run: |
+          setx /M PATH "%PATH%;C:\Python310;C:\Python310\Scripts"
+
+      # 5. Build .exe with PyInstaller
       #    We explicitly point to ai_platform_trainer/main.py
       - name: Build ai_platform_trainer.exe
         run: |
