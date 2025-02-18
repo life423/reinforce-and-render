@@ -2,6 +2,8 @@
 
 This project is a 2D platformer game created using Python and Pygame, with an integrated AI model that controls an enemy. The AI is trained to track and follow the player, providing a dynamic gameplay experience.
 
+[Download the latest release here](https://github.com/life423/ai-platform-trainer/releases/tag/v0.1.0)
+
 ## Project Structure
 
 ---
@@ -171,4 +173,4 @@ Contributions are welcome! Feel free to sbmit a pull request or open an issue to
 
 If you have any questions or feedback, please contact us at: [drew@drewclark.io](mailto:drew@drewclark.io)
 
-[Download the latest release here](https://github.com/life423/ai-platform-trainer/releases/tag/v0.1.0)
+
