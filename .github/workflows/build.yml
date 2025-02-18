@@ -53,7 +53,7 @@ jobs:
           # We set a dynamic tag so each run can have a unique version
           # You could also use a fixed tag if you want to overwrite the same release
           tag_name: "v0.1.${{ github.run_number }}"
-          release_name: "AI Platform Trainer v0.1.${{ github.run_number }}"
+          name: "AI Platform Trainer v0.1.${{ github.run_number }}"
 
           # We attach the .exe file we just built
           files: "dist/ai_platform_trainer.exe"
