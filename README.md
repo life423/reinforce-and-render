@@ -1,176 +1,69 @@
-# 2D Platformer with AI Integration
+AI Platform Trainer
+🚀 Trained AI vs. Trained AI. You’re caught in the middle.
 
-This project is a 2D platformer game created using Python and Pygame, with an integrated AI model that controls an enemy. The AI is trained to track and follow the player, providing a dynamic gameplay experience.
+🔹 What is this?
+AI Platform Trainer is a machine learning-powered game where two AIs, trained in the same environment, battle it out—one chasing, one hunting.
 
-[Download the latest release here](https://github.com/life423/ai-platform-trainer/releases/tag/v0.1.0)
+An AI enemy is trained to track and pursue you.
+An AI homing missile is trained to predict and intercept the enemy.
+Both were trained separately using supervised learning, making the battlefield a real test of AI-driven strategy.
+In training mode, the AI learns from its mistakes.
+In play mode, you take control—dodging, attacking, and watching the trained AI models react.
 
-## Project Structure
+🎯 Why is this cool?
+✅ AI vs. AI – Not just scripted enemies; both the enemy and missile learn their behaviors through machine learning.
+✅ Supervised Learning Done Right – The game records AI interactions, trains models, and lets them adapt.
+✅ Tightly Engineered & Scalable – Code is structured for clarity, expansion, and real AI research.
+✅ Easy to Play – Download the ready-to-run executable and jump in.
 
----
+📥 Download & Play
+🔗 Try it now:
+➡ Download AI Platform Trainer (Windows)
 
-The project is organized into several directories and Python scripts:
+No installation needed. Just download and play.
 
-```plaintext
-├── ai_model
-│   ├── model.py           # Defines the AI model for controlling the enemy
-│   ├── train.py           # Script to train the AI model
-│   └── saved_models       # Directory to store trained models
-│       └── enemy_ai_model.pth
-├── core
-│   ├── config.py          # Configuration file for game settings
-│   ├── utils.py           # Utility functions used in the game
-├── data
-│   └── collision_data.json # Stores collision data for AI training
-├── entities
-│   ├── enemy.py           # Enemy class, which integrates AI for decision making
-│   ├── entity.py          # Base class for game entities
-│   └── player.py          # Player class (if needed)
-├── gameplay
-│   ├── game_manager.py    # Main game loop and logic
-│   ├── main.py            # Entry point for running the game
-└── requirements.txt       # Dependencies for the project
-```
+🛠 How It Works
+Training Mode:
 
-## Features
+The enemy AI learns to hunt the player.
+The missile AI learns to predict enemy movement and intercept.
+Data is logged and used to refine both models.
+Play Mode:
 
----
+You control the player.
+The trained enemy AI chases you.
+The trained homing missile AI tracks and intercepts.
+What Makes This Different?
 
-- **AI Integration**: The game includes an AI-controlled enemy that attempts to track and reach the player. The AI model is built and trained using PyTorch.
-- **Dynamic Player Movement**: The player can move around the game area with random or manual movement based on the game mode.
-- **Collision Logging**: Collision data between the player and the enemy is logged to help train the AI model.
-- **Flexible Modes**: The game can be run in either "training" or "play" mode.
+The missile AI is smarter than the enemy AI—it has to predict movement, not just follow.
+Both AIs were trained from the same supervised learning environment, showing real adaptation.
+💻 Running from Source (For Developers & AI Enthusiasts)
+If you want to tweak the models or train your own AI versions:
 
-## Installation
+🔧 Install & Run:
+bash
+Copy
+Edit
+git clone https://github.com/life423/ai-platform-trainer.git
+cd ai-platform-trainer
+pip install -r requirements.txt
+python run_game.py
+🚀 Train Your Own AI:
+To retrain the models from scratch, run:
 
----
+bash
+Copy
+Edit
+python ai_model/train.py
+🔍 Behind the AI: How It’s Trained
+Supervised Learning – Both AIs are trained using collision-based data logging.
+Neural Networks (PyTorch) – The AI models process game states and predict movement decisions.
+Training Data Generation – The system records AI behavior during training mode and uses it to refine decision-making.
+Want to dig deeper? Check out the ai_model directory for the full training pipeline.
 
-### Prerequisites
+💡 Want to Contribute?
+Pull requests and AI model experiments are welcome!
 
----
-
-- Python 3.9 or above
-- Virtual Environment (optional but recommended)
-
-### Setup Instructions
-
----
-
-1. **Clone the Repository**:
-
-    ```bash
-    git clone <repository-url>
-    cd 2d-platformer-pygame-ai-scratch
-    ```
-
-2. **Create and Activate a Virtual Environment**:
-
-    ```bash
-    python3 -m venv venv
-    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
-    ```
-
-3. **Install Dependencies**:
-
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-4. **Install Pygame and Torch (if not in requirements.txt)**:
-    ```bash
-    pip install pygame torch
-    ```
-
-## Running the Game
-
----
-
-1. **Activate the Virtual Environment** (if not already active):
-
-    ```bash
-    source venv/bin/activate
-    ```
-
-2. **Run the Game**:
-    ```bash
-    python3 gameplay/main.py
-    ```
-
-## How to Play
-
----
-
-- **Movement**: Use the arrow keys (`UP`, `DOWN`, `LEFT`, `RIGHT`) or `WASD` keys to move the player around the screen.
-- **Quit**: Press `ESC` or `Q` to quit the game.
-
-## Game Modes
-
----
-
-- **Training Mode**: The player moves randomly, and collision data is logged for AI training purposes.
-- **Play Mode**: The player is controlled manually, and the AI controls the enemy.
-
-To switch between modes, modify the `mode` variable in `gameplay/main.py`:
-
-```python
-mode = 'play'  # or 'training'
-```
-
-## AI Model
-
----
-
-The enemy AI model is defined in `ai_model/model.py` and can be trained using `ai_model/train.py`. The model uses PyTorch to learn from logged collision data and predict enemy movements.
-
-### Training the Model
-
----
-
-To train the AI model:
-
-1. Ensure collision data is logged in `data/collision_data.json` by running the game in training mode.
-2. Run the training script:
-    ```bash
-    python3 ai_model/train.py
-    ```
-3. The trained model will be saved in the `ai_model/saved_models` directory.
-
-## Customization
-
----
-
-- **Configuration**: Game settings, such as screen size, player speed, and colors, are managed in `core/config.py`.
-- **AI Behavior**: The behavior of the AI enemy can be adjusted in `entities/enemy.py` by modifying the logic and model integration.
-
-## Troubleshooting
-
----
-
-- **Missing Pygame or Torch**: Ensure that `pygame` and `torch` are installed using `pip install pygame torch`.
-- **Virtual Environment Not Activated**: Always activate your virtual environment before running or installing dependencies.
-
-## License
-
----
-
-This project is licensed under the MIT License.
-
-## Contributions
-
----
-
-Contributions are welcome! Feel free to sbmit a pull request or open an issue to report bugs or suggest improvements.
-
-## Acknowledgments
-
----
-
-- **Pygame**: For the 2D graphics and game engine.
-- **PyTorch**: For building and training the AI model.
-
-## Contact
-
-----
-
-If you have any questions or feedback, please contact us at: [drew@drewclark.io](mailto:drew@drewclark.io)
-
-
+📬 Contact & Follow
+GitHub: life423
+Twitter: [Your Twitter Handle]
