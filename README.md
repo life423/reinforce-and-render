@@ -66,4 +66,4 @@ Pull requests and AI model experiments are welcome!
 
 📬 Contact & Follow
 GitHub: life423
-Twitter: [Your Twitter Handle]
+Twitter: [andrewgenai]
