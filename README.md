@@ -1,9 +1,6 @@
 # **🚀 AI Platform Trainer**  
 ### **Trained AI vs. Trained AI. You’re caught in the middle.**  
 
-![AI Platform Trainer Gameplay](https://via.placeholder.com/800x400)  
-*(Add an actual screenshot here!)*  
-
 ---
 
 ## **🔹 What is AI Platform Trainer?**  
