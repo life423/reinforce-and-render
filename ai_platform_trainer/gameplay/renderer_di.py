@@ -20,6 +20,12 @@ class Renderer(IRenderer):
             screen: The pygame screen to render to
         """
         self.screen = screen
+        
+        # Color definitions using a harmonious color palette
+        self.BACKGROUND_COLOR = (135, 206, 235)  # Sky blue
+        self.PLAYER_COLOR = (46, 204, 113)       # Emerald green
+        self.ENEMY_COLOR = (231, 76, 60)         # Coral red
+        self.MISSILE_COLOR = (241, 196, 15)      # Gold yellow
     
     def render(self, menu=None, player=None, enemy=None, menu_active=False):
         """
@@ -31,8 +37,8 @@ class Renderer(IRenderer):
             enemy: The enemy to render (if any)
             menu_active: Whether the menu is active
         """
-        # Clear the screen
-        self.screen.fill((0, 0, 0))
+        # Clear the screen with sky blue background
+        self.screen.fill(self.BACKGROUND_COLOR)
         
         if menu_active and menu:
             # If menu is active, let the menu handle rendering
@@ -41,9 +47,10 @@ class Renderer(IRenderer):
             # Render game elements
             if player:
                 # Render the player
+                player_color = getattr(player, 'color', self.PLAYER_COLOR)
                 pygame.draw.rect(
                     self.screen,
-                    player.color,
+                    player_color,
                     (
                         player.position["x"],
                         player.position["y"],
@@ -63,16 +70,14 @@ class Renderer(IRenderer):
                         missile_y = missile.pos["y"]
                     else:
                         continue  # Skip if missile has neither attribute
-                        
-                    pygame.draw.rect(
+                    
+                    # Use circles for missiles with enhanced size (14)
+                    missile_color = getattr(missile, 'color', self.MISSILE_COLOR)
+                    pygame.draw.circle(
                         self.screen,
-                        missile.color,
-                        (
-                            missile_x,
-                            missile_y,
-                            missile.size,
-                            missile.size,
-                        ),
+                        missile_color,
+                        (int(missile_x), int(missile_y)),  # Use position directly as center
+                        14,  # Use a larger, more visible size
                     )
             
             if enemy:
@@ -89,9 +94,10 @@ class Renderer(IRenderer):
                     s = pygame.Surface((enemy.size, enemy.size), pygame.SRCALPHA)
                     # Some enemies have alpha attribute, others don't
                     alpha = getattr(enemy, 'alpha', 255)
+                    enemy_color = getattr(enemy, 'color', self.ENEMY_COLOR)
                     pygame.draw.rect(
                         s,
-                        enemy.color + (alpha,),  # RGBA with current alpha
+                        enemy_color + (alpha,),  # RGBA with current alpha
                         (0, 0, enemy.size, enemy.size),
                     )
                     self.screen.blit(s, (enemy.pos["x"], enemy.pos["y"]))
