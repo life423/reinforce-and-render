@@ -1,6 +1,14 @@
+"""
+Train a missile trajectory prediction model using the SimpleMissileModel architecture.
+
+This module provides a training pipeline for the missile trajectory prediction model,
+including data loading, training loop, optimization, and model saving.
+"""
 import os
+from typing import Optional, List, Dict
+
 import torch
-import torch.optim as optim
+from torch import optim
 from torch.utils.data import DataLoader
 
 from ai_platform_trainer.ai_model.missile_dataset import MissileDataset
@@ -9,10 +17,11 @@ from ai_platform_trainer.ai_model.simple_missile_model import SimpleMissileModel
 
 class MissileTrainer:
     """
-    A class encapsulating the training logic for SimpleMissileModel.
-    Useful when you want to preserve OOP style, store training state,
-    or easily extend functionality (e.g. custom callbacks, advanced
-    logging, checkpointing, etc.).
+    Trainer for the missile trajectory prediction model.
+    
+    Encapsulates the training logic for SimpleMissileModel, including dataset handling,
+    optimization, and training loop execution. The class structure allows for easy extension
+    with features like custom callbacks, advanced logging, or checkpointing.
     """
 
     def __init__(
@@ -24,13 +33,14 @@ class MissileTrainer:
         model_save_path: str = "models/missile_model.pth",
     ) -> None:
         """
-        Initialize the dataset, model, and other resources for training.
+        Initialize the trainer with configurable training parameters.
         
-        :param filename: Path to the JSON dataset.
-        :param epochs: Number of training epochs.
-        :param batch_size: Training batch size.
-        :param lr: Learning rate for the optimizer.
-        :param model_save_path: Where to save the trained model weights.
+        Args:
+            filename: Path to the JSON dataset file
+            epochs: Number of training epochs to run
+            batch_size: Number of samples per training batch
+            lr: Learning rate for the Adam optimizer
+            model_save_path: File path where trained model will be saved
         """
         self.filename = filename
         self.epochs = epochs
@@ -47,9 +57,20 @@ class MissileTrainer:
         self.model = SimpleMissileModel(input_size=9, hidden_size=64, output_size=1)
         self.optimizer = optim.Adam(self.model.parameters(), lr=self.lr)
 
-    def run_training(self) -> None:
+    def run_training(self) -> Optional[Dict[str, List[float]]]:
         """
-        Execute the main training loop, saving the model when complete.
+        Execute the main training loop and save the final model.
+        
+        Performs the complete training process, including:
+        - Batch iteration through the dataset
+        - Forward and backward passes
+        - Optimization steps
+        - Loss tracking
+        - Model saving
+        
+        Returns:
+            Optional dictionary containing training metrics (None for now,
+            but could be extended to return loss history, etc.)
         """
         for epoch in range(self.epochs):
             running_loss = 0.0
@@ -83,6 +104,8 @@ class MissileTrainer:
         # Save the model
         torch.save(self.model.state_dict(), self.model_save_path)
         print(f"Saved new model to '{self.model_save_path}'.")
+        
+        return None
 
 
 if __name__ == "__main__":
@@ -91,6 +114,6 @@ if __name__ == "__main__":
         epochs=20,
         batch_size=32,
         lr=0.001,
-        model_save_path="models/missile_model.pth"
+        model_save_path="models/missile_model.pth",
     )
     trainer.run_training()
