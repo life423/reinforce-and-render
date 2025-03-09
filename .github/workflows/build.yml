@@ -25,6 +25,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          
+      # Set PYTHONPATH to include site-packages to ensure NumPy is found by PyTorch
+      - name: Set environment variables
+        run: |
+          echo "PYTHONPATH=$env:PYTHONPATH;$env:GITHUB_WORKSPACE\venv\Lib\site-packages" | Out-File -FilePath $env:GITHUB_ENV -Append
       # 4. Build .exe with PyInstaller
       #    We explicitly point to ai_platform_trainer/main.py
       - name: Build ai_platform_trainer.exe
