@@ -7,7 +7,7 @@ and model inference.
 import math
 from unittest.mock import Mock
 
-import pytest
+import pytest  # noqa: F401 - Used for fixture decorators
 import torch
 
 from ai_platform_trainer.entities.missile import Missile
