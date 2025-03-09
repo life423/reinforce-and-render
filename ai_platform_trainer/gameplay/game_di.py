@@ -31,6 +31,8 @@ from ai_platform_trainer.gameplay.display_manager import toggle_fullscreen_displ
 # Import spawner
 from ai_platform_trainer.gameplay.spawner import respawn_enemy_with_fade_in
 
+# These imports are used in methods below
+
 
 class Game:
     """
@@ -261,6 +263,102 @@ class Game:
         ):
             respawn_enemy_with_fade_in(self, current_time)
 
+    def _init_play_mode(self):
+        """
+        Initialize entities for play mode using the entity factory.
+        Called by the PlayState when entering play mode.
+        
+        Returns:
+            tuple: (player, enemy) - The initialized player and enemy entities
+        """
+        player = self.play_entity_factory.create_player(
+            self.screen_width, 
+            self.screen_height
+        )
+        
+        enemy = self.play_entity_factory.create_enemy(
+            self.screen_width, 
+            self.screen_height
+        )
+        
+        return player, enemy
+    
+    def spawn_entities(self):
+        """
+        Set up initial positions for game entities.
+        Called by state transitions and during initialization.
+        """
+        from ai_platform_trainer.gameplay.spawn_utils import find_enemy_spawn_position
+        
+        if self.player and self.enemy:
+            # Get player position
+            player_pos = (self.player.position["x"], self.player.position["y"])
+            
+            # Find a valid enemy spawn position
+            enemy_pos = find_enemy_spawn_position(
+                self.screen_width,
+                self.screen_height,
+                self.enemy.size,
+                player_pos
+            )
+            
+            # Set the enemy position
+            self.enemy.pos["x"], self.enemy.pos["y"] = enemy_pos
+    
+    def DataLogger(self, data_path):
+        """
+        Create a data logger for training mode.
+        
+        Args:
+            data_path: Path to the data file
+            
+        Returns:
+            A DataLogger instance
+        """
+        from ai_platform_trainer.core.data_logger import DataLogger
+        return DataLogger(data_path)
+    
+    def PlayerTraining(self, screen_width, screen_height):
+        """
+        Create a player entity for training mode.
+        
+        Args:
+            screen_width: Width of the screen
+            screen_height: Height of the screen
+            
+        Returns:
+            A PlayerTraining instance
+        """
+        from ai_platform_trainer.entities.player_training import PlayerTraining
+        return PlayerTraining(screen_width, screen_height)
+    
+    def EnemyTrain(self, screen_width, screen_height):
+        """
+        Create an enemy entity for training mode.
+        
+        Args:
+            screen_width: Width of the screen
+            screen_height: Height of the screen
+            
+        Returns:
+            An EnemyTrain instance
+        """
+        from ai_platform_trainer.entities.enemy_training import EnemyTrain
+        return EnemyTrain(screen_width, screen_height)
+    
+    def TrainingMode(self, game):
+        """
+        Create a training mode manager.
+        
+        Args:
+            game: The Game instance
+            
+        Returns:
+            A TrainingMode instance
+        """
+        from ai_platform_trainer.gameplay.modes.training_mode import TrainingMode
+        return TrainingMode(game)
+    
     def reset_game_state(self) -> None:
         """Reset game state, typically when returning to menu."""
         self.player = None

@@ -54,23 +54,44 @@ class Renderer(IRenderer):
                 
                 # Render player missiles
                 for missile in player.missiles:
+                    # Handle missiles with either 'position' or 'pos' attribute
+                    if hasattr(missile, 'position'):
+                        missile_x = missile.position["x"]
+                        missile_y = missile.position["y"]
+                    elif hasattr(missile, 'pos'):
+                        missile_x = missile.pos["x"]
+                        missile_y = missile.pos["y"]
+                    else:
+                        continue  # Skip if missile has neither attribute
+                        
                     pygame.draw.rect(
                         self.screen,
                         missile.color,
                         (
-                            missile.position["x"],
-                            missile.position["y"],
+                            missile_x,
+                            missile_y,
                             missile.size,
                             missile.size,
                         ),
                     )
             
-            if enemy and not enemy.hidden:
-                # Render the enemy with current alpha (for fade-in effect)
-                s = pygame.Surface((enemy.size, enemy.size), pygame.SRCALPHA)
-                pygame.draw.rect(
-                    s,
-                    enemy.color + (enemy.alpha,),  # RGBA with current alpha
-                    (0, 0, enemy.size, enemy.size),
-                )
-                self.screen.blit(s, (enemy.pos["x"], enemy.pos["y"]))
+            if enemy:
+                # Check if enemy should be visible
+                # Some enemies use 'hidden' attribute, others use 'visible'
+                is_visible = True
+                if hasattr(enemy, 'hidden'):
+                    is_visible = not enemy.hidden
+                elif hasattr(enemy, 'visible'):
+                    is_visible = enemy.visible
+                
+                if is_visible:
+                    # Render the enemy with current alpha (for fade-in effect)
+                    s = pygame.Surface((enemy.size, enemy.size), pygame.SRCALPHA)
+                    # Some enemies have alpha attribute, others don't
+                    alpha = getattr(enemy, 'alpha', 255)
+                    pygame.draw.rect(
+                        s,
+                        enemy.color + (alpha,),  # RGBA with current alpha
+                        (0, 0, enemy.size, enemy.size),
+                    )
+                    self.screen.blit(s, (enemy.pos["x"], enemy.pos["y"]))

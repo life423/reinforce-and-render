@@ -154,9 +154,13 @@ class TrainingState(GameState):
     def enter(self):
         logging.info("Entering training state")
         # Initialize training mode
-        self.game.data_logger = self.game.DataLogger(
-            self.game.config.DATA_PATH
-        )
+        # Get data path from config_manager if available, otherwise fall back to legacy config
+        if hasattr(self.game, "config_manager"):
+            data_path = self.game.config_manager.get("paths.data_path")
+        else:
+            data_path = self.game.config.DATA_PATH
+            
+        self.game.data_logger = self.game.DataLogger(data_path)
         self.game.player = self.game.PlayerTraining(
             self.game.screen_width, 
             self.game.screen_height
