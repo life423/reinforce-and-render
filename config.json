@@ -1,0 +1,28 @@
+{
+    "display": {
+        "width": 800,
+        "height": 600,
+        "fullscreen": false,
+        "window_title": "AI Platform Trainer",
+        "frame_rate": 60
+    },
+    "gameplay": {
+        "respawn_delay": 1000,
+        "player_step": 3,
+        "player_size": 20,
+        "enemy_step": 2,
+        "enemy_size": 20,
+        "missile_step": 4,
+        "missile_size": 5
+    },
+    "ai": {
+        "missile_model_path": "models/missile_model.pth",
+        "enemy_model_path": "models/enemy_ai_model.pth",
+        "input_size": 5,
+        "hidden_size": 64,
+        "output_size": 2
+    },
+    "paths": {
+        "data_path": "data/raw/training_data.json"
+    }
+}
