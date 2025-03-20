@@ -89,7 +89,8 @@ class Game:
     def _load_missile_model_once(self) -> None:
         missile_model_path = "models/missile_model.pth"
         if os.path.isfile(missile_model_path):
-            logging.info(f"Found missile model at '{missile_model_path}'. Loading once...")
+            logging.info(f"Found missile model at '{missile_model_path}'.")
+            logging.info("Loading missile model once...")
             try:
                 model = SimpleMissileModel()
                 model.load_state_dict(torch.load(missile_model_path, map_location="cpu"))
@@ -99,7 +100,8 @@ class Game:
                 logging.error(f"Failed to load missile model: {e}")
                 self.missile_model = None
         else:
-            logging.warning(f"No missile model found at '{missile_model_path}'. Skipping missile AI.")
+            logging.warning(f"No missile model found at '{missile_model_path}'.")
+            logging.warning("Skipping missile AI.")
 
     def run(self) -> None:
         while self.running:
@@ -141,6 +143,7 @@ class Game:
             spawn_entities(self)
 
     def _init_play_mode(self) -> Tuple[PlayerPlay, EnemyPlay]:
+        # Load the traditional neural network model
         model = EnemyMovementModel(input_size=5, hidden_size=64, output_size=2)
         try:
             model.load_state_dict(torch.load(config.MODEL_PATH, map_location="cpu"))
@@ -152,6 +155,23 @@ class Game:
 
         player = PlayerPlay(self.screen_width, self.screen_height)
         enemy = EnemyPlay(self.screen_width, self.screen_height, model)
+        
+        # Check for RL model and try to load if available
+        rl_model_path = "models/enemy_rl/final_model.zip"
+        if os.path.exists(rl_model_path):
+            try:
+                success = enemy.load_rl_model(rl_model_path)
+                if success:
+                    logging.info("Using reinforcement learning model for enemy behavior")
+                else:
+                    logging.warning("RL model exists but couldn't be loaded.")
+                    logging.warning("Falling back to neural network.")
+            except Exception as e:
+                logging.error(f"Error loading RL model: {e}.")
+                logging.error("Using neural network instead.")
+        else:
+            logging.info("No RL model found, using traditional neural network")
+            
         logging.info("Initialized PlayerPlay and EnemyPlay for play mode.")
         return player, enemy
 
@@ -224,7 +244,7 @@ class Game:
         if self.mode == "train" and self.training_mode_manager:
             self.training_mode_manager.update()
         elif self.mode == "play":
-    # If we haven't created a play_mode_manager yet, do so now
+            # If we haven't created a play_mode_manager yet, do so now
             if not hasattr(self, 'play_mode_manager') or self.play_mode_manager is None:
                 from ai_platform_trainer.gameplay.modes.play_mode import PlayMode
                 self.play_mode_manager = PlayMode(self)
@@ -272,7 +292,6 @@ class Game:
                 self.missile_model
             )
       
-
     def check_collision(self) -> bool:
         if not (self.player and self.enemy):
             return False
@@ -317,3 +336,57 @@ class Game:
         self.is_respawning = False
         self.respawn_timer = 0
         logging.info("Game state reset, returning to menu.")
+        
+    def reset_enemy(self) -> None:
+        """Reset the enemy's position but keep it in the game.
+        
+        This is primarily used during RL training to reset the
+        environment without disturbing other game elements.
+        """
+        if self.enemy:
+            # Place the enemy at a random location away from the player
+            import random
+            if self.player:
+                # Keep enemy away from player during resets
+                while True:
+                    x = random.randint(0, self.screen_width - self.enemy.size)
+                    y = random.randint(0, self.screen_height - self.enemy.size)
+                    
+                    # Calculate distance to player
+                    distance = math.sqrt(
+                        (x - self.player.position["x"])**2 + 
+                        (y - self.player.position["y"])**2
+                    )
+                    
+                    # Ensure minimum distance
+                    min_distance = max(self.screen_width, self.screen_height) * 0.3
+                    if distance >= min_distance:
+                        break
+            else:
+                # No player present, just pick a random position
+                x = random.randint(0, self.screen_width - self.enemy.size)
+                y = random.randint(0, self.screen_height - self.enemy.size)
+            
+            self.enemy.set_position(x, y)
+            self.enemy.visible = True
+            logging.debug(f"Enemy reset to position ({x}, {y})")
+        
+    def update_once(self) -> None:
+        """Process a single update frame for the game.
+        
+        This is used during RL training to advance the game state
+        without relying on the main game loop.
+        """
+        current_time = pygame.time.get_ticks()
+        
+        # Process pending events to avoid queue overflow
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.running = False
+        
+        # Update based on current mode
+        if self.mode == "play" and not self.menu_active:
+            if hasattr(self, 'play_mode_manager') and self.play_mode_manager:
+                self.play_mode_manager.update(current_time)
+            else:
+                self.play_update(current_time)

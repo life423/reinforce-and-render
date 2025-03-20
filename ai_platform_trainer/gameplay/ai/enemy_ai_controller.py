@@ -1,6 +1,8 @@
 import math
+import random
+import logging
 import torch
-from typing import Tuple
+
 
 def update_enemy_movement(
     enemy,
@@ -40,7 +42,11 @@ def update_enemy_movement(
         action_dx /= action_len
         action_dy /= action_len
     else:
-        action_dx, action_dy = 0.0, 0.0
+        # Apply a small random movement instead of freezing
+        angle = random.uniform(0, 2 * math.pi)
+        action_dx = math.cos(angle)
+        action_dy = math.sin(angle)
+        logging.debug(f"Applied fallback random movement for enemy at position {enemy.pos}")
 
     # Move enemy at 70% of the player's speed
     speed = player_speed * 0.7

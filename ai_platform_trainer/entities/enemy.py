@@ -2,6 +2,7 @@ import torch
 import math
 import pygame
 import logging
+import random
 from typing import Optional
 
 
@@ -72,7 +73,11 @@ class Enemy:
             action_dx /= action_len
             action_dy /= action_len
         else:
-            action_dx, action_dy = 0.0, 0.0
+            # Apply a small random movement instead of freezing
+            angle = random.uniform(0, 2 * math.pi)
+            action_dx = math.cos(angle)
+            action_dy = math.sin(angle)
+            logging.debug(f"Applied fallback random movement for enemy at position {self.pos}")
 
         speed = player_speed * 0.7
         self.pos["x"] += action_dx * speed
