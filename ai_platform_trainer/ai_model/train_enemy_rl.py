@@ -7,55 +7,147 @@ using the Stable Baselines3 PPO implementation.
 import os
 import logging
 import numpy as np
+import time
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Dict, Any
 
 from stable_baselines3 import PPO
-from stable_baselines3.common.callbacks import CheckpointCallback
+from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 
 from ai_platform_trainer.ai_model.enemy_rl_agent import EnemyGameEnv
+from ai_platform_trainer.ai_model.training_monitor import TrainingMonitor
 from ai_platform_trainer.gameplay.game import Game
 
 
-class TrainingCallback(CheckpointCallback):
+class TrainingCallback(BaseCallback):
     """
     Custom callback for training that extends the checkpoint functionality.
     """
     
-    def __init__(self, save_freq: int, save_path: str, name_prefix: str = "enemy_ppo_model"):
+    def __init__(
+        self, 
+        save_freq: int, 
+        save_path: str, 
+        monitor: TrainingMonitor,
+        name_prefix: str = "enemy_ppo_model"
+    ):
         """
         Initialize the callback with saving parameters.
         
         Args:
             save_freq: Number of timesteps between checkpoints
             save_path: Directory to save models to
+            monitor: TrainingMonitor instance for visualizing progress
             name_prefix: Prefix for saved model files
         """
-        super().__init__(save_freq, save_path, name_prefix)
+        super().__init__(verbose=1)
+        self.save_freq = save_freq
+        self.save_path = save_path
+        self.name_prefix = name_prefix
+        self.monitor = monitor
         self.best_reward = -float('inf')
         self.best_model_path = os.path.join(save_path, f"{name_prefix}_best")
-    
+        self.last_save_step = 0
+        self.training_start_time = time.time()
+        self.last_fps_update = time.time()
+        self.steps_since_fps_update = 0
+        
+    def _init_callback(self) -> None:
+        """
+        Initialize callback variables at the start of training.
+        """
+        # Create the save directory if it doesn't exist
+        os.makedirs(self.save_path, exist_ok=True)
+        
     def _on_step(self) -> bool:
         """
-        Check if we should save a model checkpoint on this step.
+        Update metrics and save model when appropriate.
         
         Returns:
             Whether to continue training
         """
-        # Call the parent _on_step for regular checkpoints
-        super()._on_step()
-        
-        # Add custom logic to save the best model by reward
-        if len(self.model.ep_info_buffer) > 0:
-            avg_reward = np.mean([ep['r'] for ep in self.model.ep_info_buffer])
+        # Collect metrics for monitoring
+        metrics = self._collect_metrics()
+        if metrics:
+            self.monitor.update(metrics)
             
+        # Check if we should save a model checkpoint
+        if self.n_calls - self.last_save_step >= self.save_freq:
+            path = os.path.join(self.save_path, f"{self.name_prefix}_{self.n_calls}")
+            self.model.save(path)
+            self.last_save_step = self.n_calls
+            
+            # Save the best model based on reward
+            avg_reward = self._get_avg_reward()
             if avg_reward > self.best_reward:
                 self.best_reward = avg_reward
-                logging.info(f"New best model with reward {avg_reward:.2f}")
                 self.model.save(self.best_model_path)
-        
+                logging.info(f"New best model with reward {avg_reward:.2f}")
+                
         return True
+        
+    def _collect_metrics(self) -> Optional[Dict[str, Any]]:
+        """
+        Collect training metrics for visualization.
+        
+        Returns:
+            Dictionary of metrics
+        """
+        metrics = {}
+        
+        # Track training steps
+        metrics['training_steps'] = self.n_calls
+        
+        # Track learning rate
+        if hasattr(self.model, 'lr_schedule') and hasattr(self.model.lr_schedule, 'get_value'):
+            metrics['learning_rate'] = self.model.lr_schedule(1)
+        
+        # Track losses
+        if hasattr(self.model, 'logger') and hasattr(self.model.logger, 'name_to_value'):
+            name_to_value = self.model.logger.name_to_value
+            for key in ['value_loss', 'policy_loss', 'entropy']:
+                if key in name_to_value:
+                    metrics[f'avg_{key}'] = name_to_value[key]
+                    
+        # Track rewards
+        metrics['episode_rewards'] = self._get_avg_reward()
+        
+        # Calculate and track FPS
+        current_time = time.time()
+        time_diff = current_time - self.last_fps_update
+        if time_diff >= 1.0:  # Update FPS every second
+            fps = self.steps_since_fps_update / time_diff
+            metrics['fps'] = fps
+            self.last_fps_update = current_time
+            self.steps_since_fps_update = 0
+        else:
+            self.steps_since_fps_update += 1
+            
+        # Track behavioral metrics if available from environment
+        if hasattr(self.training_env, 'get_attr'):
+            try:
+                # These metrics would need to be implemented in the environment
+                for metric in ['player_distances', 'missile_avoidance', 'successful_hits']:
+                    values = self.training_env.get_attr(metric)
+                    if values:
+                        metrics[metric] = np.mean(values)
+            except Exception:
+                pass  # Silently continue if metrics aren't available
+                
+        return metrics
+        
+    def _get_avg_reward(self) -> float:
+        """
+        Calculate average reward from episode info buffer.
+        
+        Returns:
+            Average reward or 0 if no episodes completed
+        """
+        if len(self.model.ep_info_buffer) == 0:
+            return 0.0
+            
+        return np.mean([ep['r'] for ep in self.model.ep_info_buffer])
 
 
 def train_rl_agent(
@@ -79,6 +171,9 @@ def train_rl_agent(
     # Create directories if they don't exist
     Path(save_path).mkdir(parents=True, exist_ok=True)
     Path(log_path).mkdir(parents=True, exist_ok=True)
+    
+    # Initialize training monitor
+    monitor = TrainingMonitor(log_path)
     
     try:
         # Create a dedicated game instance for training
@@ -116,11 +211,12 @@ def train_rl_agent(
             )
         )
         
-        # Set up checkpointing and callbacks
+        # Set up checkpoint callback with monitoring
         callbacks = [
             TrainingCallback(
                 save_freq=10000,
                 save_path=save_path,
+                monitor=monitor,
                 name_prefix="enemy_ppo_model"
             )
         ]
@@ -139,7 +235,11 @@ def train_rl_agent(
         model.save(final_model_path)
         env.save(os.path.join(save_path, "vec_normalize.pkl"))
         
+        # Generate training report
+        monitor.final_report()
+        
         logging.info(f"Training completed. Model saved to {final_model_path}")
+        logging.info(f"Training visualizations saved to {log_path}")
         
         return model
         
