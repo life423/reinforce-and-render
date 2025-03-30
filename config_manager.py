@@ -8,6 +8,7 @@ DEFAULT_SETTINGS = {
     "height": 720,
 }
 
+
 def load_settings(config_path: str = "settings.json") -> Dict[str, bool | int]:
     """
     Load settings from a JSON file. If the file doesn't exist, returns a default dict.
@@ -16,6 +17,7 @@ def load_settings(config_path: str = "settings.json") -> Dict[str, bool | int]:
         with open(config_path, "r") as file:
             return json.load(file)
     return DEFAULT_SETTINGS.copy()
+
 
 def save_settings(settings: Dict[str, bool | int], config_path: str = "settings.json") -> None:
     """

@@ -3,8 +3,6 @@ import math
 import logging
 import random
 import pygame
-from ai_platform_trainer.entities.missile import Missile
-from ai_platform_trainer.utils.helpers import wrap_position
 
 
 class TrainingMode:
@@ -65,7 +63,7 @@ class TrainingMode:
                         # Example distances
 
 
-                        
+
                         missile_angle = math.atan2(missile.vy, missile.vx)
                         missile_action = getattr(missile, "last_action", 0.0)
 
@@ -78,11 +76,11 @@ class TrainingMode:
                                 "missile_x": missile.pos["x"],
                                 "missile_y": missile.pos["y"],
                                 "missile_angle": missile_angle,
-                                
+
                                 "missile_collision": False,
                                 "missile_action": missile_action,
                                 "timestamp": current_time,
-                                
+
                             }
                         )
 

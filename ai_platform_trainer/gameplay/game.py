@@ -155,7 +155,7 @@ class Game:
 
         player = PlayerPlay(self.screen_width, self.screen_height)
         enemy = EnemyPlay(self.screen_width, self.screen_height, model)
-        
+
         # Check for RL model and try to load if available
         rl_model_path = "models/enemy_rl/final_model.zip"
         if os.path.exists(rl_model_path):
@@ -171,7 +171,7 @@ class Game:
                 logging.error("Using neural network instead.")
         else:
             logging.info("No RL model found, using traditional neural network")
-            
+
         logging.info("Initialized PlayerPlay and EnemyPlay for play mode.")
         return player, enemy
 
@@ -219,7 +219,7 @@ class Game:
 
     def _toggle_fullscreen(self) -> None:
         """
-        Helper that toggles between windowed and fullscreen, 
+        Helper that toggles between windowed and fullscreen,
         updating self.screen, self.screen_width, self.screen_height.
         """
         was_fullscreen = self.settings["fullscreen"]
@@ -291,7 +291,7 @@ class Game:
                 self._missile_input,
                 self.missile_model
             )
-      
+
     def check_collision(self) -> bool:
         if not (self.player and self.enemy):
             return False
@@ -336,10 +336,10 @@ class Game:
         self.is_respawning = False
         self.respawn_timer = 0
         logging.info("Game state reset, returning to menu.")
-        
+
     def reset_enemy(self) -> None:
         """Reset the enemy's position but keep it in the game.
-        
+
         This is primarily used during RL training to reset the
         environment without disturbing other game elements.
         """
@@ -351,13 +351,13 @@ class Game:
                 while True:
                     x = random.randint(0, self.screen_width - self.enemy.size)
                     y = random.randint(0, self.screen_height - self.enemy.size)
-                    
+
                     # Calculate distance to player
                     distance = math.sqrt(
-                        (x - self.player.position["x"])**2 + 
+                        (x - self.player.position["x"])**2 +
                         (y - self.player.position["y"])**2
                     )
-                    
+
                     # Ensure minimum distance
                     min_distance = max(self.screen_width, self.screen_height) * 0.3
                     if distance >= min_distance:
@@ -366,24 +366,24 @@ class Game:
                 # No player present, just pick a random position
                 x = random.randint(0, self.screen_width - self.enemy.size)
                 y = random.randint(0, self.screen_height - self.enemy.size)
-            
+
             self.enemy.set_position(x, y)
             self.enemy.visible = True
             logging.debug(f"Enemy reset to position ({x}, {y})")
-        
+
     def update_once(self) -> None:
         """Process a single update frame for the game.
-        
+
         This is used during RL training to advance the game state
         without relying on the main game loop.
         """
         current_time = pygame.time.get_ticks()
-        
+
         # Process pending events to avoid queue overflow
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
-        
+
         # Update based on current mode
         if self.mode == "play" and not self.menu_active:
             if hasattr(self, 'play_mode_manager') and self.play_mode_manager:

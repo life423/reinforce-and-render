@@ -52,16 +52,16 @@ COLORS = {
 def create_player_sprite(size):
     """
     Create a player sprite - a spaceship/triangle with details.
-    
+
     Args:
         size: Tuple of (width, height) for the sprite
-        
+
     Returns:
         Pygame surface with the sprite
     """
     width, height = size
     surface = pygame.Surface(size, pygame.SRCALPHA)
-    
+
     # Define ship shape (triangular spaceship)
     points = [
         (width // 2, 0),                # Nose
@@ -72,19 +72,19 @@ def create_player_sprite(size):
         (width * 2 // 3, height * 2 // 3), # Right body
         (width * 5 // 6, height * 3 // 4)  # Right wing
     ]
-    
+
     # Draw ship body
     pygame.draw.polygon(surface, COLORS["player"]["body"], points)
-    
+
     # Add cockpit (circle)
     cockpit_radius = width // 6
     pygame.draw.circle(
-        surface, 
+        surface,
         COLORS["player"]["highlight"],
         (width // 2, height // 3),
         cockpit_radius
     )
-    
+
     # Add engine glow
     engine_points = [
         (width // 3 + 2, height - 5),
@@ -92,26 +92,26 @@ def create_player_sprite(size):
         (width // 2, height + 10)
     ]
     pygame.draw.polygon(surface, COLORS["player"]["highlight"], engine_points)
-    
+
     # Add details/contours
     pygame.draw.lines(surface, COLORS["player"]["shadow"], True, points, 2)
-    
+
     return surface
 
 
 def create_enemy_sprite(size):
     """
     Create an enemy sprite - a pentagon/spaceship with details.
-    
+
     Args:
         size: Tuple of (width, height) for the sprite
-        
+
     Returns:
         Pygame surface with the sprite
     """
     width, height = size
     surface = pygame.Surface(size, pygame.SRCALPHA)
-    
+
     # Define ship shape (pentagon-like alien ship)
     points = [
         (width // 2, 0),                # Top point
@@ -120,58 +120,58 @@ def create_enemy_sprite(size):
         (width * 3 // 4, height),       # Bottom right
         (width, height // 2)            # Right point
     ]
-    
+
     # Draw ship body
     pygame.draw.polygon(surface, COLORS["enemy"]["body"], points)
-    
+
     # Add center dome
     dome_radius = width // 4
     pygame.draw.circle(
-        surface, 
+        surface,
         COLORS["enemy"]["highlight"],
         (width // 2, height // 2),
         dome_radius
     )
-    
+
     # Add "eye" in center
     eye_radius = width // 10
     pygame.draw.circle(
-        surface, 
+        surface,
         COLORS["enemy"]["shadow"],
         (width // 2, height // 2),
         eye_radius
     )
-    
+
     # Add details/contours
     pygame.draw.lines(surface, COLORS["enemy"]["shadow"], True, points, 2)
-    
+
     # Add some small circles for decoration
     for i in range(3):
         angle = i * 2 * math.pi / 3
         x = width // 2 + int(math.cos(angle) * width // 3)
         y = height // 2 + int(math.sin(angle) * height // 3)
         pygame.draw.circle(surface, COLORS["enemy"]["shadow"], (x, y), width // 12)
-    
+
     return surface
 
 
 def create_missile_sprite(size):
     """
     Create a missile sprite - an elongated shape with trail.
-    
+
     Args:
         size: Tuple of (width, height) for the sprite
-        
+
     Returns:
         Pygame surface with the sprite
     """
     width, height = size
     surface = pygame.Surface(size, pygame.SRCALPHA)
-    
+
     # Missile body (elongated hexagon)
     body_width = width // 2
     body_height = height * 2 // 3
-    
+
     points = [
         (width // 2, 0),                      # Nose
         (width // 2 - body_width // 2, body_height // 4),  # Top left
@@ -179,10 +179,10 @@ def create_missile_sprite(size):
         (width // 2 + body_width // 2, body_height),       # Bottom right
         (width // 2 + body_width // 2, body_height // 4)   # Top right
     ]
-    
+
     # Draw missile body
     pygame.draw.polygon(surface, COLORS["missile"]["body"], points)
-    
+
     # Draw missile trail/flame
     trail_points = [
         (width // 2 - body_width // 4, body_height),
@@ -190,7 +190,7 @@ def create_missile_sprite(size):
         (width // 2, height)
     ]
     pygame.draw.polygon(surface, COLORS["missile"]["trail"], trail_points)
-    
+
     # Add highlight along nose
     pygame.draw.line(
         surface,
@@ -199,60 +199,60 @@ def create_missile_sprite(size):
         (width // 2, body_height // 2),
         2
     )
-    
+
     return surface
 
 
 def create_explosion_sprite(size, frame_index, total_frames=4):
     """
     Create an explosion sprite frame.
-    
+
     Args:
         size: Tuple of (width, height) for the sprite
         frame_index: Current frame of the explosion animation
         total_frames: Total number of frames in the explosion
-        
+
     Returns:
         Pygame surface with the sprite
     """
     width, height = size
     surface = pygame.Surface(size, pygame.SRCALPHA)
-    
+
     # Calculate expansion factor based on frame
     progress = frame_index / (total_frames - 1)
-    
+
     # Draw expanding circles for explosion effect
     radius_outer = int(width * 0.4 * (0.3 + progress * 0.7))
     radius_middle = int(width * 0.3 * (0.3 + progress * 0.7))
     radius_inner = int(width * 0.15 * (0.3 + progress * 0.7))
-    
+
     # Transparency decreases with time
     alpha_outer = int(255 * (1 - progress * 0.7))
     alpha_middle = int(255 * (1 - progress * 0.5))
     alpha_inner = int(255 * (1 - progress * 0.3))
-    
+
     # Draw explosion circles
     pygame.draw.circle(
-        surface, 
+        surface,
         (*COLORS["explosion"]["outer"], alpha_outer),
         (width // 2, height // 2),
         radius_outer
     )
-    
+
     pygame.draw.circle(
-        surface, 
+        surface,
         (*COLORS["explosion"]["middle"], alpha_middle),
         (width // 2, height // 2),
         radius_middle
     )
-    
+
     pygame.draw.circle(
-        surface, 
+        surface,
         (*COLORS["explosion"]["inner"], alpha_inner),
         (width // 2, height // 2),
         radius_inner
     )
-    
+
     # Add some "spark" lines for later frames
     if frame_index > 0:
         for i in range(8):
@@ -262,7 +262,7 @@ def create_explosion_sprite(size, frame_index, total_frames=4):
             start_y = height // 2 + int(math.sin(angle) * radius_middle * 0.8)
             end_x = width // 2 + int(math.cos(angle) * (radius_middle * 0.8 + length))
             end_y = height // 2 + int(math.sin(angle) * (radius_middle * 0.8 + length))
-            
+
             pygame.draw.line(
                 surface,
                 (*COLORS["explosion"]["outer"], alpha_outer),
@@ -270,14 +270,14 @@ def create_explosion_sprite(size, frame_index, total_frames=4):
                 (end_x, end_y),
                 2
             )
-    
+
     return surface
 
 
 def save_sprite(surface, name):
     """
     Save a sprite surface to a file.
-    
+
     Args:
         surface: Pygame surface to save
         name: Filename (without extension)
@@ -290,24 +290,24 @@ def save_sprite(surface, name):
 def generate_all_sprites():
     """Generate all sprite images for the game."""
     print("Generating sprites...")
-    
+
     # Generate player sprite
     player = create_player_sprite(SPRITE_SIZES["player"])
     save_sprite(player, "player")
-    
+
     # Generate enemy sprite
     enemy = create_enemy_sprite(SPRITE_SIZES["enemy"])
     save_sprite(enemy, "enemy")
-    
+
     # Generate missile sprite
     missile = create_missile_sprite(SPRITE_SIZES["missile"])
     save_sprite(missile, "missile")
-    
+
     # Generate explosion animation frames
     for i in range(4):
         explosion = create_explosion_sprite(SPRITE_SIZES["explosion"], i, 4)
         save_sprite(explosion, f"explosion_{i}")
-    
+
     print("All sprites generated successfully!")
 
 

@@ -29,35 +29,35 @@ def setup_logging():
     )
 
 
-def parse_args(): 
+def parse_args():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(description='Train the enemy AI using reinforcement learning')
     parser.add_argument(
-        '--timesteps', 
-        type=int, 
+        '--timesteps',
+        type=int,
         default=500000,
         help='Number of timesteps to train for (default: 500000)'
     )
     parser.add_argument(
-        '--headless', 
+        '--headless',
         action='store_true',
         help='Run training without visualization (faster training)'
     )
     parser.add_argument(
-        '--save-path', 
-        type=str, 
+        '--save-path',
+        type=str,
         default='models/enemy_rl',
         help='Directory to save the model to (default: models/enemy_rl)'
     )
     parser.add_argument(
-        '--log-path', 
-        type=str, 
+        '--log-path',
+        type=str,
         default='logs/enemy_rl',
         help='Directory to save TensorBoard logs to (default: logs/enemy_rl)'
     )
     parser.add_argument(
-        '--visualize-interval', 
-        type=int, 
+        '--visualize-interval',
+        type=int,
         default=300,
         help='Interval in seconds between visualization updates (default: 300)'
     )
@@ -68,23 +68,23 @@ def ensure_directories(save_path, log_path):
     """Ensure the save and log directories exist."""
     Path(save_path).mkdir(parents=True, exist_ok=True)
     Path(log_path).mkdir(parents=True, exist_ok=True)
-    
 
-def main(): 
+
+def main():
     """Main entry point for the training script."""
     setup_logging()
     args = parse_args()
-    
+
     # Create directories if they don't exist
     ensure_directories(args.save_path, args.log_path)
-    
+
     logging.info(f"Starting enemy AI RL training for {args.timesteps} timesteps")
     logging.info(f"Model checkpoints will be saved to {args.save_path}")
     logging.info(f"Training logs will be saved to {args.log_path}")
     logging.info(f"Headless mode: {args.headless}")
     logging.info(f"Visualization interval: {args.visualize_interval} seconds")
     logging.info("Training progress can be monitored through generated dashboards")
-    
+
     # Train the model
     model = train_rl_agent(
         total_timesteps=args.timesteps,
@@ -92,19 +92,19 @@ def main():
         log_path=args.log_path,
         headless=args.headless
     )
-    
+
     if model is not None:
         logging.info("Training completed successfully!")
         final_path = os.path.join(args.save_path, 'final_model.zip')
         best_path = os.path.join(args.save_path, 'enemy_ppo_model_best.zip')
         logging.info(f"Final model saved to {final_path}")
         logging.info(f"Best model saved to {best_path}")
-        
+
         # Show visualization info
         dashboard_path = os.path.join(args.log_path, "final_dashboard.png")
         if os.path.exists(dashboard_path):
             logging.info(f"Training dashboard available at: {dashboard_path}")
-        
+
         # Suggest next steps
         logging.info("\nNext steps:")
         logging.info("1. Run the game: python -m ai_platform_trainer.main")

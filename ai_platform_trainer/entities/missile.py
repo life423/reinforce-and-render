@@ -3,7 +3,6 @@
 import pygame
 
 
-
 class Missile:
     def __init__(
         self,
