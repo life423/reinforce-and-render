@@ -5,22 +5,22 @@ This module provides shared test fixtures that can be used across
 all test modules, including mock data, model instances, and utility helpers.
 """
 import json
-import os
 from pathlib import Path
-from typing import Dict, List, Any, Callable
+from typing import Dict, List, Any
 
 import pytest
 import torch
-import numpy as np
 
 from ai_platform_trainer.ai_model.simple_missile_model import SimpleMissileModel
 
 
 @pytest.fixture
+
+
 def sample_training_data() -> List[Dict[str, Any]]:
     """
     Create a small sample of training data for testing.
-    
+
     Returns:
         List of dictionaries with game state data
     """
@@ -51,14 +51,16 @@ def sample_training_data() -> List[Dict[str, Any]]:
 
 
 @pytest.fixture
+
+
 def sample_training_json_path(tmp_path: Path, sample_training_data: List[Dict[str, Any]]) -> str:
     """
     Create a temporary JSON file with sample training data.
-    
+
     Args:
         tmp_path: pytest fixture providing a temporary directory
         sample_training_data: sample data to write to the file
-        
+
     Returns:
         Path to the created JSON file
     """
@@ -69,30 +71,34 @@ def sample_training_json_path(tmp_path: Path, sample_training_data: List[Dict[st
 
 
 @pytest.fixture
+
+
 def simple_missile_model() -> SimpleMissileModel:
     """
     Create a SimpleMissileModel instance with deterministic weights.
-    
+
     Returns:
         Initialized SimpleMissileModel with preset weights
     """
     model = SimpleMissileModel(input_size=9, hidden_size=64, output_size=1)
-    
+
     # Set seed for reproducibility
     torch.manual_seed(42)
-    
+
     # Initialize with deterministic weights
     for param in model.parameters():
         param.data.fill_(0.01)
-        
+
     return model
 
 
 @pytest.fixture
+
+
 def mock_game_state() -> Dict[str, Any]:
     """
     Create a mock game state for testing.
-    
+
     Returns:
         Dictionary with game state information
     """

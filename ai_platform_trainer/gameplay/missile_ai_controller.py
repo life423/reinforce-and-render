@@ -25,10 +25,10 @@ def update_missile_ai(
 ) -> None:
     """
     Update missile trajectories using AI model predictions.
-    
+
     This function processes all active missiles and adjusts their trajectories
     based on a combination of direct targeting and neural network predictions.
-    
+
     Args:
         missiles: List of missile objects to update
         player_pos: Dictionary containing player x,y coordinates
@@ -47,24 +47,24 @@ def update_missile_ai(
             target_angle = current_angle
         else:
             target_angle = math.atan2(
-                enemy_pos["y"] - missile.pos["y"], 
+                enemy_pos["y"] - missile.pos["y"],
                 enemy_pos["x"] - missile.pos["x"]
             )
 
         # Extract position values for model input
         px, py = player_pos["x"], player_pos["y"]
-        
+
         # If enemy doesn't exist, use projected position based on missile velocity
         ex = enemy_pos["x"] if enemy_pos else missile.pos["x"] + missile.vx
         ey = enemy_pos["y"] if enemy_pos else missile.pos["y"] + missile.vy
-        
+
         # Calculate distance to target (used as model input feature)
         dist_val = math.hypot(missile.pos["x"] - ex, missile.pos["y"] - ey)
 
         # Prepare model input tensor with current state
         shared_input_tensor[0] = torch.tensor([
-            px, py, ex, ey, 
-            missile.pos["x"], missile.pos["y"], 
+            px, py, ex, ey,
+            missile.pos["x"], missile.pos["y"],
             current_angle, dist_val, 0.0
         ])
 
@@ -74,10 +74,10 @@ def update_missile_ai(
 
         # Calculate angle difference for direct targeting
         angle_diff = math.degrees(target_angle - current_angle)
-        
+
         # Blend between model prediction and direct targeting
         blended_turn_rate = (
-            model_blend_factor * turn_rate + 
+            model_blend_factor * turn_rate +
             (1 - model_blend_factor) * angle_diff
         )
 

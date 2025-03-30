@@ -1,8 +1,12 @@
-# file: ai_platform_trainer/gameplay/modes/play_mode.py
+"""
+Play mode game logic for AI Platform Trainer.
 
+This module handles the play mode game loop and mechanics.
+"""
 import logging
-import pygame
-from ai_platform_trainer.gameplay.missile_ai_controller import update_missile_ai
+
+from ai_platform_trainer.entities.behaviors.missile_ai_controller import update_missile_ai
+
 
 class PlayMode:
     def __init__(self, game):

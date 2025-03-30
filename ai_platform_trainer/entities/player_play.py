@@ -5,6 +5,7 @@ import math
 from typing import List, Optional, Dict
 from ai_platform_trainer.entities.missile import Missile
 
+
 class PlayerPlay:
     def __init__(self, screen_width: int, screen_height: int):
         self.screen_width = screen_width
