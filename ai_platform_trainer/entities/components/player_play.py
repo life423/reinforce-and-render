@@ -53,14 +53,17 @@ class PlayerPlay:
             missile_start_y = self.position["y"] + self.size // 2
 
             birth_time = pygame.time.get_ticks()
-            # Random lifespan from 0.5–1.5s to match training
-            random_lifespan = random.randint(500, 1500)
+            # Random lifespan from 0.75–2.25s to match training
+            random_lifespan = random.randint(750, 2250)
             missile_speed = 5.0
 
             # Determine initial velocity based on enemy position if available
             if enemy_pos is not None:
                 # Calculate the angle toward the enemy's position
-                angle = math.atan2(enemy_pos["y"] - missile_start_y, enemy_pos["x"] - missile_start_x)
+                angle = math.atan2(
+                    enemy_pos["y"] - missile_start_y, 
+                    enemy_pos["x"] - missile_start_x
+                )
                 # Add a small random deviation to simulate inaccuracy
                 angle += random.uniform(-0.1, 0.1)  # deviation in radians
                 vx = missile_speed * math.cos(angle)
@@ -80,7 +83,9 @@ class PlayerPlay:
                 lifespan=random_lifespan,
             )
             self.missiles.append(missile)
-            logging.info("Play mode: Shot a missile with random lifespan and dynamic initial direction.")
+            logging.info(
+                "Play mode: Shot a missile with random lifespan and dynamic initial direction."
+            )
         else:
             logging.debug("Attempted to shoot missile, but one is already active.")
 

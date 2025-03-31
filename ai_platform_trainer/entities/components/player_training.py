@@ -182,7 +182,8 @@ class PlayerTraining:
             self.circle_radius = max(20, min(200, self.circle_radius))
 
         logging.debug(
-            f"Circle move: pos={self.position}, center={self.circle_center}, radius={self.circle_radius}"
+            f"Circle move: pos={self.position}, center={self.circle_center}, "
+            f"radius={self.circle_radius}"
         )
 
     def diagonal_pattern(self, enemy_x, enemy_y):
@@ -272,7 +273,7 @@ class PlayerTraining:
             vy = math.sin(angle) * speed
 
             # Random missile lifespan
-            lifespan = random.randint(500, 3000)  # 0.5s - 1.5s
+            lifespan = random.randint(750, 4500)  # 0.75s - 4.5s
             birth_time = pygame.time.get_ticks()
 
             missile = Missile(
@@ -286,7 +287,8 @@ class PlayerTraining:
             )
             self.missiles.append(missile)
             logging.info(
-                f"Training Mode: Missile shot with offset {offset_degrees:.1f}°, final angle: {math.degrees(angle):.1f}°"
+                f"Training Mode: Missile shot with offset {offset_degrees:.1f}°, "
+                f"final angle: {math.degrees(angle):.1f}°"
             )
 
     def update_missiles(self) -> None:
