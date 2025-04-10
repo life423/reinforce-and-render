@@ -1,17 +1,25 @@
-# file: ai_platform_trainer/core/launcher_refactored.py
 """
-Launcher module for the refactored AI Platform Trainer game.
-Uses the state machine architecture for game flow management.
+State Machine Launcher Module (Adapter)
+
+This is an adapter module that forwards to the canonical implementation
+in engine/core/unified_launcher.py for backward compatibility.
+
+DEPRECATED: Use ai_platform_trainer.engine.core.unified_launcher instead.
 """
-from ai_platform_trainer.core.logging_config import setup_logging
-from ai_platform_trainer.gameplay.game_refactored import Game
+import warnings
+import os
+from ai_platform_trainer.engine.core.unified_launcher import main, launch_state_machine
 
+# Add deprecation warning
+warnings.warn(
+    "Importing from ai_platform_trainer.core.launcher_refactored is deprecated. "
+    "Use ai_platform_trainer.engine.core.unified_launcher instead.",
+    DeprecationWarning,
+    stacklevel=2
+)
 
-def main():
-    """
-    Main entry point for the AI Platform Trainer application.
-    Initializes and runs the game with state machine architecture.
-    """
-    setup_logging()
-    game = Game()
-    game.run()
+# Override environment variable to use state machine mode
+os.environ["AI_PLATFORM_LAUNCHER_MODE"] = "STATE_MACHINE"
+
+# For backwards compatibility, provide the main function
+__all__ = ["main"]

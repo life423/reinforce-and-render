@@ -1,13 +1,19 @@
-# ai_platform_trainer/core/launcher.py
-from ai_platform_trainer.core.logging_config import setup_logging
-from ai_platform_trainer.gameplay.game import Game
+"""
+Standard Launcher Module (Engine Version)
 
-# If you had a config loader:
-# from ai_platform_trainer.core.config_loader import load_config
+This module is kept for backward compatibility but forwards to the unified launcher.
+Use ai_platform_trainer.engine.core.unified_launcher directly for new code.
+"""
+import warnings
+from ai_platform_trainer.engine.core.unified_launcher import main, launch_standard
 
+# Add deprecation warning
+warnings.warn(
+    "Importing from ai_platform_trainer.engine.core.launcher is deprecated. "
+    "Use ai_platform_trainer.engine.core.unified_launcher instead.",
+    DeprecationWarning,
+    stacklevel=2
+)
 
-def main():
-    setup_logging()
-    # config = load_config()  # If you have a config loader
-    game = Game()  # Pass config here if needed: Game(config)
-    game.run()
+# For backwards compatibility, provide the main function
+__all__ = ["main"]

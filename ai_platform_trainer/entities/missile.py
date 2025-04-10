@@ -12,7 +12,7 @@ class Missile:
         vx: float = 5.0,
         vy: float = 0.0,
         birth_time: int = 0,
-        lifespan: int = 1000,  # default 1s if not overridden
+        lifespan: int = 3333,  # default ~3.3s (2/3 of previous 5s value)
     ):
         self.size = 10
         self.color = (255, 255, 0)  # Yellow

@@ -1,37 +1,22 @@
-# file: ai_platform_trainer/core/service_locator.py
 """
-Service Locator pattern implementation for dependency injection.
-Provides central registry of services that can be accessed throughout the application.
+Service Locator Module (Adapter)
+
+This is an adapter module that forwards to the canonical implementation
+in engine/core/service_locator.py for backward compatibility.
+
+DEPRECATED: Use ai_platform_trainer.engine.core.service_locator instead.
 """
+import warnings
+from ai_platform_trainer.core.adapter import CoreAdapter
 
+# Import and re-export the ServiceLocator class from engine/core
+_service_locator_module = CoreAdapter.get_module("service_locator")
+ServiceLocator = _service_locator_module.ServiceLocator
 
-class ServiceLocator:
-    """
-    Service locator for dependency injection.
-    Maintains a registry of services that can be retrieved by name.
-    """
-    _services = {}
-
-    @classmethod
-    def register(cls, name, service):
-        """
-        Register a service by name.
-
-        Args:
-            name: The name to register the service under
-            service: The service instance to register
-        """
-        cls._services[name] = service
-
-    @classmethod
-    def get(cls, name):
-        """
-        Get a service by name.
-
-        Args:
-            name: The name of the service to retrieve
-
-        Returns:
-            The registered service, or None if no service with the given name exists
-        """
-        return cls._services.get(name)
+# Add deprecation warning
+warnings.warn(
+    "Importing from ai_platform_trainer.core.service_locator is deprecated. "
+    "Use ai_platform_trainer.engine.core.service_locator instead.",
+    DeprecationWarning,
+    stacklevel=2
+)

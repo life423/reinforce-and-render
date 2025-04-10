@@ -1,34 +1,22 @@
-import logging
-import sys
+"""
+Logging Configuration Module (Adapter)
 
-LOG_FILE = "game.log"
+This is an adapter module that forwards to the canonical implementation
+in engine/core/logging_config.py for backward compatibility.
 
+DEPRECATED: Use ai_platform_trainer.engine.core.logging_config instead.
+"""
+import warnings
+from ai_platform_trainer.core.adapter import CoreAdapter
 
-def setup_logging() -> logging.Logger:
-    """
-    Sets up a shared logger that writes to both file and console.
-    Returns the configured logger instance for convenience.
-    """
-    logger = logging.getLogger("ai_platform_trainer")
-    logger.setLevel(logging.INFO)
+# Import and re-export functions from engine/core
+_logging_module = CoreAdapter.get_module("logging_config")
+setup_logging = _logging_module.setup_logging
 
-    # Prevent adding handlers multiple times if this is called more than once
-    if not logger.handlers:
-        # File handler
-        file_handler = logging.FileHandler(LOG_FILE)
-        file_handler.setLevel(logging.INFO)
-        file_format = logging.Formatter(
-            "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
-        )
-        file_handler.setFormatter(file_format)
-
-        # Stream (console) handler
-        stream_handler = logging.StreamHandler(sys.stdout)
-        stream_handler.setLevel(logging.INFO)
-        stream_format = logging.Formatter("%(levelname)s - %(message)s")
-        stream_handler.setFormatter(stream_format)
-
-        logger.addHandler(file_handler)
-        logger.addHandler(stream_handler)
-
-    return logger
+# Add deprecation warning
+warnings.warn(
+    "Importing from ai_platform_trainer.core.logging_config is deprecated. "
+    "Use ai_platform_trainer.engine.core.logging_config instead.",
+    DeprecationWarning,
+    stacklevel=2
+)

@@ -53,14 +53,16 @@ class PlayerPlay:
             missile_start_y = self.position["y"] + self.size // 2
 
             birth_time = pygame.time.get_ticks()
-            # Random lifespan from 0.5–1.5s to match training
-            random_lifespan = random.randint(500, 1500)
+            # Random lifespan from 2-4.67s (2/3 of previous value)
+            random_lifespan = random.randint(2000, 4666)
             missile_speed = 5.0
 
             # Determine initial velocity based on enemy position if available
             if enemy_pos is not None:
                 # Calculate the angle toward the enemy's position
-                angle = math.atan2(enemy_pos["y"] - missile_start_y, enemy_pos["x"] - missile_start_x)
+                dy = enemy_pos["y"] - missile_start_y
+                dx = enemy_pos["x"] - missile_start_x
+                angle = math.atan2(dy, dx)
                 # Add a small random deviation to simulate inaccuracy
                 angle += random.uniform(-0.1, 0.1)  # deviation in radians
                 vx = missile_speed * math.cos(angle)
@@ -80,7 +82,7 @@ class PlayerPlay:
                 lifespan=random_lifespan,
             )
             self.missiles.append(missile)
-            logging.info("Play mode: Shot a missile with random lifespan and dynamic initial direction.")
+            logging.info("Play mode: Shot a missile with reduced travel distance.")
         else:
             logging.debug("Attempted to shoot missile, but one is already active.")
 
@@ -89,20 +91,21 @@ class PlayerPlay:
         for missile in self.missiles[:]:
             missile.update()
 
-            # Remove if it expires or goes off-screen
+            # Remove if it expires
             if current_time - missile.birth_time >= missile.lifespan:
                 self.missiles.remove(missile)
                 logging.debug("Missile removed for exceeding lifespan.")
                 continue
 
-            if (
-                missile.pos["x"] < 0
-                or missile.pos["x"] > self.screen_width
-                or missile.pos["y"] < 0
-                or missile.pos["y"] > self.screen_height
-            ):
-                self.missiles.remove(missile)
-                logging.debug("Missile removed for going off-screen.")
+            # Screen wrapping for missiles, similar to player wrapping
+            if missile.pos["x"] < -missile.size:
+                missile.pos["x"] = self.screen_width
+            elif missile.pos["x"] > self.screen_width:
+                missile.pos["x"] = -missile.size
+            if missile.pos["y"] < -missile.size:
+                missile.pos["y"] = self.screen_height
+            elif missile.pos["y"] > self.screen_height:
+                missile.pos["y"] = -missile.size
 
     def draw_missiles(self, screen: pygame.Surface) -> None:
         for missile in self.missiles:

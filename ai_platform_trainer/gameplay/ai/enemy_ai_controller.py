@@ -25,8 +25,10 @@ class EnemyAIController:
     def __init__(self):
         """Initialize the enemy AI controller."""
         self.last_action_time = time.time()
-        self.action_interval = 0.05  # 50ms between actions
-        self.smoothing_factor = 0.7  # For smoothing movements
+        # Reduced from 0.05 to 0.01 (10ms between actions)
+        self.action_interval = 0.01
+        # Reduced from 0.7 to 0.4 for more responsive movement
+        self.smoothing_factor = 0.4
         self.prev_dx = 0
         self.prev_dy = 0
         self.stuck_counter = 0
@@ -92,9 +94,17 @@ class EnemyAIController:
                 # Calculate future distance
                 future_dx = future_x - enemy_x
                 future_dy = future_y - enemy_y
-                future_distance = math.sqrt(future_dx*future_dx + future_dy*future_dy)
+                # Calculate the squared distance
+                # Split calculation to avoid long line
+                future_dx_squared = future_dx * future_dx
+                future_dy_squared = future_dy * future_dy
+                future_dist_squared = future_dx_squared + future_dy_squared
+                # Get actual distance
+                # by taking the square root
+                future_distance = math.sqrt(future_dist_squared)
                 
-                nearby_missiles.append({
+                # Create the missile info dictionary
+                missile_info = {
                     "missile": missile,
                     "distance": distance,
                     "future_distance": future_distance,
@@ -104,11 +114,16 @@ class EnemyAIController:
                     "future_dy": future_dy,
                     "vx": missile.vx,
                     "vy": missile.vy
-                })
+                }
+                nearby_missiles.append(missile_info)
                 
         return nearby_missiles
     
-    def _calculate_evasion_vector(self, enemy_pos: Dict[str, float], missiles: List[Dict]) -> Tuple[float, float]:
+    def _calculate_evasion_vector(
+        self,
+        enemy_pos: Dict[str, float],
+        missiles: List[Dict]
+    ) -> Tuple[float, float]:
         """
         Calculate optimal evasion vector based on nearby missiles.
         
@@ -272,8 +287,8 @@ class EnemyAIController:
         # Store for next frame's smoothing
         self.prev_dx, self.prev_dy = action_dx, action_dy
 
-        # Move enemy at 70% of the player's speed
-        speed = player_speed * 0.7
+        # Move enemy at 100% of the player's speed (increased from 70%)
+        speed = player_speed * 1.0
         enemy.pos["x"] += action_dx * speed
         enemy.pos["y"] += action_dy * speed
 
