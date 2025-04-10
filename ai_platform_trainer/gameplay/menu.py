@@ -142,10 +142,42 @@ class Menu:
             self.draw_help(screen)
             return
             
-            # If the AI selection screen is active, draw that
+        # If the AI selection screen is active, draw that
         if self.show_ai_select:
             self.draw_ai_select(screen)
             return
+        
+        # Draw the main menu (if no special screens are active)
+        # Fill the screen background
+        screen.fill(self.color_background)
+
+        # Render the game title
+        title_surface = self.font_title.render("Pixel Pursuit", True, self.color_title)
+        title_rect = title_surface.get_rect(
+            center=(self.screen_width // 2, self.screen_height // 5)
+        )
+        screen.blit(title_surface, title_rect)
+
+        # Render menu options
+        mouse_x, mouse_y = (
+            pygame.mouse.get_pos()
+        )  # For any mouse-based highlighting, if desired
+        for index, option in enumerate(self.menu_options):
+            # Choose highlight color if this option is currently selected
+            color = (
+                self.color_selected
+                if index == self.selected_option
+                else self.color_option
+            )
+            option_surface = self.font_option.render(option, True, color)
+            option_rect = option_surface.get_rect(
+                center=(self.screen_width // 2, self.screen_height // 2 + index * 80)
+            )
+            # Store this rect for click detection
+            self.option_rects[index] = option_rect
+            # Draw the menu option on screen
+            screen.blit(option_surface, option_rect)
+
 
     def draw_ai_select(self, screen):
         """
