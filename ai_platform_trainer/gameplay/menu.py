@@ -142,10 +142,11 @@ class Menu:
             self.draw_help(screen)
             return
             
-        # If the AI selection screen is active, draw that
+            # If the AI selection screen is active, draw that
         if self.show_ai_select:
             self.draw_ai_select(screen)
             return
+
     def draw_ai_select(self, screen):
         """
         Draw the AI selection screen where users can choose between
