@@ -1,12 +1,13 @@
 # ai_platform_trainer/entities/enemy_play.py
 
-import math
-import pygame
 import logging
-import numpy as np
+import math
 from typing import Tuple
 
-from ai_platform_trainer.gameplay.ai.enemy_ai_controller import update_enemy_movement
+import numpy as np
+import pygame
+
+from ai_platform_trainer.entities.behaviors.enemy_ai_controller import update_enemy_movement
 
 # Import optionally - will be None if not available
 try:
