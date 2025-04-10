@@ -1,21 +1,21 @@
 # AI Platform Trainer
 
-A game environment for training and evaluating AI agents through reinforcement learning with PyTorch neural networks and C++/CUDA acceleration.
+An enterprise-grade platform for training and evaluating AI agents using reinforcement learning in a game environment.
 
 ## Overview
 
-AI Platform Trainer is an enterprise-grade framework for training AI-controlled entities in a simulated game environment. The platform features:
+AI Platform Trainer is a 2D platformer game environment designed for training and evaluating AI agents using deep reinforcement learning. The platform includes a neural network-based enemy AI, reinforcement learning training capabilities, real-time visualizations, and a high-performance C++/CUDA backend for accelerated training.
 
-- Neural network-based AI with PyTorch
-- Reinforcement learning integration with stable-baselines3
-- C++/CUDA acceleration for physics computations
-- CPU and GPU support with automatic detection
-- Comprehensive logging and error handling
-- Containerized deployment options
+## Features
 
-## Project Structure
+- **Game Environment**: A 2D game environment built with PyGame where entities can interact
+- **Neural Network Models**: Pre-trained models for missile trajectory prediction and enemy movement
+- **Reinforcement Learning**: GPU-accelerated reinforcement learning using PPO for training enemy behaviors
+- **C++/CUDA Integration**: High-performance physics simulation with Python bindings
+- **Visualizations**: Real-time training visualizations and performance metrics
+- **Cross-platform**: Support for both CPU and GPU environments with automatic detection
 
-The codebase follows a clean, modular structure:
+## Directory Structure
 
 ```
 ai_platform_trainer/
@@ -36,137 +36,94 @@ ai_platform_trainer/
 ├── scripts/                   # Utility scripts
 ├── assets/                    # Game assets
 └── deployment/                # Deployment configurations
-    ├── docker/                # Docker files
-    └── ci/                    # CI/CD configuration
 ```
 
-## Getting Started
+## Requirements
 
-### Prerequisites
+- Python 3.8 or newer
+- PyTorch 1.8.0 or newer
+- CUDA Toolkit 10.2+ (optional, for GPU acceleration)
+- CMake 3.10+ (for building C++ extensions)
 
-- Python 3.8 or higher
-- For GPU acceleration: CUDA Toolkit 11.x and compatible GPU
+## Installation
 
-### Installation
+### CPU Environment
 
-#### Option 1: Standard Installation
-
-1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/ai-platform-trainer.git
-cd ai-platform-trainer
-```
-
-2. Set up a virtual environment:
-```bash
-# CPU-only environment
+# Create a conda environment
 conda env create -f environment-cpu.yml
 conda activate ai-platform-cpu
 
-# OR for GPU support
-conda env create -f environment-gpu.yml
-conda activate ai-platform-gpu
-```
-
-3. Install the package in development mode:
-```bash
+# Install the package
 pip install -e .
 ```
 
-#### Option 2: Docker Installation
-
-We provide Docker containers for both CPU and GPU environments:
+### GPU Environment (recommended for training)
 
 ```bash
-# CPU environment
-cd deployment/docker
-docker-compose up dev-cpu
+# Create a conda environment with CUDA support
+conda env create -f environment-gpu.yml
+conda activate ai-platform-gpu
 
-# GPU environment (requires nvidia-docker)
-docker-compose up dev-gpu
+# Install the package
+pip install -e .
+
+# Build the C++ extensions
+cd src/ai_platform_trainer/physics/cpp
+python setup.py build_ext --inplace
 ```
-
-### Environment Setup Verification
-
-Verify your environment setup with:
-
-```bash
-python -m src.ai_platform_trainer.utils.environment
-```
-
-This will show the detected environment configuration, including CUDA availability.
 
 ## Usage
 
 ### Running the Game
 
-To start the game in play mode:
 ```bash
+# Run the game in play mode
 python -m src.ai_platform_trainer.main
 ```
 
 ### Training Models
 
-#### Training Neural Network Model
+#### Training the Missile Model
 
-To train the traditional neural network model:
 ```bash
-python -m src.ai_platform_trainer.ml.training.train_missile_model
+# Train the missile trajectory prediction model
+python -m src.ai_platform_trainer.ml.training.train_missile_model --epochs 100 --batch-size 32
 ```
 
-#### Training Reinforcement Learning Model
+#### Training the Enemy RL Agent
 
-To train the RL model:
 ```bash
-python -m src.ai_platform_trainer.ml.rl.train_enemy_rl
+# Train the enemy agent using reinforcement learning
+python -m src.ai_platform_trainer.ml.rl.train_enemy_rl --timesteps 1000000 --save-freq 10000
 ```
 
-Options:
-- `--timesteps`: Number of training steps (default: 500000)
-- `--headless`: Run without visualization for faster training
-- `--save-path`: Directory to save model checkpoints (default: models/enemy_rl)
-- `--log-path`: Directory to save logs (default: logs/enemy_rl)
+## Documentation
+
+For more detailed information, refer to:
+
+- [Project Structure](docs/design/project_structure.md): Details on code organization
+- [Refactoring Next Steps](docs/refactoring_next_steps.md): Future improvements
 
 ## Development
 
-### Code Quality
+To set up a development environment:
 
-We use several tools to ensure code quality:
-
-1. **Formatting and Linting**: Run pre-commit hooks on your changes:
+1. Install development dependencies
 ```bash
-pre-commit install  # Set up the git hooks
-pre-commit run --all-files  # Manually run on all files
+pip install -e ".[dev]"
 ```
 
-2. **Type Checking**: The codebase uses mypy for static type checking:
+2. Install pre-commit hooks
 ```bash
-mypy src/
+pre-commit install
 ```
 
-3. **Testing**: Run the test suite:
+3. Run tests
 ```bash
-pytest tests/
+python -m pytest
 ```
-
-### Docker Development
-
-For containerized development:
-
-```bash
-cd deployment/docker
-docker-compose up dev-cpu  # or dev-gpu
-```
-
-## CI/CD Pipeline
-
-The project includes a GitHub Actions workflow for CI/CD:
-
-- **Linting**: Enforces code style and quality standards
-- **Testing**: Runs the test suite on CPU environments
-- **Building**: Creates distribution packages
-- **GPU Testing**: (Optional, requires self-hosted runners)
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+[Insert license information]

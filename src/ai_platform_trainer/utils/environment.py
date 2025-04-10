@@ -1,186 +1,138 @@
 """
-Environment configuration and detection utilities for AI Platform Trainer.
+Environment utilities for AI Platform Trainer.
 
-This module provides functions to detect and configure the runtime environment,
-including GPU availability, CUDA versions, and fallback mechanisms.
+This module provides utilities for detecting and configuring execution environments,
+such as CPU/GPU availability, version detection, and system compatibility checks.
 """
 import logging
 import platform
-import subprocess
-import sys
-from typing import Dict, Optional, Tuple, Union
+import os
+from typing import Optional, Tuple, Dict, Any
 
 import torch
-
-logger = logging.getLogger(__name__)
-
-
-class EnvironmentInfo:
-    """Holds information about the runtime environment."""
-
-    def __init__(self) -> None:
-        """Initialize environment info."""
-        self.system: str = platform.system()
-        self.python_version: str = platform.python_version()
-        self.cuda_available: bool = torch.cuda.is_available()
-        self.cuda_version: Optional[str] = None
-        self.gpu_name: Optional[str] = None
-        self.gpu_count: int = 0
-        self.device_capabilities: Dict[str, Union[str, int, float]] = {}
-        self.nvcc_available: bool = False
-        self.is_initialized: bool = False
-
-    def detect(self) -> "EnvironmentInfo":
-        """Detect and populate environment information."""
-        # Detect CUDA capabilities
-        if self.cuda_available:
-            self.cuda_version = torch.version.cuda
-            self.gpu_count = torch.cuda.device_count()
-            if self.gpu_count > 0:
-                self.gpu_name = torch.cuda.get_device_name(0)
-                # Get device capabilities
-                device_properties = torch.cuda.get_device_properties(0)
-                self.device_capabilities = {
-                    "compute_capability": f"{device_properties.major}.{device_properties.minor}",
-                    "total_memory": device_properties.total_memory / (1024**3),  # Convert to GB
-                    "multi_processor_count": device_properties.multi_processor_count,
-                }
-
-        # Check if nvcc is available (for direct CUDA compilation)
-        try:
-            result = subprocess.run(
-                ["nvcc", "--version"], capture_output=True, text=True, check=False
-            )
-            self.nvcc_available = result.returncode == 0
-        except (FileNotFoundError, subprocess.SubprocessError):
-            self.nvcc_available = False
-
-        self.is_initialized = True
-        return self
-
-    def to_dict(self) -> Dict[str, Union[str, bool, int, Dict]]:
-        """Convert environment info to dictionary."""
-        if not self.is_initialized:
-            self.detect()
-
-        return {
-            "system": self.system,
-            "python_version": self.python_version,
-            "cuda_available": self.cuda_available,
-            "cuda_version": self.cuda_version,
-            "gpu_name": self.gpu_name,
-            "gpu_count": self.gpu_count,
-            "device_capabilities": self.device_capabilities,
-            "nvcc_available": self.nvcc_available,
-        }
-
-    def __str__(self) -> str:
-        """Return string representation of environment info."""
-        if not self.is_initialized:
-            self.detect()
-
-        lines = [
-            "AI Platform Trainer Environment:",
-            f"- System: {self.system}",
-            f"- Python: {self.python_version}",
-            f"- CUDA available: {self.cuda_available}",
-        ]
-
-        if self.cuda_available:
-            lines.extend(
-                [
-                    f"- CUDA version: {self.cuda_version}",
-                    f"- GPU count: {self.gpu_count}",
-                    f"- GPU name: {self.gpu_name}",
-                ]
-            )
-            if self.device_capabilities:
-                lines.append("- Device capabilities:")
-                for key, value in self.device_capabilities.items():
-                    lines.append(f"  - {key}: {value}")
-
-        lines.append(f"- NVCC available: {self.nvcc_available}")
-        return "\n".join(lines)
 
 
 def get_device() -> torch.device:
     """
-    Get the appropriate device for PyTorch operations.
-
+    Get the best available PyTorch device (CUDA GPU if available, otherwise CPU).
+    
     Returns:
-        torch.device: The device to use for PyTorch operations (CUDA if available, CPU otherwise)
+        The best available torch.device
     """
     if torch.cuda.is_available():
-        return torch.device("cuda")
-    return torch.device("cpu")
-
-
-def test_cuda_tensor_allocation() -> Tuple[bool, Optional[str]]:
-    """
-    Test if tensor allocation on GPU works correctly.
-
-    Returns:
-        Tuple[bool, Optional[str]]: Success status and error message if any
-    """
-    if not torch.cuda.is_available():
-        return False, "CUDA is not available"
-
-    try:
-        x = torch.rand(5, 3).cuda()
-        y = x + x  # Perform a simple operation
-        y.cpu()  # Move back to CPU
-        return True, None
-    except Exception as e:
-        return False, str(e)
-
-
-def setup_gpu_environment() -> Tuple[torch.device, bool]:
-    """
-    Set up the GPU environment and return the appropriate device.
-
-    Returns:
-        Tuple[torch.device, bool]: The device to use and whether CUDA is working
-    """
-    env_info = EnvironmentInfo().detect()
-    device = get_device()
-    cuda_working = False
-
-    if env_info.cuda_available:
-        success, error_msg = test_cuda_tensor_allocation()
-        if success:
-            logger.info("CUDA is available and working correctly")
-            cuda_working = True
-        else:
-            logger.warning(f"CUDA is available but tensor operations failed: {error_msg}")
-            logger.warning("Falling back to CPU")
+        device = torch.device("cuda")
+        logging.info(f"Using GPU: {torch.cuda.get_device_name(0)}")
+        logging.info(f"CUDA version: {torch.version.cuda}")
     else:
-        logger.info("CUDA is not available, using CPU")
-
-    return device, cuda_working
-
-
-def print_environment_info() -> None:
-    """Print environment information to stdout."""
-    env_info = EnvironmentInfo().detect()
-    print(env_info)
-
-
-def main() -> int:
-    """Run environment detection and print information."""
-    print_environment_info()
+        device = torch.device("cpu")
+        logging.info("GPU not available, using CPU")
     
-    device, cuda_working = setup_gpu_environment()
-    print(f"\nSelected device: {device}")
+    return device
+
+
+def get_system_info() -> Dict[str, Any]:
+    """
+    Get detailed information about the current system environment.
     
+    Returns:
+        Dictionary containing system information
+    """
+    info = {
+        "platform": platform.system(),
+        "platform_release": platform.release(),
+        "platform_version": platform.version(),
+        "architecture": platform.machine(),
+        "processor": platform.processor(),
+        "python_version": platform.python_version(),
+        "python_implementation": platform.python_implementation(),
+        "torch_version": torch.__version__,
+        "cuda_available": torch.cuda.is_available(),
+    }
+    
+    # Add CUDA details if available
     if torch.cuda.is_available():
-        success, error = test_cuda_tensor_allocation()
-        if success:
-            print("✓ GPU tensor operations: Working")
-        else:
-            print(f"✗ GPU tensor operations: Failed - {error}")
+        info.update({
+            "cuda_version": torch.version.cuda,
+            "gpu_name": torch.cuda.get_device_name(0),
+            "gpu_count": torch.cuda.device_count(),
+            "gpu_memory": torch.cuda.get_device_properties(0).total_memory,
+        })
     
-    return 0 if cuda_working or not torch.cuda.is_available() else 1
+    return info
+
+
+def check_compatibility() -> Tuple[bool, str]:
+    """
+    Check if the current environment is compatible with AI Platform Trainer.
+    
+    Returns:
+        Tuple of (is_compatible, message)
+    """
+    # Check Python version
+    python_version = tuple(map(int, platform.python_version_tuple()))
+    if python_version < (3, 8):
+        return False, (
+            f"Python version {platform.python_version()} is not supported. "
+            f"Please use Python 3.8 or newer."
+        )
+    
+    # Check PyTorch version
+    torch_version = torch.__version__.split('.')
+    torch_major, torch_minor = int(torch_version[0]), int(torch_version[1])
+    if torch_major < 1 or (torch_major == 1 and torch_minor < 8):
+        return False, (
+            f"PyTorch version {torch.__version__} is not supported. "
+            f"Please use PyTorch 1.8.0 or newer."
+        )
+    
+    # All checks passed
+    return True, "Environment is compatible with AI Platform Trainer."
+
+
+def setup_training_environment(
+    seed: Optional[int] = None,
+    deterministic: bool = False,
+    benchmark: bool = True
+) -> None:
+    """
+    Set up the PyTorch environment for training.
+    
+    Args:
+        seed: Optional random seed for reproducibility
+        deterministic: Whether to enable deterministic mode
+        benchmark: Whether to enable cudnn benchmark mode
+    """
+    # Set random seed if provided
+    if seed is not None:
+        torch.manual_seed(seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed(seed)
+            torch.cuda.manual_seed_all(seed)
+    
+    # Configure deterministic behavior if requested
+    if deterministic and torch.cuda.is_available():
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+        os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
+        torch.use_deterministic_algorithms(True)
+    elif benchmark and torch.cuda.is_available():
+        # Use benchmark mode for faster training with variable input sizes
+        torch.backends.cudnn.benchmark = True
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    # Configure basic logging
+    logging.basicConfig(level=logging.INFO)
+    
+    # Print system information when run directly
+    info = get_system_info()
+    for key, value in info.items():
+        logging.info(f"{key}: {value}")
+    
+    # Check compatibility
+    is_compatible, message = check_compatibility()
+    logging.info(message)
+    
+    # Get device
+    device = get_device()
+    logging.info(f"Using device: {device}")
