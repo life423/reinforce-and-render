@@ -4,13 +4,15 @@
 #include <memory>
 #include "entity.h"
 
-// CUDA-specific includes
+// Conditionally include CUDA headers
+#ifdef USE_CUDA
 #include <cuda_runtime.h>
+#endif
 
 namespace gpu_env {
 
-// CUDA-specific data structures 
-struct CudaVector2 {
+// Vector structure (usable with or without CUDA)
+struct Vector2 {
     float x;
     float y;
 };

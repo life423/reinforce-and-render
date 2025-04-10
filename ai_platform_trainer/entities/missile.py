@@ -8,11 +8,11 @@ class Missile:
         self,
         x: int,
         y: int,
-        speed: float = 5.0,
-        vx: float = 5.0,
+        speed: float = 8.0,  # Increased from 5.0 to allow faster missile travel
+        vx: float = 8.0,  # Increased from 5.0 to allow faster missile travel
         vy: float = 0.0,
         birth_time: int = 0,
-        lifespan: int = 10000,  # default 10s (increased from 3.3s to allow longer travel distance)
+        lifespan: int = 20000,  # default 20s (doubled again from 10s to allow even longer travel distance)
     ):
         self.size = 10
         self.color = (255, 255, 0)  # Yellow
