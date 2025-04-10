@@ -136,6 +136,7 @@ class Menu:
         """
         Draw a dedicated Help / Controls screen.
         This screen instructs the user on game controls and how to return to the main menu.
+        It also provides information about game modes and AI training.
         """
 
         # Clear the screen with the background color
@@ -146,25 +147,90 @@ class Menu:
             "Help / Controls", True, self.color_title
         )
         help_title_rect = help_title_surface.get_rect(
-            center=(self.screen_width // 2, self.screen_height // 5)
+            center=(self.screen_width // 2, self.screen_height // 10)
         )
         screen.blit(help_title_surface, help_title_rect)
 
-        # Text lines describing the controls and how to exit
+        # Create a smaller font for more detailed explanations
+        font_info = pygame.font.Font(None, 34)
+
+        # Controls section
+        controls_title = self.font_option.render("Controls:", True, self.color_selected)
+        controls_rect = controls_title.get_rect(
+            topleft=(self.screen_width // 10, self.screen_height // 5)
+        )
+        screen.blit(controls_title, controls_rect)
+
+        # Text lines describing the controls
         controls_text = [
-            "Press Arrow Keys or W/S to navigate menu.",
-            "Control Player with Arrow Keys or WASD.",
-            "Press Space to shoot missiles.",
-            "Press Enter to select.",
-            "Press F to toggle fullscreen.",
-            "Press M to return to the menu.",
-            "Press Escape to quit this help screen or the game.",
+            "• Arrow Keys or W/S to navigate menu",
+            "• Control Player with Arrow Keys or WASD",
+            "• Press Space to shoot missiles",
+            "• Press Enter to select menu items",
+            "• Press F to toggle fullscreen",
+            "• Press M to return to the menu",
+            "• Press Escape to quit help or game"
         ]
 
-        # Draw each line of text, spacing them out vertically
+        # Draw controls text
         for i, line in enumerate(controls_text):
-            help_surface = self.font_option.render(line, True, self.color_option)
+            help_surface = font_info.render(line, True, self.color_option)
             help_rect = help_surface.get_rect(
-                center=(self.screen_width // 2, self.screen_height // 2 + i * 60)
+                topleft=(self.screen_width // 10, self.screen_height // 5 + 40 + i * 30)
             )
             screen.blit(help_surface, help_rect)
+
+        # Game Modes section - starts halfway down screen
+        modes_title = self.font_option.render("Game Modes:", True, self.color_selected)
+        modes_rect = modes_title.get_rect(
+            topleft=(self.screen_width // 10, self.screen_height // 2)
+        )
+        screen.blit(modes_title, modes_rect)
+
+        # Text explaining the game modes
+        modes_text = [
+            "• Play Mode: Regular gameplay against AI enemy",
+            "• Train Mode: Collects missile data to train avoidance AI"
+        ]
+
+        # Draw modes text
+        y_offset = self.screen_height // 2 + 40
+        for i, line in enumerate(modes_text):
+            mode_surface = font_info.render(line, True, self.color_option)
+            mode_rect = mode_surface.get_rect(
+                topleft=(self.screen_width // 10, y_offset + i * 30)
+            )
+            screen.blit(mode_surface, mode_rect)
+
+        # AI Training section
+        ai_title = self.font_option.render("AI Training:", True, self.color_selected)
+        ai_rect = ai_title.get_rect(
+            topleft=(self.screen_width // 10, y_offset + len(modes_text) * 30 + 20)
+        )
+        screen.blit(ai_title, ai_rect)
+
+        # Text explaining the AI training
+        ai_text = [
+            "• Enemy uses Reinforcement Learning (RL) for intelligent movement",
+            "• RL trains the enemy to chase player while avoiding missiles",
+            "• Missile avoidance is trained using gameplay data collection",
+            "• CUDA acceleration is used for physics simulation"
+        ]
+
+        # Draw AI text
+        ai_y_offset = y_offset + len(modes_text) * 30 + 60
+        for i, line in enumerate(ai_text):
+            ai_surface = font_info.render(line, True, self.color_option)
+            ai_rect = ai_surface.get_rect(
+                topleft=(self.screen_width // 10, ai_y_offset + i * 30)
+            )
+            screen.blit(ai_surface, ai_rect)
+
+        # Return instructions at bottom
+        exit_text = self.font_option.render(
+            "Press ESC or ENTER to return to menu", True, self.color_title
+        )
+        exit_rect = exit_text.get_rect(
+            center=(self.screen_width // 2, self.screen_height - 50)
+        )
+        screen.blit(exit_text, exit_rect)
