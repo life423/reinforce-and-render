@@ -143,9 +143,9 @@ class PlayerTraining:
         else:
             self.random_walk_timer -= 1
 
-        angle = self.bias_angle_away_from_enemy(
-            enemy_x, enemy_y, self.random_walk_angle
-        )
+        # Split long function call
+        rw_angle = self.random_walk_angle
+        angle = self.bias_angle_away_from_enemy(enemy_x, enemy_y, rw_angle)
         ndx = math.cos(angle)
         ndy = math.sin(angle)
         self.move_with_velocity(ndx, ndy)
@@ -160,12 +160,10 @@ class PlayerTraining:
         angle_increment = 0.02
         self.circle_angle += angle_increment
 
-        desired_x = (
-            self.circle_center[0] + math.cos(self.circle_angle) * self.circle_radius
-        )
-        desired_y = (
-            self.circle_center[1] + math.sin(self.circle_angle) * self.circle_radius
-        )
+        circle_cos = math.cos(self.circle_angle)
+        desired_x = self.circle_center[0] + circle_cos * self.circle_radius
+        circle_sin = math.sin(self.circle_angle)
+        desired_y = self.circle_center[1] + circle_sin * self.circle_radius
 
         dx = desired_x - self.position["x"]
         dy = desired_y - self.position["y"]
@@ -271,8 +269,8 @@ class PlayerTraining:
             vx = math.cos(angle) * speed
             vy = math.sin(angle) * speed
 
-            # Random missile lifespan
-            lifespan = random.randint(500, 3000)  # 0.5s - 1.5s
+            # Random missile lifespan (matching play mode values)
+            lifespan = random.randint(2000, 4666)  # 2-4.67s
             birth_time = pygame.time.get_ticks()
 
             missile = Missile(
@@ -286,24 +284,33 @@ class PlayerTraining:
             )
             self.missiles.append(missile)
             logging.info(
-                f"Training Mode: Missile shot with offset {offset_degrees:.1f}°, final angle: {math.degrees(angle):.1f}°"
+                f"Training Mode: Missile shot with offset {offset_degrees:.1f}°, "
+                f"angle: {math.degrees(angle):.1f}°"
             )
 
     def update_missiles(self) -> None:
         """
-        Let each missile move and remove it if it goes off-screen.
+        Update missile positions and handle screen wrapping.
         """
+        current_time = pygame.time.get_ticks()
         for missile in self.missiles[:]:
             missile.update()
-            # Remove if off-screen
-            if (
-                missile.pos["x"] < 0
-                or missile.pos["x"] > self.screen_width
-                or missile.pos["y"] < 0
-                or missile.pos["y"] > self.screen_height
-            ):
+
+            # Remove if it expires
+            if current_time - missile.birth_time >= missile.lifespan:
                 self.missiles.remove(missile)
-                logging.debug("Missile removed for going off-screen.")
+                logging.debug("Missile removed for exceeding lifespan.")
+                continue
+
+            # Screen wrapping for missiles, similar to player wrapping
+            if missile.pos["x"] < -missile.size:
+                missile.pos["x"] = self.screen_width
+            elif missile.pos["x"] > self.screen_width:
+                missile.pos["x"] = -missile.size
+            if missile.pos["y"] < -missile.size:
+                missile.pos["y"] = self.screen_height
+            elif missile.pos["y"] > self.screen_height:
+                missile.pos["y"] = -missile.size
 
     def draw_missiles(self, screen: pygame.Surface) -> None:
         """
