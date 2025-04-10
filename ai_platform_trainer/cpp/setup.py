@@ -35,12 +35,18 @@ def find_cmake_executable():
             os.path.expanduser(r"~\scoop\apps\cmake\current\bin\cmake.exe"),
             os.path.expanduser(r"~\chocolatey\bin\cmake.exe"),
             # VS 2019/2022 bundled CMake
-            r"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe",
-            r"C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe",
-            r"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe",
-            r"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe",
-            r"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe",
-            r"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe",
+            r"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community"
+            r"\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe",
+            r"C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional"
+            r"\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe",
+            r"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise"
+            r"\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe",
+            r"C:\Program Files\Microsoft Visual Studio\2022\Community"
+            r"\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe",
+            r"C:\Program Files\Microsoft Visual Studio\2022\Professional"
+            r"\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe",
+            r"C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
+            r"\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe",
         ]
         
         for location in common_locations:
@@ -156,8 +162,14 @@ class CMakeBuild(build_ext):
             os.makedirs(self.build_temp)
         
         # Use the located CMake executable
-        subprocess.check_call([self.cmake_executable, ext.sourcedir] + cmake_args, cwd=self.build_temp)
-        subprocess.check_call([self.cmake_executable, '--build', '.'] + build_args, cwd=self.build_temp)
+        subprocess.check_call(
+            [self.cmake_executable, ext.sourcedir] + cmake_args,
+            cwd=self.build_temp
+        )
+        subprocess.check_call(
+            [self.cmake_executable, '--build', '.'] + build_args,
+            cwd=self.build_temp
+        )
 
 
 setup(

@@ -45,13 +45,16 @@ def get_gpu_utilization():
         logger.error(f"Error getting GPU utilization: {e}")
         return 0.0
 
+
 def get_cpu_utilization():
     """Get current CPU utilization"""
     return psutil.cpu_percent()
 
+
 def get_memory_usage():
     """Get current memory usage in MB"""
     return psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024
+
 
 def monitor_resources():
     """Monitor GPU, CPU and memory usage"""
@@ -113,6 +116,7 @@ def plot_utilization():
     logger.info("Utilization plot saved to 'gpu_training_verification.png'")
     plt.close()
 
+
 def verify_cuda_capability():
     """Verify that PyTorch can access CUDA and report device information"""
     print("\n=== CUDA Capability Check ===")
@@ -129,6 +133,7 @@ def verify_cuda_capability():
             print(f"  Memory: {torch.cuda.get_device_properties(i).total_memory / 1024**3:.2f} GB")
     else:
         print("WARNING: CUDA is not available! The training will run on CPU only.")
+
 
 def verify_pybind_extension():
     """Verify that the PyBind11 CUDA extension is properly loaded"""
@@ -153,6 +158,7 @@ def verify_pybind_extension():
     except Exception as e:
         print(f"ERROR: Failed to create environment: {e}")
         return False
+
 
 def benchmark_performance(
     num_envs=4,
@@ -280,10 +286,10 @@ def benchmark_performance(
         speedup = results['cpu']['duration'] / results['gpu']['duration']
         print("\n=== Benchmark Comparison ===")
         print(f"GPU training was {speedup:.2f}x faster than CPU training")
-        print(f"GPU: {results['gpu']['steps_per_second']:.2f} steps/s, "
-              f"avg utilization: {results['gpu']['avg_gpu_utilization']:.1f}%")
-        print(f"CPU: {results['cpu']['steps_per_second']:.2f} steps/s, "
-              f"avg utilization: {results['cpu']['avg_cpu_utilization']:.1f}%")
+        print(f"GPU: {results['gpu']['steps_per_second']:.2f} steps/s,")
+        print(f"     avg utilization: {results['gpu']['avg_gpu_utilization']:.1f}%")
+        print(f"CPU: {results['cpu']['steps_per_second']:.2f} steps/s,")
+        print(f"     avg utilization: {results['cpu']['avg_cpu_utilization']:.1f}%")
     
     return results
 
@@ -308,7 +314,7 @@ def run_cuda_kernels_test():
         print(f"Creating environment with {missile_count} missiles...")
         
         # Reset to get initial state
-        obs = env.reset()
+        _ = env.reset()  # Initial observation not used
         
         # Step a few times to generate missiles
         steps = 0
@@ -330,7 +336,7 @@ def run_cuda_kernels_test():
         while steps < 500:
             # Take random action
             action = env.action_space.sample()
-            obs, reward, done, _, info = env.step(action)
+            _, reward, done, _, info = env.step(action)  # Observation not used
             
             # Print info every 100 steps
             if steps % 100 == 0:
@@ -338,9 +344,10 @@ def run_cuda_kernels_test():
             
             steps += 1
             if done:
-                obs = env.reset()
+                _ = env.reset()  # Observation not used
         
-        duration = time.time() - start_time
+        # Calculate test duration (not used but kept for debugging)
+        _ = time.time() - start_time
         
         # Stop monitoring
         stop_monitoring = True

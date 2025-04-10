@@ -67,9 +67,11 @@ This will perform several checks to ensure your GPU is being used:
 If CMake isn't found automatically:
 
 1. Install CMake:
+
    - Windows: `winget install Kitware.CMake` or `choco install cmake`
    - Linux: `apt install cmake` or `yum install cmake`
    - macOS: `brew install cmake`
+
 
 2. Set the CMAKE_EXECUTABLE environment variable:
    - Windows: `set CMAKE_EXECUTABLE=C:\path\to\cmake.exe`

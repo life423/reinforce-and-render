@@ -6,6 +6,7 @@ import subprocess
 import sys
 import platform
 
+
 def find_cmake_executable():
     """Find the CMake executable path"""
     # Try direct command (for when it's in PATH)
@@ -26,14 +27,19 @@ def find_cmake_executable():
             os.path.expanduser(r"~\scoop\apps\cmake\current\bin\cmake.exe"),
             os.path.expanduser(r"~\chocolatey\bin\cmake.exe"),
             # VS 2019/2022 bundled CMake
-            r"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe",
-            r"C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe",
-            r"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe",
-            r"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe",
-            r"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe",
-            r"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe",
+            r"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community"
+            r"\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe",
+            r"C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional"
+            r"\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe",
+            r"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise"
+            r"\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe",
+            r"C:\Program Files\Microsoft Visual Studio\2022\Community"
+            r"\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe",
+            r"C:\Program Files\Microsoft Visual Studio\2022\Professional"
+            r"\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe",
+            r"C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
+            r"\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe",
         ]
-        
         for location in common_locations:
             if os.path.isfile(location) and os.access(location, os.X_OK):
                 print(f"Found CMake at: {location}")
@@ -46,7 +52,6 @@ def find_cmake_executable():
             "/usr/local/bin/cmake",
             "/opt/homebrew/bin/cmake",  # Homebrew on M1 Macs
         ]
-        
         for location in common_locations:
             if os.path.isfile(location) and os.access(location, os.X_OK):
                 print(f"Found CMake at: {location}")
@@ -54,6 +59,7 @@ def find_cmake_executable():
     
     print("Unable to find CMake automatically.")
     return None
+
 
 def verify_cmake(cmake_path):
     """Verify CMake works and show version"""
@@ -69,10 +75,10 @@ def verify_cmake(cmake_path):
         print(f"Error running CMake: {e}")
         return False
 
+
 def check_other_deps():
     """Check other dependencies"""
     print("\nChecking other dependencies:")
-    
     # Check for CUDA via PyTorch
     try:
         import torch
@@ -107,17 +113,15 @@ def check_other_deps():
             print("  You may need to install Visual Studio with C++ workload")
             print("  or run from a Developer Command Prompt for VS.")
 
+
 def main():
     print("============================================")
     print("CMake Finder for AI Platform Trainer")
     print("============================================\n")
-    
     # Find CMake
     cmake_path = find_cmake_executable()
-    
     if cmake_path:
         print(f"\nFound CMake at: {cmake_path}")
-        
         # Verify it works
         if verify_cmake(cmake_path):
             print("✓ CMake verification successful!")
@@ -127,10 +131,8 @@ def main():
             print(f"\nSet CMAKE_EXECUTABLE={cmake_path}")
             print("\nYou can now run the following command to build:")
             print("python setup.py build_ext --inplace")
-            
             # Check other dependencies
             check_other_deps()
-            
             # Offer to run the build
             choice = input("\nDo you want to run the build now? (y/n): ")
             if choice.lower().startswith('y'):
@@ -145,7 +147,6 @@ def main():
         print("      winget install Kitware.CMake")
         print("      or")
         print("      choco install cmake")
-        
         # Ask for manual path
         print("\nIf you know where CMake is installed, you can enter the path manually:")
         manual_path = input("CMake path (or press Enter to skip): ")
@@ -158,6 +159,7 @@ def main():
                 print("✗ The provided path does not seem to be a valid CMake executable.")
     
     print("\n============================================")
+
 
 if __name__ == "__main__":
     main()

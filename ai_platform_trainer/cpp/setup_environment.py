@@ -25,8 +25,9 @@ import shutil
 import tempfile
 import ctypes
 import urllib.request
-import time
-from pathlib import Path
+# import time  # Unused import
+# from pathlib import Path  # Unused import
+
 
 # Define color codes for terminal output
 class Colors:
@@ -102,7 +103,7 @@ def is_admin():
             return ctypes.windll.shell32.IsUserAnAdmin() != 0
         else:
             return os.geteuid() == 0
-    except:
+    except Exception:
         return False
 
 
@@ -132,8 +133,8 @@ def check_python():
                 tmp.write(b'#include <Python.h>\nint main() { return 0; }')
                 tmp.flush()
                 code, _, _ = run_command(
-                    ['gcc', '-c', tmp.name, '-o', os.devnull, 
-                     f'-I{sys.base_prefix}/include/python{major}.{minor}']
+                    ['gcc', '-c', tmp.name, '-o', os.devnull,
+                        f'-I{sys.base_prefix}/include/python{major}.{minor}']
                 )
                 return code == 0
     
@@ -239,8 +240,8 @@ def check_cuda():
         # Try to find CUDA in common locations
         if platform.system() == "Windows":
             cuda_paths = [
-                os.path.join(os.environ.get("ProgramFiles", "C:\\Program Files"), 
-                            "NVIDIA GPU Computing Toolkit\\CUDA")
+                os.path.join(os.environ.get("ProgramFiles", "C:\\Program Files"),
+                             "NVIDIA GPU Computing Toolkit\\CUDA")
             ]
             
             for cuda_path in cuda_paths:
@@ -269,8 +270,8 @@ def check_cuda():
             device_name = torch.cuda.get_device_name(0)
             device_count = torch.cuda.device_count()
             
-            print_status("PyTorch CUDA Support", "ok", 
-                        f"CUDA {cuda_version}, {device_count} device(s)")
+            print_status("PyTorch CUDA Support", "ok",
+                         f"CUDA {cuda_version}, {device_count} device(s)")
             print_status("GPU Device", "ok", device_name)
             cuda_found = True
         else:

@@ -33,9 +33,11 @@ The C++ compiler comes from Visual Studio Build Tools, which is required even if
 3. Complete the installation (this may take a while)
 
 4. Verify installation by opening a command prompt and running:
-   ```
+
+   ```bash
    cl
    ```
+
    If you see "Microsoft (R) C/C++ Optimizing Compiler" message, it's working.
 
 ### 2. Install CMake
@@ -45,7 +47,8 @@ CMake is required to generate the build system.
 #### Windows:
 
 1. **Option 1 - Using Winget (recommended)**:
-   ```
+
+   ```bash
    winget install Kitware.CMake
    ```
 
@@ -55,9 +58,11 @@ CMake is required to generate the build system.
    - Complete the installation
 
 3. Verify installation:
-   ```
+
+   ```bash
    cmake --version
    ```
+
    You should see "cmake version 3.18" or higher.
 
 #### Linux:
@@ -96,9 +101,11 @@ The CUDA Toolkit is required for GPU acceleration.
    - Complete the installation
 
 4. Verify installation:
-   ```
+
+   ```bash
    nvcc --version
    ```
+
    You should see "Cuda compilation tools" followed by the version.
 
 #### Linux:

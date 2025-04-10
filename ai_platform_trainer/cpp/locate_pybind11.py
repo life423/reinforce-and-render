@@ -44,9 +44,9 @@ for i, location in enumerate(pybind11_cmake_locations, 1):
     # Check if it contains the key config files
     config_file = os.path.join(location, "pybind11Config.cmake")
     if os.path.exists(config_file):
-        print(f"   ✓ Found pybind11Config.cmake")
+        print("   ✓ Found pybind11Config.cmake")
     else:
-        print(f"   ✗ Missing pybind11Config.cmake")
+        print("   ✗ Missing pybind11Config.cmake")
 
 if not pybind11_cmake_locations:
     print("No pybind11 cmake directories found!")
