@@ -6,15 +6,16 @@ This module provides functionality to:
 2. Append new data to existing training data
 3. Trigger retraining of AI models
 """
-import os
 import json
 import logging
+import os
 import time
-from typing import Dict, List, Any, Tuple
+from typing import Any, Dict, List, Tuple
+
+from ai_platform_trainer.ai_model.train_enemy_rl import train_rl_agent
 
 # Import training modules
-from ai_platform_trainer.ai.training.train_missile_model import MissileTrainer
-from ai_platform_trainer.ai.training.train_enemy_rl import train_rl_agent
+from ai_platform_trainer.ai_model.train_missile_model import MissileTrainer
 
 # Set up logging
 logging.basicConfig(
