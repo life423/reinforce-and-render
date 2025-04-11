@@ -1,4 +1,4 @@
-# file: ai_platform_trainer/gameplay/game_di.py
+# file: ai_platform_trainer/engine/core/game_di.py
 """
 Game class with dependency injection for the AI Platform Trainer.
 """
@@ -31,11 +31,6 @@ from ai_platform_trainer.gameplay.state_machine import (
 )
 
 # We'll use the config_manager from ServiceLocator
-
-
-
-
-
 # These imports are used in methods below
 
 
