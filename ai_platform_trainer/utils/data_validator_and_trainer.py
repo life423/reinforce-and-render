@@ -169,7 +169,11 @@ class DataValidatorAndTrainer:
             logger.error(f"Error loading existing data: {error}")
             return []
 
-    def merge_and_save_data(self, existing_data: List[Dict[str, Any]], new_data: List[Dict[str, Any]]) -> bool:
+    def merge_and_save_data(
+        self,
+        existing_data: List[Dict[str, Any]],
+        new_data: List[Dict[str, Any]]
+    ) -> bool:
         """
         Merge new data with existing data and save to file.
 
