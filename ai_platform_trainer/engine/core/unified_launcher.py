@@ -18,10 +18,8 @@ try:
 
     # from ai_platform_trainer.core.service_locator import ServiceLocator
     from ai_platform_trainer.engine.core.game import Game as StandardGame
-
-    # Temporarily keep these imports from the original location until they're refactored
-    from ai_platform_trainer.gameplay.game_di import Game as DIGame
-    from ai_platform_trainer.gameplay.game_refactored import Game as StateMachineGame
+    from ai_platform_trainer.engine.core.game_di import Game as DIGame
+    from ai_platform_trainer.engine.core.game_refactored import Game as StateMachineGame
 except ImportError as e:
     print(f"Critical import error: {e}")
     print("Cannot initialize launcher system.")
