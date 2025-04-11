@@ -2,7 +2,7 @@ import logging
 import math
 import os
 import random
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 import pygame
 
@@ -129,7 +129,9 @@ class PlayerPlay:
             lifespan=random_lifespan,
         )
         self.missiles.append(missile)
-        logging.debug(f"Play mode: Shot missile #{len(self.missiles)} - {len(self.missiles)}/{self.max_missiles} active")
+        logging.debug(
+            f"Shot missile #{len(self.missiles)} - {len(self.missiles)}/{self.max_missiles} active"
+        )
 
     def hit_enemy(self) -> None:
         """Handle scoring when a missile hits the enemy."""
@@ -155,7 +157,8 @@ class PlayerPlay:
     def update(self, current_time: int) -> None:
         """Update player state, missiles, and effects."""
         # Update invulnerability
-        if self.invulnerable and current_time - self.invulnerable_time >= self.invulnerable_duration:
+        if (self.invulnerable and 
+                current_time - self.invulnerable_time >= self.invulnerable_duration):
             self.invulnerable = False
             
         # Update flash effect
@@ -201,7 +204,11 @@ class PlayerPlay:
         screen.blit(lives_text, (self.screen_width - 120, 10))
         
         # Missiles
-        missile_text = font.render(f"Missiles: {len(self.missiles)}/{self.max_missiles}", True, (255, 255, 255))
+        missile_text = font.render(
+            f"Missiles: {len(self.missiles)}/{self.max_missiles}", 
+            True, 
+            (255, 255, 255)
+        )
         screen.blit(missile_text, (10, 50))
 
     def draw(self, screen: pygame.Surface) -> None:
