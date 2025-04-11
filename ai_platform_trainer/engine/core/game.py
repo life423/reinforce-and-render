@@ -22,6 +22,7 @@ from ai_platform_trainer.engine.core.game_config import config
 
 # Logging setup
 from ai_platform_trainer.engine.core.logging_config import setup_logging
+from ai_platform_trainer.engine.gameplay.modes.training_mode import TrainingMode
 
 # Engine imports
 from ai_platform_trainer.engine.physics.collisions import handle_missile_collisions
@@ -30,6 +31,7 @@ from ai_platform_trainer.engine.rendering.display_manager import (
     init_pygame_display,
     toggle_fullscreen_display,
 )
+from ai_platform_trainer.engine.rendering.menu import Menu
 from ai_platform_trainer.engine.rendering.renderer import Renderer
 
 # Missile AI updates
@@ -38,8 +40,6 @@ from ai_platform_trainer.entities.components.enemy_play import EnemyPlay
 from ai_platform_trainer.entities.components.enemy_training import EnemyTrain
 from ai_platform_trainer.entities.components.player_play import PlayerPlay
 from ai_platform_trainer.entities.components.player_training import PlayerTraining
-from ai_platform_trainer.gameplay.menu import Menu
-from ai_platform_trainer.gameplay.modes.training_mode import TrainingMode
 from config_manager import load_settings, save_settings
 
 
@@ -290,7 +290,7 @@ class Game:
         elif self.mode == "play":
             # If we haven't created a play_mode_manager yet, do so now
             if not hasattr(self, 'play_mode_manager') or self.play_mode_manager is None:
-                from ai_platform_trainer.gameplay.modes.play_mode import PlayMode
+                from ai_platform_trainer.engine.gameplay.modes.play_mode import PlayMode
                 self.play_mode_manager = PlayMode(self)
 
             self.play_mode_manager.update(current_time)
