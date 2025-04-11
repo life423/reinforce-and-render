@@ -5,6 +5,7 @@ This module handles loading, caching, and rendering sprites for game entities.
 It provides an abstraction layer over pygame's sprite handling to make the
 code more modular and maintainable.
 """
+import logging
 import os
 from typing import Dict, List, Tuple, Union
 
@@ -54,35 +55,51 @@ class SpriteManager:
         """
         # Check if sprite is already cached
         if name in self.sprites:
+            logging.debug(f"Using cached sprite for '{name}'")
             return self.sprites[name]
 
+        logging.info(f"Loading sprite '{name}' with size {size}")
+        
         # Try to load the sprite from subdirectory first (assets/sprites/player/player.png)
         subdirectory_path = os.path.join(self.sprites_dir, name, f"{name}.png")
+        logging.debug(f"Checking subdirectory path: {subdirectory_path}")
+        
         if os.path.exists(subdirectory_path):
+            logging.debug(f"Found sprite at {subdirectory_path}")
             try:
                 # Load and scale the sprite
                 sprite = pygame.image.load(subdirectory_path).convert_alpha()
                 sprite = pygame.transform.scale(sprite, size)
                 self.sprites[name] = sprite
+                logging.info(f"Successfully loaded sprite from {subdirectory_path}")
                 return sprite
-            except pygame.error:
+            except pygame.error as e:
                 # If loading fails, try the next method
-                pass
+                logging.warning(f"Error loading from subdirectory: {e}")
+        else:
+            logging.debug(f"File not found at {subdirectory_path}")
         
         # Try to load the sprite from file directly in sprites_dir (assets/sprites/player.png)
         direct_path = os.path.join(self.sprites_dir, f"{name}.png")
+        logging.debug(f"Checking direct path: {direct_path}")
+        
         if os.path.exists(direct_path):
+            logging.debug(f"Found sprite at {direct_path}")
             try:
                 # Load and scale the sprite
                 sprite = pygame.image.load(direct_path).convert_alpha()
                 sprite = pygame.transform.scale(sprite, size)
                 self.sprites[name] = sprite
+                logging.info(f"Successfully loaded sprite from {direct_path}")
                 return sprite
-            except pygame.error:
+            except pygame.error as e:
                 # If loading fails, fall back to placeholder
-                pass
+                logging.warning(f"Error loading from direct path: {e}")
+        else:
+            logging.debug(f"File not found at {direct_path}")
 
         # Create placeholder sprite
+        logging.warning(f"Using placeholder for sprite '{name}' (no valid file found)")
         sprite = self._create_placeholder(name, size)
         self.sprites[name] = sprite
         return sprite
@@ -198,38 +215,55 @@ class SpriteManager:
         # Check if animation is already cached
         animation_key = f"{name}_{frames}"
         if animation_key in self.animations:
+            logging.debug(f"Using cached animation for '{animation_key}'")
             return self.animations[animation_key]
 
+        logging.info(f"Loading animation '{name}' with {frames} frames at size {size}")
+        
         # Try to load animation frames from files
         animation_frames = []
         for i in range(frames):
             # Try subdirectory path first (assets/sprites/effects/explosion_0.png)
             subdirectory_path = os.path.join(self.sprites_dir, name, f"{name}_{i}.png")
+            logging.debug(f"Checking frame {i} at subdirectory path: {subdirectory_path}")
+            
             if os.path.exists(subdirectory_path):
+                logging.debug(f"Found frame {i} at {subdirectory_path}")
                 try:
                     # Load and scale the frame
                     frame = pygame.image.load(subdirectory_path).convert_alpha()
                     frame = pygame.transform.scale(frame, size)
                     animation_frames.append(frame)
+                    logging.debug(f"Successfully loaded frame {i} from {subdirectory_path}")
                     continue
-                except pygame.error:
-                    pass
+                except pygame.error as e:
+                    logging.warning(f"Error loading frame {i} from subdirectory: {e}")
+            else:
+                logging.debug(f"Frame {i} not found at {subdirectory_path}")
             
             # Try direct path (assets/sprites/explosion_0.png)
             direct_path = os.path.join(self.sprites_dir, f"{name}_{i}.png")
+            logging.debug(f"Checking frame {i} at direct path: {direct_path}")
+            
             if os.path.exists(direct_path):
+                logging.debug(f"Found frame {i} at {direct_path}")
                 try:
                     # Load and scale the frame
                     frame = pygame.image.load(direct_path).convert_alpha()
                     frame = pygame.transform.scale(frame, size)
                     animation_frames.append(frame)
+                    logging.debug(f"Successfully loaded frame {i} from {direct_path}")
                     continue
-                except pygame.error:
+                except pygame.error as e:
                     # If loading fails, use placeholder
+                    logging.warning(f"Error loading frame {i} from direct path: {e}")
                     animation_frames.append(self._create_placeholder(name, size))
                     continue
+            else:
+                logging.debug(f"Frame {i} not found at {direct_path}")
             
             # If no valid paths, create a placeholder
+            logging.warning(f"Using placeholder for frame {i} of animation '{name}' (no valid file found)")
             animation_frames.append(self._create_animation_placeholder(name, size, i, frames))
 
         self.animations[animation_key] = animation_frames
