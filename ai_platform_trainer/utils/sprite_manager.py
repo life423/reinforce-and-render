@@ -6,8 +6,9 @@ It provides an abstraction layer over pygame's sprite handling to make the
 code more modular and maintainable.
 """
 import os
+from typing import Dict, List, Tuple, Union
+
 import pygame
-from typing import Dict, Tuple, Union, List
 
 # Type aliases
 Color = Tuple[int, int, int]
@@ -55,12 +56,25 @@ class SpriteManager:
         if name in self.sprites:
             return self.sprites[name]
 
-        # Try to load the sprite from file
-        sprite_path = os.path.join(self.sprites_dir, f"{name}.png")
-        if os.path.exists(sprite_path):
+        # Try to load the sprite from subdirectory first (assets/sprites/player/player.png)
+        subdirectory_path = os.path.join(self.sprites_dir, name, f"{name}.png")
+        if os.path.exists(subdirectory_path):
             try:
                 # Load and scale the sprite
-                sprite = pygame.image.load(sprite_path).convert_alpha()
+                sprite = pygame.image.load(subdirectory_path).convert_alpha()
+                sprite = pygame.transform.scale(sprite, size)
+                self.sprites[name] = sprite
+                return sprite
+            except pygame.error:
+                # If loading fails, try the next method
+                pass
+        
+        # Try to load the sprite from file directly in sprites_dir (assets/sprites/player.png)
+        direct_path = os.path.join(self.sprites_dir, f"{name}.png")
+        if os.path.exists(direct_path):
+            try:
+                # Load and scale the sprite
+                sprite = pygame.image.load(direct_path).convert_alpha()
                 sprite = pygame.transform.scale(sprite, size)
                 self.sprites[name] = sprite
                 return sprite
