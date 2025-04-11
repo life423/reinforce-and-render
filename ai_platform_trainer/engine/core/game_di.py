@@ -288,7 +288,7 @@ class Game:
         Set up initial positions for game entities.
         Called by state transitions and during initialization.
         """
-        from ai_platform_trainer.gameplay.spawn_utils import find_enemy_spawn_position
+        from ai_platform_trainer.engine.gameplay.spawn_utils import find_enemy_spawn_position
 
         if self.player and self.enemy:
             # Get player position
