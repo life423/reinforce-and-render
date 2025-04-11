@@ -7,7 +7,10 @@ backward compatibility with existing code during the refactoring process.
 import warnings
 
 # Re-export config from its new location
-from ai_platform_trainer.engine.gameplay.config import config
+from ai_platform_trainer.engine.gameplay.config import config as _config
+
+# Re-export at module level
+config = _config
 
 # Emit a deprecation warning
 warnings.warn(
