@@ -1,4 +1,4 @@
-# file: ai_platform_trainer/gameplay/game_refactored.py
+# file: ai_platform_trainer/engine/core/game_refactored.py
 import logging
 import os
 from typing import Dict, Optional, Tuple
