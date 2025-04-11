@@ -4,32 +4,37 @@ Game class with dependency injection for the AI Platform Trainer.
 """
 import logging
 import os
-import pygame
-import torch
 from typing import Optional
 
-# Import service locator
-from ai_platform_trainer.core.service_locator import ServiceLocator
-
-# We'll use the config_manager from ServiceLocator
-
-# Import state machine components
-from ai_platform_trainer.gameplay.state_machine import (
-    MenuState,
-    PlayState,
-    TrainingState,
-    PausedState,
-    GameOverState,
-)
+import pygame
+import torch
 
 # Import missile model
 from ai_platform_trainer.ai_model.simple_missile_model import SimpleMissileModel
 
+# Import service locator
+from ai_platform_trainer.core.service_locator import ServiceLocator
+
+# Import spawner
+from ai_platform_trainer.engine.physics.spawner import respawn_enemy_with_fade_in
+
 # Import display manager
 from ai_platform_trainer.gameplay.display_manager import toggle_fullscreen_display
 
-# Import spawner
-from ai_platform_trainer.gameplay.spawner import respawn_enemy_with_fade_in
+# Import state machine components
+from ai_platform_trainer.gameplay.state_machine import (
+    GameOverState,
+    MenuState,
+    PausedState,
+    PlayState,
+    TrainingState,
+)
+
+# We'll use the config_manager from ServiceLocator
+
+
+
+
 
 # These imports are used in methods below
 
