@@ -3,29 +3,43 @@ cmake_minimum_required(VERSION 3.18)
 # Start the project with C++ and check for CUDA later
 project(gpu_game_environment LANGUAGES CXX)
 
-# Modern CMake CUDA detection and support
-include(CheckLanguage)
-check_language(CUDA)
-
-if(CMAKE_CUDA_COMPILER)
-  enable_language(CUDA)
-  message(STATUS "CUDA found: ${CMAKE_CUDA_COMPILER_VERSION}")
-  # Set CUDA architecture based on capability - include RTX 5070 (sm_120)
-  set(CMAKE_CUDA_ARCHITECTURES 70 75 80 86 90 "120")
-  set(CUDA_FOUND TRUE)
-else()
-  message(STATUS "CUDA not found, using CPU-only build")
-endif()
-
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Using CUDA implementation for GPU acceleration
-# Our physics.cu implementation handles physics on the GPU
-option(USE_CUDA "Build with CUDA support if available" ON)
-set(CUDA_ENABLED TRUE)
-message(STATUS "Using CUDA-accelerated implementation for enhanced physics")
+# Modern CMake CUDA detection and support
+include(CheckLanguage)
+check_language(CUDA)
+
+# CUDA configuration
+if(CMAKE_CUDA_COMPILER)
+  enable_language(CUDA)
+  message(STATUS "CUDA found: ${CMAKE_CUDA_COMPILER_VERSION}")
+  
+  # Set CUDA architecture based on capability - include RTX 5070 (sm_120)
+  set(CMAKE_CUDA_ARCHITECTURES 70 75 80 86 90 "120")
+  
+  # Find CUDA package - this gives us access to CUDA libraries
+  find_package(CUDA REQUIRED)
+  
+  # Debug info
+  message(STATUS "CUDA_INCLUDE_DIRS: ${CUDA_INCLUDE_DIRS}")
+  message(STATUS "CUDA_LIBRARIES: ${CUDA_LIBRARIES}")
+  message(STATUS "CUDA_CUDART_LIBRARY: ${CUDA_CUDART_LIBRARY}")
+  
+  # Set variables for use later
+  set(CUDA_FOUND TRUE)
+  set(CUDA_ENABLED TRUE)
+  
+  # Set preprocessor definition to enable CUDA code
+  add_definitions(-DUSE_CUDA)
+  
+  message(STATUS "Using CUDA-accelerated implementation for enhanced physics")
+else()
+  message(STATUS "CUDA not found, using CPU-only build")
+  set(CUDA_FOUND FALSE)
+  set(CUDA_ENABLED FALSE)
+endif()
 
 # Find PyBind11 - try multiple approaches
 include(FetchContent QUIET)
@@ -60,6 +74,11 @@ include_directories(
     ${Python_INCLUDE_DIRS}
 )
 
+# Add CUDA includes if available
+if(CUDA_FOUND)
+    include_directories(${CUDA_INCLUDE_DIRS})
+endif()
+
 # Source files
 set(SOURCES
     src/entity.cpp
@@ -70,11 +89,6 @@ set(SOURCES
 
 # Conditionally add CUDA-specific files
 if(CUDA_FOUND)
-    # Set preprocessor definition to enable CUDA code
-    add_definitions(-DUSE_CUDA)
-    set(CUDA_ENABLED TRUE)
-    
-    # Add CUDA-specific files
     set(CUDA_SOURCES
         src/physics.cu
     )
@@ -87,9 +101,20 @@ pybind11_add_module(gpu_environment
     ${SOURCES}
 )
 
-# Link libraries - with modern CMake, we don't need to explicitly specify CUDA_LIBRARIES
+# Link libraries - explicitly using CUDA libraries
 if(CUDA_FOUND)
-    target_link_libraries(gpu_environment PRIVATE CUDA::cudart)
+    # For Visual Studio / Windows, we need to link directly
+    if(MSVC)
+        if(CUDA_CUDART_LIBRARY)
+            target_link_libraries(gpu_environment PRIVATE ${CUDA_CUDART_LIBRARY})
+        else()
+            # Fallback for older CUDA versions
+            target_link_libraries(gpu_environment PRIVATE ${CUDA_LIBRARIES})
+        endif()
+    else()
+        # Linux / macOS linking approach
+        target_link_libraries(gpu_environment PRIVATE ${CUDA_LIBRARIES})
+    endif()
 endif()
 
 # Set output directory

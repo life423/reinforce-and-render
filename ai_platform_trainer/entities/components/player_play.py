@@ -60,7 +60,7 @@ class PlayerPlay:
         logging.info("Player has been reset to the initial position.")
 
     def handle_input(self) -> bool:
-        """Process player input for movement. Returns False to exit the game."""
+        """Process player input for movement. Returns True to continue the game."""
         keys = pygame.key.get_pressed()
 
         # WASD / Arrow key movement
