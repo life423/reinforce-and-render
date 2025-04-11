@@ -10,7 +10,7 @@ from typing import Dict, List, Optional
 
 import torch
 
-from ai_platform_trainer.ai.models.simple_missile_model import SimpleMissileModel
+from ai_platform_trainer.ai_model.simple_missile_model import SimpleMissileModel
 from ai_platform_trainer.entities.components.missile import Missile
 
 
