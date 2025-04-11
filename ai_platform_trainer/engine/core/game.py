@@ -5,43 +5,42 @@ This module defines the core Game class that manages the game loop,
 entities, and game states.
 """
 import logging
-import os
 import math
+import os
+from typing import Optional, Tuple
+
 import pygame
 import torch
-from typing import Optional, Tuple
+
+# AI and model imports
+from ai_platform_trainer.ai_model.model_definition.enemy_movement_model import EnemyMovementModel
+from ai_platform_trainer.ai_model.simple_missile_model import SimpleMissileModel
+
+# Data logger and entity imports
+from ai_platform_trainer.engine.core.data_logger import DataLogger
+from ai_platform_trainer.engine.core.game_config import config
 
 # Logging setup
 from ai_platform_trainer.engine.core.logging_config import setup_logging
-from config_manager import load_settings, save_settings
 
 # Engine imports
 from ai_platform_trainer.engine.physics.collisions import handle_missile_collisions
-from ai_platform_trainer.engine.core.game_config import config
-from ai_platform_trainer.gameplay.ui.menu import Menu
-from ai_platform_trainer.engine.rendering.renderer import Renderer
-from ai_platform_trainer.engine.physics.spawner import (
-    spawn_entities,
-    respawn_enemy_with_fade_in,
-)
+from ai_platform_trainer.engine.physics.spawner import respawn_enemy_with_fade_in, spawn_entities
 from ai_platform_trainer.engine.rendering.display_manager import (
     init_pygame_display,
     toggle_fullscreen_display,
 )
+from ai_platform_trainer.engine.rendering.renderer import Renderer
+
 # Missile AI updates
 from ai_platform_trainer.entities.behaviors.missile_ai_controller import update_missile_ai
-
-# AI and model imports
-from ai_platform_trainer.ai_model.model_definition.enemy_movement_model import EnemyMovementModel
-from ai_platform_trainer.ai.models.simple_missile_model import SimpleMissileModel
-
-# Data logger and entity imports
-from ai_platform_trainer.engine.core.data_logger import DataLogger
 from ai_platform_trainer.entities.components.enemy_play import EnemyPlay
 from ai_platform_trainer.entities.components.enemy_training import EnemyTrain
 from ai_platform_trainer.entities.components.player_play import PlayerPlay
 from ai_platform_trainer.entities.components.player_training import PlayerTraining
+from ai_platform_trainer.gameplay.menu import Menu
 from ai_platform_trainer.gameplay.modes.training_mode import TrainingMode
+from config_manager import load_settings, save_settings
 
 
 class Game:
