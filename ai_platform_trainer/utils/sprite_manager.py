@@ -203,19 +203,34 @@ class SpriteManager:
         # Try to load animation frames from files
         animation_frames = []
         for i in range(frames):
-            frame_path = os.path.join(self.sprites_dir, f"{name}_{i}.png")
-            if os.path.exists(frame_path):
+            # Try subdirectory path first (assets/sprites/effects/explosion_0.png)
+            subdirectory_path = os.path.join(self.sprites_dir, name, f"{name}_{i}.png")
+            if os.path.exists(subdirectory_path):
                 try:
                     # Load and scale the frame
-                    frame = pygame.image.load(frame_path).convert_alpha()
+                    frame = pygame.image.load(subdirectory_path).convert_alpha()
                     frame = pygame.transform.scale(frame, size)
                     animation_frames.append(frame)
+                    continue
+                except pygame.error:
+                    pass
+            
+            # Try direct path (assets/sprites/explosion_0.png)
+            direct_path = os.path.join(self.sprites_dir, f"{name}_{i}.png")
+            if os.path.exists(direct_path):
+                try:
+                    # Load and scale the frame
+                    frame = pygame.image.load(direct_path).convert_alpha()
+                    frame = pygame.transform.scale(frame, size)
+                    animation_frames.append(frame)
+                    continue
                 except pygame.error:
                     # If loading fails, use placeholder
                     animation_frames.append(self._create_placeholder(name, size))
-            else:
-                # Create placeholder frame with slight variation
-                animation_frames.append(self._create_animation_placeholder(name, size, i, frames))
+                    continue
+            
+            # If no valid paths, create a placeholder
+            animation_frames.append(self._create_animation_placeholder(name, size, i, frames))
 
         self.animations[animation_key] = animation_frames
         return animation_frames
