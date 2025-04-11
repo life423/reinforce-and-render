@@ -5,17 +5,21 @@ This module provides a consolidated entry point for the game with support for
 different game initialization methods (dependency injection, standard, or state machine).
 It selects the appropriate launcher based on settings and provides fallback mechanisms.
 """
+import logging
 import os
 import sys
-import logging
 import traceback
 from enum import Enum, auto
+
 # from typing import Any, Dict, Optional
 
 try:
     from ai_platform_trainer.core.logging_config import setup_logging
+
     # from ai_platform_trainer.core.service_locator import ServiceLocator
-    from ai_platform_trainer.gameplay.game import Game as StandardGame
+    from ai_platform_trainer.engine.core.game import Game as StandardGame
+
+    # Temporarily keep these imports from the original location until they're refactored
     from ai_platform_trainer.gameplay.game_di import Game as DIGame
     from ai_platform_trainer.gameplay.game_refactored import Game as StateMachineGame
 except ImportError as e:
