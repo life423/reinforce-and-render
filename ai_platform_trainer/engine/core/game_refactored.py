@@ -17,10 +17,10 @@ from ai_platform_trainer.core.data_logger import DataLogger
 from ai_platform_trainer.core.logging_config import setup_logging
 
 # These imports are used by Game class methods and by GameState subclasses
-from ai_platform_trainer.engine.physics.spawner import (
+from ai_platform_trainer.engine.physics.spawner import (  # noqa: F401
     spawn_entities,  # Used in state_machine.py - PlayState.enter
+    respawn_enemy_with_fade_in,
 )
-from ai_platform_trainer.engine.physics.spawner import respawn_enemy_with_fade_in  # noqa: F401
 from ai_platform_trainer.entities.enemy_play import EnemyPlay
 from ai_platform_trainer.entities.enemy_training import EnemyTrain
 from ai_platform_trainer.entities.player_play import PlayerPlay
