@@ -10,13 +10,11 @@ import sys
 import logging
 import traceback
 from enum import Enum, auto
-from typing import Any, Dict, Optional
+# from typing import Any, Dict, Optional
 
-# Import all launcher options
 try:
     from ai_platform_trainer.core.logging_config import setup_logging
-    from ai_platform_trainer.core.service_locator import ServiceLocator
-    # Import game modes
+    # from ai_platform_trainer.core.service_locator import ServiceLocator
     from ai_platform_trainer.gameplay.game import Game as StandardGame
     from ai_platform_trainer.gameplay.game_di import Game as DIGame
     from ai_platform_trainer.gameplay.game_refactored import Game as StateMachineGame
@@ -41,7 +39,6 @@ def get_launcher_mode_from_settings() -> LauncherMode:
         LauncherMode: The launcher mode to use
     """
     try:
-        # First check environment variable
         env_mode = os.environ.get("AI_PLATFORM_LAUNCHER_MODE", "").upper()
         if env_mode == "STANDARD":
             return LauncherMode.STANDARD
@@ -50,7 +47,6 @@ def get_launcher_mode_from_settings() -> LauncherMode:
         elif env_mode == "STATE_MACHINE":
             return LauncherMode.STATE_MACHINE
         
-        # Then check settings file
         try:
             from config_manager import load_settings
             settings = load_settings("settings.json")
@@ -65,11 +61,9 @@ def get_launcher_mode_from_settings() -> LauncherMode:
         except Exception as settings_error:
             logging.warning(f"Could not load settings: {settings_error}")
             
-        # Default to DI mode
         return LauncherMode.DEPENDENCY_INJECTION
     except Exception as e:
         logging.error(f"Error determining launcher mode: {e}")
-        # Fallback to standard mode if something goes wrong
         return LauncherMode.STANDARD
 
 
@@ -94,19 +88,15 @@ def launch_dependency_injection() -> None:
     creating and running the game.
     """
     try:
-        # Import DI specific components
         from ai_platform_trainer.core.launcher_di import register_services
         
-        # Register all the services
         register_services()
         
-        # Create and run the game
         game = DIGame()
         game.run()
     except Exception as e:
         logging.error(f"Error in DI launcher: {e}")
         logging.debug(traceback.format_exc())
-        # If DI fails, try to fall back to standard mode
         logging.warning("Falling back to standard launcher...")
         launch_standard()
 
@@ -121,12 +111,10 @@ def launch_state_machine() -> None:
     except Exception as e:
         logging.error(f"Error in state machine launcher: {e}")
         logging.debug(traceback.format_exc())
-        # If state machine fails, try to fall back to DI mode
         logging.warning("Falling back to DI launcher...")
         try:
             launch_dependency_injection()
         except Exception:
-            # If DI also fails, try standard mode
             logging.warning("Falling back to standard launcher...")
             launch_standard()
 
@@ -138,18 +126,15 @@ def main() -> None:
     Selects the appropriate launcher based on settings and runs the game.
     Provides fallback mechanisms if the selected launcher fails.
     """
-    # Setup logging first
     setup_logging()
     
     logging.info("Starting AI Platform Trainer")
     
     try:
-        # Determine which launcher to use
         mode = get_launcher_mode_from_settings()
         
         logging.info(f"Using launcher mode: {mode.name}")
         
-        # Launch with the selected mode
         if mode == LauncherMode.STANDARD:
             launch_standard()
         elif mode == LauncherMode.DEPENDENCY_INJECTION:
