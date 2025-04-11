@@ -1,30 +1,10 @@
 # file: ai_platform_trainer/gameplay/game_refactored.py
 import logging
 import os
+from typing import Dict, Optional, Tuple
+
 import pygame
 import torch
-from typing import Optional, Tuple, Dict
-
-# Logging setup
-from ai_platform_trainer.core.logging_config import setup_logging
-from config_manager import load_settings, save_settings
-
-# Gameplay imports
-from ai_platform_trainer.gameplay.collisions import handle_missile_collisions
-from ai_platform_trainer.gameplay.config import config
-from ai_platform_trainer.gameplay.menu import Menu
-from ai_platform_trainer.gameplay.renderer import Renderer
-# These imports are used by Game class methods and by GameState subclasses
-from ai_platform_trainer.gameplay.spawner import (  # noqa: F401
-    spawn_entities,  # Used in state_machine.py - PlayState.enter
-    respawn_enemy_with_fade_in,
-)
-from ai_platform_trainer.gameplay.display_manager import (
-    init_pygame_display,
-    toggle_fullscreen_display,
-)
-# Used in state_machine.py - PlayState.update
-from ai_platform_trainer.gameplay.missile_ai_controller import update_missile_ai  # noqa: F401
 
 # AI and model imports
 from ai_platform_trainer.ai_model.model_definition.enemy_movement_model import EnemyMovementModel
@@ -32,21 +12,44 @@ from ai_platform_trainer.ai_model.simple_missile_model import SimpleMissileModel
 
 # Data logger and entity imports
 from ai_platform_trainer.core.data_logger import DataLogger
+
+# Logging setup
+from ai_platform_trainer.core.logging_config import setup_logging
+
+# These imports are used by Game class methods and by GameState subclasses
+from ai_platform_trainer.engine.physics.spawner import (
+    spawn_entities,  # Used in state_machine.py - PlayState.enter
+)
+from ai_platform_trainer.engine.physics.spawner import respawn_enemy_with_fade_in  # noqa: F401
 from ai_platform_trainer.entities.enemy_play import EnemyPlay
 from ai_platform_trainer.entities.enemy_training import EnemyTrain
 from ai_platform_trainer.entities.player_play import PlayerPlay
 from ai_platform_trainer.entities.player_training import PlayerTraining
+
+# Gameplay imports
+from ai_platform_trainer.gameplay.collisions import handle_missile_collisions
+from ai_platform_trainer.gameplay.config import config
+from ai_platform_trainer.gameplay.display_manager import (
+    init_pygame_display,
+    toggle_fullscreen_display,
+)
+from ai_platform_trainer.gameplay.menu import Menu
+
+# Used in state_machine.py - PlayState.update
+from ai_platform_trainer.gameplay.missile_ai_controller import update_missile_ai  # noqa: F401
 from ai_platform_trainer.gameplay.modes.training_mode import TrainingMode
+from ai_platform_trainer.gameplay.renderer import Renderer
 
 # Import state machine components
 from ai_platform_trainer.gameplay.state_machine import (
+    GameOverState,
     GameState,
     MenuState,
+    PausedState,
     PlayState,
     TrainingState,
-    PausedState,
-    GameOverState,
 )
+from config_manager import load_settings, save_settings
 
 
 class Game:
