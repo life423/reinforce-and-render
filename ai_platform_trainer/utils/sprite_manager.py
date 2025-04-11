@@ -32,6 +32,11 @@ class SpriteManager:
             sprites_dir: Directory containing sprite assets
         """
         self.sprites_dir = sprites_dir
+        # Log the current working directory to help debug path issues
+        cwd = os.getcwd()
+        logging.info(f"Current working directory: {cwd}")
+        abs_path = os.path.abspath(sprites_dir)
+        logging.info(f"Absolute sprite directory path: {abs_path}")
         self.sprites: Dict[str, pygame.Surface] = {}
         self.animations: Dict[str, List[pygame.Surface]] = {}
 
@@ -263,7 +268,7 @@ class SpriteManager:
                 logging.debug(f"Frame {i} not found at {direct_path}")
             
             # If no valid paths, create a placeholder
-            logging.warning(f"Using placeholder for frame {i} of animation '{name}' (no valid file found)")
+            logging.warning(f"Using placeholder for frame {i} of '{name}' (file not found)")
             animation_frames.append(self._create_animation_placeholder(name, size, i, frames))
 
         self.animations[animation_key] = animation_frames
