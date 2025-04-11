@@ -228,13 +228,13 @@ class Game:
                     if selected_action:
                         self.check_menu_selection(selected_action)
                 else:
-                    if event.key == pygame.K_ESCAPE:
+                    if event.key == pygame.K_p:
+                        self.paused = not self.paused
+                        logging.info(f"Game {'paused' if self.paused else 'resumed'}")
+                    elif event.key == pygame.K_ESCAPE:
                         logging.info("Escape key pressed. Returning to menu.")
                         self.menu_active = True
                         self.reset_game_state()
-                    elif event.key == pygame.K_p:
-                        self.paused = not self.paused
-                        logging.info(f"Game {'paused' if self.paused else 'resumed'}")
                     elif event.key == pygame.K_SPACE and self.player:
                         self.player.shoot_missile(self.enemy.pos)
                     elif event.key == pygame.K_m:
