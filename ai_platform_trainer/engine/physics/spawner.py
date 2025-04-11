@@ -1,9 +1,8 @@
-# file: ai_platform_trainer/gameplay/spawner.py
+# file: ai_platform_trainer/engine/physics/spawner.py
 import logging
-from ai_platform_trainer.gameplay.spawn_utils import (
-    find_valid_spawn_position,
-)
-from ai_platform_trainer.gameplay.config import config
+
+from ai_platform_trainer.engine.gameplay.config import config
+from ai_platform_trainer.engine.physics.spawn_utils import find_valid_spawn_position
 
 
 def spawn_entities(game):
