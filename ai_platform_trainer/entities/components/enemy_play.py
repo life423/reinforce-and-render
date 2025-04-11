@@ -267,14 +267,18 @@ class EnemyPlay:
             
         # Draw particles
         for particle in self.particles:
-            particle_surface = pygame.Surface((particle['size'] * 2, particle['size'] * 2), pygame.SRCALPHA)
+            size = particle['size']
+            particle_surface = pygame.Surface((size * 2, size * 2), pygame.SRCALPHA)
             pygame.draw.circle(
                 particle_surface,
                 (*particle['color'], int(particle['alpha'])),
                 (particle['size'], particle['size']),
                 particle['size']
             )
-            screen.blit(particle_surface, (particle['x'] - particle['size'], particle['y'] - particle['size']))
+            screen.blit(
+                particle_surface, 
+                (particle['x'] - size, particle['y'] - size)
+            )
         
         # Draw enemy
         if self.using_sprite:
