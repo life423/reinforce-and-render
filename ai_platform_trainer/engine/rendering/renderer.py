@@ -91,7 +91,6 @@ class Renderer:
                     logging.warning("Menu is missing game attribute - using fallback rendering")
                     # Use player/enemy directly
                     self._render_game_fallback(player, enemy)
-                    self._render_pause_overlay()
 
             # Update display
             pygame.display.flip()
@@ -145,6 +144,32 @@ class Renderer:
         if self.enable_effects:
             self._update_and_render_effects()
 
+    def _render_game_fallback(self, player, enemy) -> None:
+        """
+        Fallback rendering method when menu.game attribute is missing.
+        This renders only the essential game elements that don't require the game instance.
+
+        Args:
+            player: Player instance
+            enemy: Enemy instance (for backward compatibility)
+        """
+        # Draw player with sprite
+        if hasattr(player, 'position') and hasattr(player, 'size'):
+            self._render_player(player)
+
+            # Render player missiles
+            if hasattr(player, 'missiles'):
+                for missile in player.missiles:
+                    self._render_missile(missile)
+
+        # Render enemy if available (for backward compatibility)
+        if hasattr(enemy, 'pos') and hasattr(enemy, 'size') and enemy.visible:
+            self._render_enemy(enemy)
+            
+        # Render particle effects if enabled
+        if self.enable_effects:
+            self._update_and_render_effects()
+            
     def _render_obstacle(self, obstacle) -> None:
         """
         Render an obstacle entity.
