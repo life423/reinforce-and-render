@@ -50,7 +50,7 @@ def get_launcher_mode_from_settings() -> LauncherMode:
             return LauncherMode.STATE_MACHINE
         
         try:
-            from config_manager import load_settings
+            from ai_platform_trainer.core.config_manager import load_settings
             settings = load_settings("settings.json")
             if settings and "launcher_mode" in settings:
                 mode = settings["launcher_mode"].upper()

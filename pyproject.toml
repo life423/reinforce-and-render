@@ -52,10 +52,9 @@ docs = [
 "Bug Tracker" = "https://github.com/yourusername/ai-platform-trainer/issues"
 
 [tool.setuptools]
-package-dir = {"" = "src"}
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[project.scripts]
+run-game = "ai_platform_trainer.main:main"
 
 [tool.black]
 line-length = 100
