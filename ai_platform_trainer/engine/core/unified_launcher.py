@@ -7,19 +7,31 @@ It selects the appropriate launcher based on settings and provides fallback mech
 """
 import logging
 import os
+import pathlib
 import sys
 import traceback
 from enum import Enum, auto
 
+# Add the project root directory to sys.path to ensure all modules can be found
+current_dir = pathlib.Path(__file__).resolve().parent.parent.parent.parent
+if str(current_dir) not in sys.path:
+    sys.path.insert(0, str(current_dir))
+
 # from typing import Any, Dict, Optional
 
 try:
+    # Try importing core modules
     from ai_platform_trainer.core.logging_config import setup_logging
-
-    # from ai_platform_trainer.core.service_locator import ServiceLocator
     from ai_platform_trainer.engine.core.game import Game as StandardGame
     from ai_platform_trainer.engine.core.game_di import Game as DIGame
     from ai_platform_trainer.engine.core.game_refactored import Game as StateMachineGame
+
+    # Ensure config_manager can be imported
+    try:
+        import config_manager
+    except ImportError:
+        print("Warning: Could not import root-level config_manager. Using package-level import.")
+        from ai_platform_trainer.engine.core import config_manager
 except ImportError as e:
     print(f"Critical import error: {e}")
     print("Cannot initialize launcher system.")
