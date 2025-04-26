@@ -95,6 +95,9 @@ class PlayerPlay:
             return
             
         self.last_missile_time = current_time
+        
+        # Calculate the center of the player as the missile start position
+        # This matches the Missile class which now uses center positioning
         missile_start_x = self.position["x"] + self.size // 2
         missile_start_y = self.position["y"] + self.size // 2
 
@@ -105,10 +108,14 @@ class PlayerPlay:
 
         # Determine initial velocity based on enemy position if available
         if enemy_pos is not None:
+            # Calculate enemy center for more accurate aiming
+            enemy_center_x = enemy_pos["x"] + self.size // 2  # Assuming same size
+            enemy_center_y = enemy_pos["y"] + self.size // 2
+            
             # Calculate the angle toward the enemy's position
             angle = math.atan2(
-                enemy_pos["y"] - missile_start_y, 
-                enemy_pos["x"] - missile_start_x
+                enemy_center_y - missile_start_y, 
+                enemy_center_x - missile_start_x
             )
             # Add a small random deviation to simulate inaccuracy
             angle += random.uniform(-0.1, 0.1)  # deviation in radians
@@ -117,6 +124,12 @@ class PlayerPlay:
         else:
             vx = missile_speed
             vy = 0.0
+
+        # Log the missile creation details for debugging
+        logging.debug(
+            f"Creating missile at ({missile_start_x}, {missile_start_y}) "
+            f"with velocity ({vx:.2f}, {vy:.2f})"
+        )
 
         # Create a new missile object with calculated initial velocity and random lifespan
         missile = Missile(

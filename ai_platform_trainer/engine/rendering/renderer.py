@@ -254,48 +254,19 @@ class Renderer:
             missile: Missile instance
         """
         try:
-            if hasattr(missile, 'position') and hasattr(missile, 'size'):
-                # Determine sprite size - make it a bit more elongated
-                width = missile.size
-                height = int(missile.size * 1.5)
-                size = (width, height)
-                pos = missile.position
+            # Simply delegate the rendering to missile's own draw method
+            # This ensures consistent rendering across the application
+            if hasattr(missile, 'draw'):
+                missile.draw(self.screen)
+                logging.debug(
+                    f"Missile drawn at position: ({missile.position['x']}, {missile.position['y']})"
+                )
                 
-                logging.debug(f"Rendering missile at position: ({pos['x']}, {pos['y']}), " 
-                              f"size: {size}")
-
-                # Calculate rotation angle based on direction
-                rotation = 0
-                if hasattr(missile, 'direction'):
-                    # Convert direction to angle in degrees
-                    dx, dy = missile.direction
-                    if dx != 0 or dy != 0:
-                        import math
-                        angle_rad = math.atan2(dy, dx)
-                        rotation = math.degrees(angle_rad) + 90  # Adjust so 0 points up
-                        logging.debug(f"Missile rotation: {rotation} degrees")
-
-                # Load sprite directly to check
-                sprite = self.sprite_manager.load_sprite("missile", size)
-                if sprite:
-                    logging.debug("Missile sprite loaded successfully")
-                    
-                    # Rotate sprite if needed
-                    if rotation != 0:
-                        sprite = pygame.transform.rotate(sprite, rotation)
-                        logging.debug(f"Missile sprite rotated to {rotation} degrees")
-                    
-                    # Render directly
-                    self.screen.blit(sprite, (pos['x'], pos['y']))
-                    logging.debug("Missile sprite blitted to screen")
-                else:
-                    logging.warning("Missile sprite is None")
-
-                # Add a trail effect if effects are enabled
-                if self.enable_effects and self.frame_count % 2 == 0:
-                    self._add_missile_trail(missile)
+                # Add a trail effect if enabled (now part of missile.draw)
+                # if self.enable_effects and self.frame_count % 2 == 0:
+                #    self._add_missile_trail(missile)
             else:
-                logging.warning("Missile missing position or size attributes")
+                logging.warning("Missile missing draw method")
         except Exception as e:
             logging.error(f"Error rendering missile: {e}")
 
