@@ -109,7 +109,7 @@ def test_menu_functionality():
     expected_options = ["Play", "AI Select", "Train", "Help", "Exit"]
     if menu.menu_options != expected_options:
         logging.error(f"Menu options don't match expected: "
-                     f"{menu.menu_options} vs {expected_options}")
+                      f"{menu.menu_options} vs {expected_options}")
         return False
     
     # Draw the menu to see if it renders without errors
@@ -163,7 +163,7 @@ def test_game_initialization():
                 logging.info("Menu has game attribute")
             else:
                 logging.warning("Menu does NOT have game attribute - "
-                               "this will cause rendering errors")
+                                "this will cause rendering errors")
                 
                 # Debug: Add attribute to fix the error
                 test_menu.game = game
@@ -195,12 +195,12 @@ def test_game_initialization():
                     # Try to fix the Menu has no attribute 'game' error if that's what happened
                     if "'Menu' object has no attribute 'game'" in str(render_err):
                         logging.info("Detected 'Menu has no game attribute' error, "
-                                    "trying to fix...")
+                                     "trying to fix...")
                         game.menu.game = game
                         # Try rendering again
                         try:
                             game.renderer.render(game.menu, game.player, 
-                                               game.enemy, game.menu_active)
+                                                game.enemy, game.menu_active)
                             pygame.display.flip()
                             logging.info("Render successful after adding game attribute to menu!")
                         except Exception as retry_err:
