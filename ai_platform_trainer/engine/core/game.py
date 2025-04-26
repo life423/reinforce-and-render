@@ -224,6 +224,15 @@ class Game:
                     self._toggle_fullscreen()
 
                 if self.menu_active:
+                    # Handle Escape key on main menu to exit the game
+                    if event.key == pygame.K_ESCAPE:
+                        # Only exit if we're on the main menu (not in a submenu)
+                        if not self.menu.show_help and not self.menu.show_ai_select:
+                            logging.info("Escape key pressed in main menu. Exiting game.")
+                            self.running = False
+                            return
+                        # Otherwise, let the menu's handle_menu_events handle the Escape key
+                    
                     selected_action = self.menu.handle_menu_events(event)
                     if selected_action:
                         self.check_menu_selection(selected_action)

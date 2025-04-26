@@ -75,6 +75,14 @@ class MenuState(GameState):
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                # Only exit if we're on the main menu (not in a submenu)
+                if not self.game.menu.show_help and not self.game.menu.show_ai_select:
+                    logging.info("Escape key pressed in main menu. Exiting game.")
+                    self.game.running = False
+                    return None
+                # Otherwise, let the menu's handle_menu_events handle the Escape key
+            
             selected_action = self.game.menu.handle_menu_events(event)
             if selected_action:
                 return self._handle_menu_selection(selected_action)
