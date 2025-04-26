@@ -37,9 +37,8 @@ def main():
     
     # Clean exit
     pygame.quit()
-print("Verification complete. Check the screenshot to confirm sprites display correctly.")
+    print("Verification complete. Check the screenshot to confirm sprites display correctly.")
 
 
-if __name__ == "__main__":
 if __name__ == "__main__":
     main()
