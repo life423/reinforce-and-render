@@ -1,5 +1,6 @@
 # file: ai_platform_trainer/gameplay/state_machine.py
 import logging
+
 import pygame
 
 
@@ -131,8 +132,9 @@ class PlayState(GameState):
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                logging.info("Escape key pressed. Going to paused state.")
-                return "paused"
+                logging.info("Escape key pressed. Exiting game.")
+                self.game.running = False
+                return None
             elif event.key == pygame.K_SPACE and self.game.player:
                 self.game.player.shoot_missile(self.game.enemy.pos)
             elif event.key == pygame.K_m:
@@ -189,8 +191,9 @@ class TrainingState(GameState):
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                logging.info("Escape key pressed. Going to paused state.")
-                return "paused"
+                logging.info("Escape key pressed. Exiting game.")
+                self.game.running = False
+                return None
             elif event.key == pygame.K_m:
                 logging.info("M key pressed. Returning to menu.")
                 self.game.reset_game_state()
@@ -234,7 +237,7 @@ class PausedState(GameState):
         # Render instructions
         instruction_font = pygame.font.SysFont(None, 24)
         instructions = [
-            "ESC - Resume",
+            "ESC - Exit Game",
             "M - Main Menu"
         ]
 
@@ -248,8 +251,9 @@ class PausedState(GameState):
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                logging.info("Escape key pressed. Resuming game.")
-                return self.game.mode  # Return to the previous state (play or train)
+                logging.info("Escape key pressed. Exiting game.")
+                self.game.running = False
+                return None
             elif event.key == pygame.K_m:
                 logging.info("M key pressed in pause menu. Returning to main menu.")
                 self.game.reset_game_state()
@@ -300,7 +304,8 @@ class GameOverState(GameState):
         instruction_font = pygame.font.SysFont(None, 24)
         instructions = [
             "Press SPACE to play again",
-            "Press M for main menu"
+            "Press M for main menu",
+            "Press ESC to exit game"
         ]
 
         for i, instruction in enumerate(instructions):
@@ -312,7 +317,11 @@ class GameOverState(GameState):
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
+            if event.key == pygame.K_ESCAPE:
+                logging.info("Escape key pressed. Exiting game.")
+                self.game.running = False
+                return None
+            elif event.key == pygame.K_SPACE:
                 # Start a new game in the same mode
                 return self.game.mode
             elif event.key == pygame.K_m:
