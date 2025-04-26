@@ -12,9 +12,18 @@ import sys
 # Initialize pygame
 pygame.init()
 
-# Ensure output directory exists
-SPRITES_DIR = "assets/sprites"
-os.makedirs(SPRITES_DIR, exist_ok=True)
+# Ensure output directories exist
+SPRITES_BASE_DIR = "assets/sprites"
+SPRITES_DIRS = {
+    "player": f"{SPRITES_BASE_DIR}/player",
+    "enemy": f"{SPRITES_BASE_DIR}/enemy",
+    "missile": f"{SPRITES_BASE_DIR}/missile",
+    "effects": f"{SPRITES_BASE_DIR}/effects",
+}
+
+# Create all necessary directories
+for directory in SPRITES_DIRS.values():
+    os.makedirs(directory, exist_ok=True)
 
 # Set up sprite sizes and parameters
 SPRITE_SIZES = {
@@ -64,13 +73,13 @@ def create_player_sprite(size):
 
     # Define ship shape (triangular spaceship)
     points = [
-        (width // 2, 0),                # Nose
-        (width // 6, height * 3 // 4),  # Left wing
-        (width // 3, height * 2 // 3),  # Left body
-        (width // 3, height),           # Left back
-        (width * 2 // 3, height),       # Right back
-        (width * 2 // 3, height * 2 // 3), # Right body
-        (width * 5 // 6, height * 3 // 4)  # Right wing
+        (width // 2, 0),                  # Nose
+        (width // 6, height * 3 // 4),    # Left wing
+        (width // 3, height * 2 // 3),    # Left body
+        (width // 3, height),             # Left back
+        (width * 2 // 3, height),         # Right back
+        (width * 2 // 3, height * 2 // 3),  # Right body
+        (width * 5 // 6, height * 3 // 4),  # Right wing
     ]
 
     # Draw ship body
@@ -274,15 +283,25 @@ def create_explosion_sprite(size, frame_index, total_frames=4):
     return surface
 
 
-def save_sprite(surface, name):
+def save_sprite(surface, entity_type, name=None):
     """
-    Save a sprite surface to a file.
+    Save a sprite surface to the appropriate subdirectory.
 
     Args:
         surface: Pygame surface to save
-        name: Filename (without extension)
+        entity_type: Type of entity (player, enemy, missile, explosion)
+        name: Optional specific filename (without extension), defaults to entity_type
     """
-    path = os.path.join(SPRITES_DIR, f"{name}.png")
+    if name is None:
+        name = entity_type
+        
+    # Handle explosion frames which go to effects directory
+    if "explosion" in name:
+        directory = SPRITES_DIRS["effects"]
+    else:
+        directory = SPRITES_DIRS.get(entity_type, SPRITES_BASE_DIR)
+        
+    path = os.path.join(directory, f"{name}.png")
     pygame.image.save(surface, path)
     print(f"Saved sprite: {path}")
 
@@ -306,7 +325,23 @@ def generate_all_sprites():
     # Generate explosion animation frames
     for i in range(4):
         explosion = create_explosion_sprite(SPRITE_SIZES["explosion"], i, 4)
-        save_sprite(explosion, f"explosion_{i}")
+        save_sprite(explosion, "effects", f"explosion_{i}")
+
+    # Also save a copy in the root directory for backward compatibility
+    # This ensures older code still works while we transition
+    print("\nCreating backward compatibility copies in root sprites directory...")
+    player = create_player_sprite(SPRITE_SIZES["player"])
+    pygame.image.save(player, os.path.join(SPRITES_BASE_DIR, "player.png"))
+    
+    enemy = create_enemy_sprite(SPRITE_SIZES["enemy"])
+    pygame.image.save(enemy, os.path.join(SPRITES_BASE_DIR, "enemy.png"))
+    
+    missile = create_missile_sprite(SPRITE_SIZES["missile"])
+    pygame.image.save(missile, os.path.join(SPRITES_BASE_DIR, "missile.png"))
+    
+    for i in range(4):
+        explosion = create_explosion_sprite(SPRITE_SIZES["explosion"], i, 4)
+        pygame.image.save(explosion, os.path.join(SPRITES_BASE_DIR, f"explosion_{i}.png"))
 
     print("All sprites generated successfully!")
 

@@ -14,7 +14,12 @@ class PlayerPlay:
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.size = 50
+        # Size is interpreted as the width and height
+        self.width = self.size
+        self.height = self.size
         self.color = (0, 0, 139)  # Dark Blue (fallback)
+        
+        # Position is the CENTER of the player, not top-left corner
         self.position = {"x": screen_width // 4, "y": screen_height // 2}
         self.step = 5
         self.missiles: List[Missile] = []
@@ -231,7 +236,30 @@ class PlayerPlay:
             # Flash effect by skipping draw every other 200ms
             pass
         else:
-            screen.blit(self.sprite, (self.position["x"], self.position["y"]))
+            # Get the rect for the sprite centered at player's position
+            sprite_rect = self.sprite.get_rect(
+                center=(int(self.position["x"]), int(self.position["y"]))
+            )
+            screen.blit(self.sprite, sprite_rect.topleft)
+            
+            # Draw debug visualization
+            debug_mode = getattr(self, 'show_debug', False)
+            if debug_mode:
+                # Draw center point
+                pygame.draw.circle(
+                    screen,
+                    (255, 0, 0),  # Red for center
+                    (int(self.position["x"]), int(self.position["y"])),
+                    3
+                )
+                
+                # Draw bounding box
+                pygame.draw.rect(
+                    screen,
+                    (0, 255, 0),  # Green for hitbox
+                    self.get_rect(),
+                    1  # Line width
+                )
         
         # Draw missiles
         self.draw_missiles(screen)
@@ -241,9 +269,10 @@ class PlayerPlay:
 
     def get_rect(self) -> pygame.Rect:
         """Get the player's collision rectangle."""
+        # Return a rectangle centered on player's position
         return pygame.Rect(
-            self.position["x"], 
-            self.position["y"], 
-            self.size, 
-            self.size
+            self.position["x"] - self.width // 2,
+            self.position["y"] - self.height // 2, 
+            self.width, 
+            self.height
         )

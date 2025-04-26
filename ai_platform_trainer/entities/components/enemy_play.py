@@ -30,8 +30,15 @@ class EnemyPlay:
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.size = 50
+        # Size is interpreted as width and height
+        self.width = self.size
+        self.height = self.size
         self.color = (255, 215, 0)  # Gold (fallback color)
-        self.pos = {"x": self.screen_width // 2, "y": self.screen_height // 2}
+        
+        # Position is the CENTER of the enemy, not top-left corner
+        self.position = {"x": self.screen_width // 2, "y": self.screen_height // 2}
+        # Also maintain pos for compatibility with any code that uses it
+        self.pos = self.position
         self.model = model
         self.base_speed = max(2, screen_width // 400)
         self.visible = True
@@ -125,18 +132,25 @@ class EnemyPlay:
             return
 
         # Store previous position for angle calculation
-        prev_x, prev_y = self.pos["x"], self.pos["y"]
+        prev_x, prev_y = self.position["x"], self.position["y"]
         
         # Scale action to actual speed
         speed = self.base_speed
-        self.pos["x"] += action[0] * speed
-        self.pos["y"] += action[1] * speed
+        self.position["x"] += action[0] * speed
+        self.position["y"] += action[1] * speed
 
         # Apply wrap-around
-        self.pos["x"], self.pos["y"] = self.wrap_position(self.pos["x"], self.pos["y"])
+        # Break up long line for position wrap
+        new_x, new_y = self.wrap_position(
+            self.position["x"], 
+            self.position["y"]
+        )
+        self.position["x"], self.position["y"] = new_x, new_y
         
         # Update rotation angle based on movement direction
-        if abs(self.pos["x"] - prev_x) > 0.01 or abs(self.pos["y"] - prev_y) > 0.01:
+        x_changed = abs(self.pos["x"] - prev_x) > 0.01
+        y_changed = abs(self.pos["y"] - prev_y) > 0.01
+        if x_changed or y_changed:
             self.angle = math.degrees(math.atan2(
                 self.pos["y"] - prev_y, 
                 self.pos["x"] - prev_x
@@ -172,10 +186,10 @@ class EnemyPlay:
             ex = self.pos["x"] / screen_width
             ey = self.pos["y"] / screen_height
 
-            # Calculate distance
-            dist = math.sqrt(
-                (player_x - self.pos["x"])**2 + (player_y - self.pos["y"])**2
-            ) / max(screen_width, screen_height)
+            # Calculate distance between player and enemy centers
+            dx = player_x - self.pos["x"]
+            dy = player_y - self.pos["y"]
+            dist = math.sqrt(dx**2 + dy**2) / max(screen_width, screen_height)
 
             player_speed_norm = player_speed / 10.0
             time_factor = 0.5  # Placeholder for time since last hit
@@ -191,7 +205,9 @@ class EnemyPlay:
                 self.apply_rl_action(action)
             except Exception as e:
                 # Fallback to traditional approach on error
-                logging.error(f"RL model inference failed: {e}. Falling back to neural network.")
+                logging.error(
+                    f"RL model inference failed: {e}. Falling back to neural network."
+                )
                 self.using_rl = False
                 update_enemy_movement(self, player_x, player_y, player_speed, current_time)
         else:
@@ -223,11 +239,11 @@ class EnemyPlay:
         if len(self.particles) >= self.max_particles:
             return
             
-        # Add particle at enemy's position
+        # Add particle at enemy's center position
         if random.random() < 0.3:  # Only add particles sometimes
             self.particles.append({
-                'x': self.pos["x"] + self.size // 2,
-                'y': self.pos["y"] + self.size // 2,
+                'x': self.position["x"],
+                'y': self.position["y"],
                 'size': random.randint(2, 5),
                 'color': random.choice(self.particle_colors),
                 'alpha': 255,
@@ -291,9 +307,28 @@ class EnemyPlay:
             
             # Get rect for centered blitting
             rect = rotated_sprite.get_rect(center=(
-                int(self.pos["x"] + self.size // 2),
-                int(self.pos["y"] + self.size // 2)
+                int(self.position["x"]),
+                int(self.position["y"])
             ))
+            
+            # Draw debug visualization if enabled
+            debug_mode = getattr(self, 'show_debug', False)
+            if debug_mode:
+                # Draw center point
+                pygame.draw.circle(
+                    screen,
+                    (255, 0, 0),  # Red for center
+                    (int(self.position["x"]), int(self.position["y"])),
+                    3
+                )
+                
+                # Draw bounding box
+                pygame.draw.rect(
+                    screen,
+                    (0, 255, 0),  # Green for hitbox
+                    self.get_rect(),
+                    1  # Line width
+                )
             
             # Apply fade alpha
             rotated_sprite.set_alpha(self.fade_alpha)
@@ -303,7 +338,10 @@ class EnemyPlay:
         else:
             # Fallback to simple surface if sprite isn't available
             self.surface.set_alpha(self.fade_alpha)
-            screen.blit(self.surface, (self.pos["x"], self.pos["y"]))
+            # Calculate top-left corner for surface blitting
+            top_left_x = self.position["x"] - self.width // 2
+            top_left_y = self.position["y"] - self.height // 2
+            screen.blit(self.surface, (top_left_x, top_left_y))
 
     def hide(self) -> None:
         """Hide the enemy after being hit."""
@@ -336,9 +374,10 @@ class EnemyPlay:
         
     def get_rect(self) -> pygame.Rect:
         """Get the enemy's collision rectangle."""
+        # Return a rectangle centered on enemy's position
         return pygame.Rect(
-            self.pos["x"], 
-            self.pos["y"], 
-            self.size, 
-            self.size
+            self.position["x"] - self.width // 2,
+            self.position["y"] - self.height // 2, 
+            self.width, 
+            self.height
         )
