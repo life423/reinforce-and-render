@@ -110,20 +110,36 @@ class SpriteManager:
         
         # Handle base sprite names (for category lookup)
         base_name = name
-        if "_" in name and name.split("_")[-1].isdigit():
-            # Handle animation frames like "explosion_0"
-            base_name = name.split("_")[0]
+        variant_suffix = None
+        
+        # Check for orientation variants (wall_h, wall_v)
+        if "_" in name:
+            parts = name.split("_")
+            if len(parts) == 2 and parts[1] in ["h", "v"]:
+                base_name = parts[0]       # e.g., "wall"
+                variant_suffix = parts[1]  # e.g., "h"
+            elif parts[-1].isdigit():
+                # Handle animation frames like "explosion_0"
+                base_name = parts[0]
         
         # 1. Category subfolder with full name if this entity type has a mapping
         if base_name in self.entity_type_dirs:
             category_dir = self.entity_type_dirs[base_name]
             paths.append(os.path.join(self.sprites_dir, category_dir, f"{name}.png"))
+            
+            # For obstacle variants, also try the abbreviated form (h.png, v.png)
+            if variant_suffix and base_name in ["wall", "rock", "obstacle"]:
+                paths.append(os.path.join(self.sprites_dir, category_dir, f"{variant_suffix}.png"))
         
         # 2. Direct in sprites directory (legacy support)
         paths.append(os.path.join(self.sprites_dir, f"{name}.png"))
         
         # 3. Generic subfolder with name
         paths.append(os.path.join(self.sprites_dir, name, f"{name}.png"))
+        
+        # 4. For variants, try the base sprite as fallback
+        if variant_suffix and base_name:
+            paths.append(os.path.join(self.sprites_dir, self.entity_type_dirs.get(base_name, ""), f"{base_name}.png"))
         
         logging.debug(f"Potential paths for sprite '{name}': {paths}")
         return paths
@@ -139,8 +155,15 @@ class SpriteManager:
         Returns:
             Placeholder sprite surface
         """
+        # Check for variant names like wall_h and extract the base name
+        base_name = name
+        if "_" in name:
+            parts = name.split("_")
+            if len(parts) == 2 and parts[1] in ["h", "v"]:
+                base_name = parts[0]
+                
         # Get the placeholder color for the entity type
-        color = self.placeholder_colors.get(name, (200, 200, 200))  # Default to gray
+        color = self.placeholder_colors.get(base_name, (200, 200, 200))  # Default to gray
 
         # Create a surface with alpha channel
         sprite = pygame.Surface(size, pygame.SRCALPHA)
