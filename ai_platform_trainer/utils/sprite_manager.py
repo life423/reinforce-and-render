@@ -139,7 +139,9 @@ class SpriteManager:
         
         # 4. For variants, try the base sprite as fallback
         if variant_suffix and base_name:
-            paths.append(os.path.join(self.sprites_dir, self.entity_type_dirs.get(base_name, ""), f"{base_name}.png"))
+            base_dir = self.entity_type_dirs.get(base_name, "")
+            fallback_path = os.path.join(self.sprites_dir, base_dir, f"{base_name}.png")
+            paths.append(fallback_path)
         
         logging.debug(f"Potential paths for sprite '{name}': {paths}")
         return paths
@@ -339,7 +341,7 @@ class SpriteManager:
         
         # If no frames found and frames count specified, use placeholders
         if not frame_files and frames is not None:
-            logging.warning(f"No animation frames found for '{base_name}', creating {frames} placeholders")
+            logging.warning(f"No frames found for '{base_name}', creating {frames} placeholders")
             animation_frames = [
                 self._create_animation_placeholder(base_name, size, i, frames)
                 for i in range(frames)
