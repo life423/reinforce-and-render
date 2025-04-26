@@ -77,11 +77,20 @@ class Renderer:
                 logging.debug("Menu rendered.")
             else:
                 # Render game elements
-                self._render_game(menu.game, player, enemy)
-                logging.debug("Game elements rendered.")
-                
-                # Check if game is paused and render pause overlay
-                if hasattr(menu, 'game') and hasattr(menu.game, 'paused') and menu.game.paused:
+                # Check if menu has game attribute, safely handle if missing
+                if hasattr(menu, 'game'):
+                    game_instance = menu.game
+                    self._render_game(game_instance, player, enemy)
+                    logging.debug("Game elements rendered.")
+                    
+                    # Check if game is paused and render pause overlay
+                    if hasattr(game_instance, 'paused') and game_instance.paused:
+                        self._render_pause_overlay()
+                else:
+                    # Fallback: render game elements without using menu.game
+                    logging.warning("Menu is missing game attribute - using fallback rendering")
+                    # Use player/enemy directly
+                    self._render_game_fallback(player, enemy)
                     self._render_pause_overlay()
 
             # Update display
