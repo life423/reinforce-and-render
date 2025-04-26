@@ -6,9 +6,11 @@ This script launches the game, lets it run for a few seconds to ensure
 everything renders, and takes a screenshot to verify sprite loading.
 """
 import os
-import time
+
 import pygame
+
 from ai_platform_trainer.engine.core.game import Game
+
 
 def main():
     """Run the game for a few seconds and take a screenshot."""
@@ -36,6 +38,8 @@ def main():
     # Clean exit
     pygame.quit()
     print("Verification complete. Check the screenshot to confirm sprites display correctly.")
+
+
 
 if __name__ == "__main__":
     main()
