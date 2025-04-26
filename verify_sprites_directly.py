@@ -6,6 +6,7 @@ This script initializes pygame and the sprite manager, then renders all
 sprite types to a grid with labels for easy verification.
 """
 import os
+
 import pygame
 
 from ai_platform_trainer.utils.sprite_manager import SpriteManager
@@ -55,8 +56,8 @@ def main():
         
         # Render label
         name_text = font.render(sprite_name, True, (255, 255, 255))
-        status_text = font.render(status, True, 
-                                 (100, 255, 100) if not is_placeholder else (255, 100, 100))
+        status_text = font.render(status, True,
+                                  (100, 255, 100) if not is_placeholder else (255, 100, 100))
         
         screen.blit(name_text, (x - name_text.get_width()//2, y + sprite_size[1]//2 + 5))
         screen.blit(status_text, (x - status_text.get_width()//2, y + sprite_size[1]//2 + 25))
@@ -67,8 +68,8 @@ def main():
     screen.blit(title, (400 - title.get_width()//2, 30))
     
     # Add instructions
-    instructions = font.render("All sprites should display properly (not placeholders)", 
-                             True, (200, 200, 200))
+    instructions = font.render("All sprites should display properly (not placeholders)",
+                               True, (200, 200, 200))
     screen.blit(instructions, (400 - instructions.get_width()//2, 60))
     
     # Take a screenshot
