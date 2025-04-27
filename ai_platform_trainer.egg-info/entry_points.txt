@@ -1,0 +1,2 @@
+[console_scripts]
+ai-trainer = ai_platform_trainer.__main__:main
