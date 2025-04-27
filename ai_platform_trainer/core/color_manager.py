@@ -4,31 +4,55 @@ from typing import Tuple, Dict, Union, Optional
 
 ColorType = Tuple[int, int, int]
 
-# Triadic roles mapping to your brand's 500-level Tailwind shades
+# Expanded color palette following color theory principles
 _ROLE_COLORS: Dict[str, ColorType] = {
     # Core brand colors
-    "primary":    (16, 185, 129),  # brandGreen[500]  #10B981
-    "secondary":  (14, 165, 233),  # brandBlue[500]   #0EA5E9
-    "accent":     (255, 107, 0),   # brandOrange[500] #FF6B00
+    "primary":     (16, 185, 129),   # Green - #10B981
+    "secondary":   (14, 165, 233),   # Blue - #0EA5E9
+    "accent":      (255, 107, 0),    # Orange - #FF6B00
     
-    # UI colors
-    "background": (13, 17, 23),    # Dark background
-    "text":       (230, 237, 243), # Light text
-    "panel":      (22, 27, 34),    # Slightly lighter than background
-    "highlight":  (56, 139, 253),  # Highlight blue
-    "warning":    (210, 153, 34),  # Warning yellow
-    "error":      (248, 81, 73),   # Error red
-    "success":    (63, 185, 80),   # Success green
+    # UI interface colors
+    "background":  (13, 17, 23),     # Dark background - #0D1117
+    "text":        (230, 237, 243),  # Light text - #E6EDF3
+    "panel":       (22, 27, 34),     # Slightly lighter background - #161B22
+    "highlight":   (56, 139, 253),   # Highlight blue - #388BFD
+    "warning":     (210, 153, 34),   # Warning yellow - #D29922
+    "error":       (248, 81, 73),    # Error red - #F85149
+    "success":     (63, 185, 80),    # Success green - #3FB950
     
-    # Gray scale for menu
-    "bg":         (24, 24, 27),    # Dark gray background
-    "gray300":    (212, 212, 216), # Light gray for text
-    "gray500":    (113, 113, 122), # Medium gray for secondary text
+    # Menu-specific enhanced color scheme
+    "bg":          (24, 24, 27),     # Dark gray background - #18181B
+    
+    # Text grays with proper contrast
+    "gray100":     (243, 244, 246),  # Lightest text - #F3F4F6
+    "gray200":     (229, 231, 235),  # Very light text - #E5E7EB
+    "gray300":     (212, 212, 216),  # Light text - #D4D4D8
+    "gray400":     (156, 163, 175),  # Medium light - #9CA3AF
+    "gray500":     (113, 113, 122),  # Medium - #71717A
+    "gray600":     (82, 82, 91),     # Medium dark - #52525B
+    "gray700":     (63, 63, 70),     # Dark - #3F3F46
+    "gray800":     (39, 39, 42),     # Very dark - #27272A
+    
+    # Menu options with color harmony
+    "option1":     (16, 185, 129),   # Green (same as primary)
+    "option2":     (14, 165, 233),   # Blue (same as secondary)
+    "option3":     (236, 72, 153),   # Pink - #EC4899
+    "option4":     (139, 92, 246),   # Purple - #8B5CF6
+    "option5":     (217, 119, 6),    # Amber - #D97706
+    "option6":     (6, 182, 212),    # Cyan - #06B6D4
+    "option7":     (245, 158, 11),   # Yellow - #F59E0B
+    "option8":     (249, 115, 22),   # Orange - #F97316
+    
+    # Selection indicators
+    "selection":    (255, 255, 255), # Pure white for selection
+    "hover":        (181, 181, 204), # Light lavender for hover
+    "inactive":     (120, 120, 135), # Muted color for inactive
 }
 
 # Predefined color palettes
 _PALETTES: Dict[str, Dict[str, ColorType]] = {
     "default": _ROLE_COLORS,
+    
     "monochrome": {
         "primary":    (200, 200, 200),
         "secondary":  (150, 150, 150),
@@ -40,7 +64,31 @@ _PALETTES: Dict[str, Dict[str, ColorType]] = {
         "warning":    (175, 150, 100),
         "error":      (200, 100, 100),
         "success":    (100, 200, 100),
+        
+        # Menu mappings for monochrome
+        "gray100":    (230, 230, 230),
+        "gray200":    (210, 210, 210),
+        "gray300":    (190, 190, 190),
+        "gray400":    (170, 170, 170),
+        "gray500":    (150, 150, 150),
+        "gray600":    (120, 120, 120),
+        "gray700":    (90, 90, 90),
+        "gray800":    (60, 60, 60),
+        
+        "option1":    (220, 220, 220),
+        "option2":    (200, 200, 200),
+        "option3":    (180, 180, 180),
+        "option4":    (160, 160, 160),
+        "option5":    (140, 140, 140),
+        "option6":    (120, 120, 120),
+        "option7":    (100, 100, 100),
+        "option8":    (80, 80, 80),
+        
+        "selection":  (255, 255, 255),
+        "hover":      (200, 200, 200),
+        "inactive":   (150, 150, 150),
     },
+    
     "high_contrast": {
         "primary":    (0, 255, 0),
         "secondary":  (0, 0, 255),
@@ -52,6 +100,29 @@ _PALETTES: Dict[str, Dict[str, ColorType]] = {
         "warning":    (255, 255, 0),
         "error":      (255, 0, 0),
         "success":    (0, 255, 0),
+        
+        # Menu mappings for high contrast
+        "gray100":    (255, 255, 255),
+        "gray200":    (240, 240, 240),
+        "gray300":    (220, 220, 220),
+        "gray400":    (200, 200, 200),
+        "gray500":    (180, 180, 180),
+        "gray600":    (150, 150, 150),
+        "gray700":    (120, 120, 120),
+        "gray800":    (90, 90, 90),
+        
+        "option1":    (0, 255, 0),
+        "option2":    (255, 255, 0),
+        "option3":    (255, 0, 255),
+        "option4":    (0, 255, 255),
+        "option5":    (255, 128, 0),
+        "option6":    (128, 255, 0),
+        "option7":    (0, 128, 255),
+        "option8":    (255, 0, 128),
+        
+        "selection":  (255, 255, 255),
+        "hover":      (200, 200, 200),
+        "inactive":   (150, 150, 150),
     }
 }
 

@@ -23,7 +23,8 @@ class RLBounceEnv:
 
     def __init__(self, seed: int | None = None):
         self.rng   = random.Random(seed)
-        self.space = create_physics_space(gravity=(0, 0))  # square walls already added
+        self.space = create_physics_space(gravity=(0, 0))
+        # square walls already added
         self.player_body: pymunk.Body | None = None
         self.enemy_body:  pymunk.Body | None = None
         self.steps  = 0
