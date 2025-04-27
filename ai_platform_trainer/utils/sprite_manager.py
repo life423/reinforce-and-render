@@ -99,7 +99,7 @@ class SpriteManager:
                     logging.warning(f"Error loading from {path}: {e}")
         
         # Create placeholder sprite if no paths worked
-        logging.warning(f"Using placeholder for sprite '{name}' (no valid file found)")
+        logging.warning(f"Using placeholder for '{name}' (no valid file found)")
         sprite = self._create_placeholder(name, size)
         self.sprites[cache_key] = sprite
         return sprite

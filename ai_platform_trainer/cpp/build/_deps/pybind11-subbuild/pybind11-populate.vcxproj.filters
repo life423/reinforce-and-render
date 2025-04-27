@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\aiand\Documents\software-engineering\ai-platform-trainer\ai_platform_trainer\cpp\build\_deps\pybind11-subbuild\CMakeFiles\8288e9d38f9ec70ef09d55e25e9f50ad\pybind11-populate-mkdir.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\aiand\Documents\software-engineering\ai-platform-trainer\ai_platform_trainer\cpp\build\_deps\pybind11-subbuild\CMakeFiles\8288e9d38f9ec70ef09d55e25e9f50ad\pybind11-populate-download.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\aiand\Documents\software-engineering\ai-platform-trainer\ai_platform_trainer\cpp\build\_deps\pybind11-subbuild\CMakeFiles\8288e9d38f9ec70ef09d55e25e9f50ad\pybind11-populate-update.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\aiand\Documents\software-engineering\ai-platform-trainer\ai_platform_trainer\cpp\build\_deps\pybind11-subbuild\CMakeFiles\8288e9d38f9ec70ef09d55e25e9f50ad\pybind11-populate-patch.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\aiand\Documents\software-engineering\ai-platform-trainer\ai_platform_trainer\cpp\build\_deps\pybind11-subbuild\CMakeFiles\8288e9d38f9ec70ef09d55e25e9f50ad\pybind11-populate-configure.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\aiand\Documents\software-engineering\ai-platform-trainer\ai_platform_trainer\cpp\build\_deps\pybind11-subbuild\CMakeFiles\8288e9d38f9ec70ef09d55e25e9f50ad\pybind11-populate-build.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\aiand\Documents\software-engineering\ai-platform-trainer\ai_platform_trainer\cpp\build\_deps\pybind11-subbuild\CMakeFiles\8288e9d38f9ec70ef09d55e25e9f50ad\pybind11-populate-install.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\aiand\Documents\software-engineering\ai-platform-trainer\ai_platform_trainer\cpp\build\_deps\pybind11-subbuild\CMakeFiles\8288e9d38f9ec70ef09d55e25e9f50ad\pybind11-populate-test.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\aiand\Documents\software-engineering\ai-platform-trainer\ai_platform_trainer\cpp\build\_deps\pybind11-subbuild\CMakeFiles\97946ee861105d2798e6cef3148fd736\pybind11-populate-complete.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\aiand\Documents\software-engineering\ai-platform-trainer\ai_platform_trainer\cpp\build\_deps\pybind11-subbuild\CMakeFiles\935284ae3abf7737511b21466f63eeb3\pybind11-populate.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\aiand\Documents\software-engineering\ai-platform-trainer\ai_platform_trainer\cpp\build\_deps\pybind11-subbuild\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\aiand\Documents\software-engineering\ai-platform-trainer\ai_platform_trainer\cpp\build\_deps\pybind11-subbuild\CMakeFiles\pybind11-populate" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{525D06A3-4502-347A-B781-7DC213543738}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -7,6 +7,9 @@ project(gpu_game_environment LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Find Python first since we'll need it for architecture detection
+find_package(Python COMPONENTS Interpreter Development REQUIRED)
+
 # Modern CMake CUDA detection and support
 include(CheckLanguage)
 check_language(CUDA)
@@ -16,8 +19,25 @@ if(CMAKE_CUDA_COMPILER)
   enable_language(CUDA)
   message(STATUS "CUDA found: ${CMAKE_CUDA_COMPILER_VERSION}")
   
-  # Set CUDA architecture based on capability - include RTX 5070 (sm_120)
-  set(CMAKE_CUDA_ARCHITECTURES 70 75 80 86 90 "120")
+  # Detect supported CUDA architectures from current system
+  message(STATUS "Detecting supported CUDA architectures...")
+  execute_process(
+    COMMAND ${Python_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/detect_gpu_arch.py"
+    OUTPUT_VARIABLE DETECTED_ARCHS
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    RESULT_VARIABLE DETECT_RESULT
+  )
+  
+  if(DETECT_RESULT EQUAL 0 AND DETECTED_ARCHS)
+    # Successfully detected architectures
+    string(REPLACE ";" " " ARCH_LIST "${DETECTED_ARCHS}")
+    message(STATUS "Using detected CUDA architectures: ${ARCH_LIST}")
+    set(CMAKE_CUDA_ARCHITECTURES ${DETECTED_ARCHS})
+  else()
+    # Fall back to defaults if detection failed
+    message(STATUS "Architecture detection failed, using defaults")
+    set(CMAKE_CUDA_ARCHITECTURES 70 75 80 86)
+  endif()
   
   # Find CUDA package - this gives us access to CUDA libraries
   find_package(CUDA REQUIRED)
@@ -64,8 +84,7 @@ else()
   find_package(pybind11 REQUIRED)
 endif()
 
-# Find Python
-find_package(Python COMPONENTS Interpreter Development REQUIRED)
+# Python is already found above
 
 # Include directories
 include_directories(

@@ -1,111 +1,110 @@
+# file: ai_platform_trainer/engine/core/game.py
 """
-Main game controller for AI Platform Trainer.
-
-This module defines the core Game class that manages the game loop,
-entities, and game states.
+Game class with dependency injection for the AI Platform Trainer.
 """
 import logging
-import math
 import os
-from typing import Optional, Tuple
+from typing import Optional
 
 import pygame
 import torch
 
-# AI and model imports
-from ai_platform_trainer.ai_model.model_definition.enemy_movement_model import EnemyMovementModel
+# Import missile model
 from ai_platform_trainer.ai_model.simple_missile_model import SimpleMissileModel
 
-# Data logger and entity imports
-from ai_platform_trainer.engine.core.data_logger import DataLogger
-from ai_platform_trainer.engine.core.game_config import config
+# Import service locator
+from ai_platform_trainer.core.service_locator import ServiceLocator
 
-# Logging setup
-from ai_platform_trainer.engine.core.logging_config import setup_logging
-from ai_platform_trainer.engine.gameplay.modes.training_mode import TrainingMode
+# Import spawner
+from ai_platform_trainer.engine.physics.spawner import respawn_enemy_with_fade_in
 
-# Engine imports
-from ai_platform_trainer.engine.physics.collisions import handle_missile_collisions
-from ai_platform_trainer.engine.physics.spawner import respawn_enemy_with_fade_in, spawn_entities
-from ai_platform_trainer.engine.rendering.display_manager import (
-    init_pygame_display,
-    toggle_fullscreen_display,
+# Import display manager
+from ai_platform_trainer.gameplay.display_manager import toggle_fullscreen_display
+
+# Import state machine components
+from ai_platform_trainer.gameplay.state_machine import (
+    GameOverState,
+    MenuState,
+    PausedState,
+    PlayState,
+    TrainingState,
 )
-from ai_platform_trainer.engine.rendering.menu import Menu
-from ai_platform_trainer.engine.rendering.renderer import Renderer
 
-# Missile AI updates
-from ai_platform_trainer.entities.behaviors.missile_ai_controller import update_missile_ai
-from ai_platform_trainer.entities.components.enemy_play import EnemyPlay
-from ai_platform_trainer.entities.components.enemy_training import EnemyTrain
-from ai_platform_trainer.entities.components.player_play import PlayerPlay
-from ai_platform_trainer.entities.components.player_training import PlayerTraining
-from config_manager import load_settings, save_settings
+# We'll use the config_manager from ServiceLocator
+# These imports are used in methods below
 
 
 class Game:
     """
     Main class to run the Pixel Pursuit game.
-    Manages both training ('train') and play ('play') modes,
-    as well as the main loop, event handling, and initialization.
+    Uses dependency injection for services and state management for game flow.
     """
 
     def __init__(self) -> None:
-        setup_logging()
+        """Initialize the game with injected dependencies."""
         self.running: bool = True
         self.menu_active: bool = True
         self.mode: Optional[str] = None
-        self.paused: bool = False
+        self.paused: bool = False  # Track pause state
 
-        # 1) Load user settings
-        self.settings = load_settings("settings.json")
+        # Get dependencies from the service locator
+        self.config_manager = ServiceLocator.get("config_manager")
+        # Legacy config for backward compatibility
+        self.config = ServiceLocator.get("config")
+        self.renderer = ServiceLocator.get("renderer")
+        self.input_handler = ServiceLocator.get("input_handler")
+        self.menu = ServiceLocator.get("menu")
+        self.clock = ServiceLocator.get("clock")
+        self.play_entity_factory = ServiceLocator.get("play_entity_factory")
+        self.training_entity_factory = ServiceLocator.get("training_entity_factory")
+        self.screen = ServiceLocator.get("screen")
 
-        # 2) Initialize Pygame and the display
-        (self.screen, self.screen_width, self.screen_height) = init_pygame_display(
-            fullscreen=self.settings.get("fullscreen", False)
-        )
+        # Get screen dimensions from the display service
+        display_service = ServiceLocator.get("display")
+        self.screen_width, self.screen_height = display_service.get_dimensions()
 
-        # 3) Create clock, menu, and renderer
-        pygame.display.set_caption(config.WINDOW_TITLE)
-        self.clock = pygame.time.Clock()
-        self.menu = Menu(self.screen_width, self.screen_height)
-        self.renderer = Renderer(self.screen)
+        # Entities and managers
+        self.player = None
+        self.enemy = None
+        self.data_logger = None
+        self.training_mode_manager = None
 
-        # 4) Entities and managers
-        self.player: Optional[PlayerPlay] = None
-        self.enemy: Optional[EnemyPlay] = None  # Keeping for backward compatibility
-        self.enemies = []  # List to hold multiple enemies
-        self.num_enemies = 3  # Default number of enemies to spawn
-        self.obstacles = []  # List to hold obstacles
-        self.num_obstacles = 5  # Default number of obstacles to spawn
-        self.data_logger: Optional[DataLogger] = None
-        self.training_mode_manager: Optional[TrainingMode] = None  # For train mode
-        self.play_mode_manager = None  # Will be initialized in start_game
-
-        # 5) Load missile model once
-        self.missile_model: Optional[SimpleMissileModel] = None
-        self._load_missile_model_once()
-
-        # 6) Additional logic
+        # Additional logic
         self.respawn_delay = 1000
         self.respawn_timer = 0
         self.is_respawning = False
 
-        # Scoring system
-        self.score = 0
-        self.last_score_time = 0  # For time-based scoring
-        self.survival_score_interval = 1000  # 1 second in milliseconds
-        
+        # Load missile model once
+        self.missile_model = None
+        self._load_missile_model_once()
+
         # Reusable tensor for missile AI input
         self._missile_input = torch.zeros((1, 9), dtype=torch.float32)
 
-        logging.info("Game initialized.")
+        # Initialize state machine - create states directly instead of getting from ServiceLocator
+        self.states = {
+            "menu": MenuState(self),
+            "play": PlayState(self),
+            "train": TrainingState(self),
+            "paused": PausedState(self),
+            "game_over": GameOverState(self),
+        }
+        self.current_state = self.states["menu"]
+        self.current_state.enter()
+
+        logging.info("Game initialized with dependency injection.")
 
     def _load_missile_model_once(self) -> None:
-        missile_model_path = "models/missile_model.pth"
+        """
+        Load the missile AI model once during initialization.
+        """
+        # Use a more robust path resolution
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        missile_model_path = os.path.join(base_dir, "models/missile_model.pth")
         if os.path.isfile(missile_model_path):
-            logging.info(f"Found missile model at '{missile_model_path}'.")
-            logging.info("Loading missile model once...")
+            logging.info(
+                f"Found missile model at '{missile_model_path}'. Loading once..."
+            )
             try:
                 model = SimpleMissileModel()
                 model.load_state_dict(torch.load(missile_model_path, map_location="cpu"))
@@ -115,22 +114,36 @@ class Game:
                 logging.error(f"Failed to load missile model: {e}")
                 self.missile_model = None
         else:
-            logging.warning(f"No missile model found at '{missile_model_path}'.")
-            logging.warning("Skipping missile AI.")
+            logging.warning(
+                f"No missile model found at '{missile_model_path}'. "
+                "Skipping missile AI."
+            )
 
     def run(self) -> None:
+        """Main game loop using state machine architecture."""
         while self.running:
-            current_time = pygame.time.get_ticks()
-            self.handle_events()
+            delta_time = self.clock.tick(self.config_manager.get("display.frame_rate", 60)) / 1000.0
 
-            if self.menu_active:
-                self.menu.draw(self.screen)
-            else:
-                self.update(current_time)
-                self.renderer.render(self.menu, self.player, self.enemy, self.menu_active)
+            # Handle input through the input handler
+            continue_game, events = self.input_handler.handle_input()
+            if not continue_game:
+                self.running = False
+                break
 
+            # Let the current state handle events
+            for event in events:
+                next_state = self.current_state.handle_event(event)
+                if next_state:
+                    self.transition_to(next_state)
+                    break
+
+            # Update and render the current state
+            next_state = self.current_state.update(delta_time)
+            if next_state:
+                self.transition_to(next_state)
+
+            self.current_state.render(self.renderer)
             pygame.display.flip()
-            self.clock.tick(config.FRAME_RATE)
 
         # Save data if we were training
         if self.mode == "train" and self.data_logger:
@@ -139,241 +152,111 @@ class Game:
         pygame.quit()
         logging.info("Game loop exited and Pygame quit.")
 
-    def start_game(self, mode: str) -> None:
-        self.mode = mode
-        self.menu_active = False  # Explicitly set menu_active to False
-        logging.info(f"Starting game in '{mode}' mode.")
+    def transition_to(self, state_name: str) -> None:
+        """
+        Transition from the current state to a new state.
 
-        if mode == "train":
-            self.data_logger = DataLogger(config.DATA_PATH)
-            self.player = PlayerTraining(self.screen_width, self.screen_height)
-            self.enemy = EnemyTrain(self.screen_width, self.screen_height)
-
-            spawn_entities(self)
-            self.player.reset()
-            self.training_mode_manager = TrainingMode(self)
-
-        else:  # "play"
-            self.player, self.enemy = self._init_play_mode()
-            self.player.reset()
-            spawn_entities(self)
-
-    def _init_play_mode(self) -> Tuple[PlayerPlay, EnemyPlay]:
-        # Load the traditional neural network model
-        model = EnemyMovementModel(input_size=5, hidden_size=64, output_size=2)
-        try:
-            model.load_state_dict(torch.load(config.MODEL_PATH, map_location="cpu"))
-            model.eval()
-            logging.info("Enemy AI model loaded for play mode.")
-        except Exception as e:
-            logging.error(f"Failed to load enemy model: {e}")
-            raise e
-
-        player = PlayerPlay(self.screen_width, self.screen_height)
-        
-        # Create the main enemy (for backward compatibility)
-        enemy = EnemyPlay(self.screen_width, self.screen_height, model)
-        
-        # Initialize the enemies list
-        self.enemies = []
-        
-        # Check for RL model and try to load if available
-        rl_model_path = "models/enemy_rl/final_model.zip"
-        rl_loaded = False
-        if os.path.exists(rl_model_path):
-            try:
-                success = enemy.load_rl_model(rl_model_path)
-                if success:
-                    rl_loaded = True
-                    logging.info("Using reinforcement learning model for enemy behavior")
-                else:
-                    logging.warning("RL model exists but couldn't be loaded.")
-                    logging.warning("Falling back to neural network.")
-            except Exception as e:
-                logging.error(f"Error loading RL model: {e}.")
-                logging.error("Using neural network instead.")
+        Args:
+            state_name: The name of the state to transition to
+        """
+        if state_name in self.states:
+            logging.info(f"Transitioning from {type(self.current_state).__name__} to {state_name}")
+            self.current_state.exit()
+            self.current_state = self.states[state_name]
+            self.current_state.enter()
         else:
-            logging.info("No RL model found, using traditional neural network")
-
-        # Create multiple enemies
-        self.enemies.append(enemy)  # Add the main enemy to the list
-        
-        # Create additional enemies
-        for i in range(1, self.num_enemies):
-            new_enemy = EnemyPlay(self.screen_width, self.screen_height, model)
-            
-            # If RL model was loaded successfully for the first enemy, apply to all
-            if rl_loaded:
-                new_enemy.load_rl_model(rl_model_path)
-                
-            self.enemies.append(new_enemy)
-            
-        logging.info(f"Initialized PlayerPlay and {len(self.enemies)} enemies for play mode.")
-        return player, enemy  # Return the first enemy for backward compatibility
-
-    def handle_events(self) -> None:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                logging.info("Quit event detected. Exiting game.")
-                self.running = False
-
-            elif event.type == pygame.KEYDOWN:
-                # Fullscreen toggling
-                if event.key == pygame.K_f:
-                    logging.debug("F pressed - toggling fullscreen.")
-                    self._toggle_fullscreen()
-
-                if self.menu_active:
-                    # Handle Escape key on main menu to exit the game
-                    if event.key == pygame.K_ESCAPE:
-                        # Only exit if we're on the main menu (not in a submenu)
-                        if not self.menu.show_help and not self.menu.show_ai_select:
-                            logging.info("Escape key pressed in main menu. Exiting game.")
-                            self.running = False
-                            return
-                        # Otherwise, let the menu's handle_menu_events handle the Escape key
-                    
-                    selected_action = self.menu.handle_menu_events(event)
-                    if selected_action:
-                        self.check_menu_selection(selected_action)
-                else:
-                    if event.key == pygame.K_p:
-                        self.paused = not self.paused
-                        logging.info(f"Game {'paused' if self.paused else 'resumed'}")
-                    elif event.key == pygame.K_ESCAPE:
-                        logging.info("Escape key pressed. Returning to menu.")
-                        self.menu_active = True
-                        self.reset_game_state()
-                    elif event.key == pygame.K_SPACE and self.player:
-                        self.player.shoot_missile(self.enemy.pos)
-                    elif event.key == pygame.K_m:
-                        logging.info("M key pressed. Returning to menu.")
-                        self.menu_active = True
-                        self.reset_game_state()
-
-            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if self.menu_active:
-                    selected_action = self.menu.handle_menu_events(event)
-                    if selected_action:
-                        self.check_menu_selection(selected_action)
-
-    def check_menu_selection(self, selected_action: str) -> None:
-        if selected_action == "exit":
-            logging.info("Exit action selected from menu.")
-            self.running = False
-        elif selected_action in ["train", "play"]:
-            logging.info(f"'{selected_action}' selected from menu.")
-            self.menu_active = False
-            self.start_game(selected_action)
+            logging.error(f"Attempted to transition to unknown state: {state_name}")
 
     def _toggle_fullscreen(self) -> None:
         """
         Helper that toggles between windowed and fullscreen,
-        updating self.screen, self.screen_width, self.screen_height.
+        updating the display.
         """
-        was_fullscreen = self.settings["fullscreen"]
+        # Get the current fullscreen state from configuration
+        was_fullscreen = self.config_manager.get("display.fullscreen", False)
+
+        # Get screen dimensions from configuration
+        screen_size = (
+            self.config_manager.get("display.width", 800),
+            self.config_manager.get("display.height", 600)
+        )
+
+        # Toggle fullscreen
         new_display, w, h = toggle_fullscreen_display(
             not was_fullscreen,
-            config.SCREEN_SIZE
+            screen_size
         )
-        self.settings["fullscreen"] = not was_fullscreen
-        save_settings(self.settings, "settings.json")
 
+        # Update configuration
+        self.config_manager.set("display.fullscreen", not was_fullscreen)
+        self.config_manager.save()
+
+        # Also update legacy settings for backward compatibility
+        settings_service = ServiceLocator.get("settings")
+        settings = settings_service.get_settings()
+        settings["fullscreen"] = not was_fullscreen
+        settings_service.save_settings(settings)
+
+        # Update services
+        display_service = ServiceLocator.get("display")
+        display_service.set_screen(new_display, w, h)
+
+        # Update local references
         self.screen = new_display
         self.screen_width, self.screen_height = w, h
-        pygame.display.set_caption(config.WINDOW_TITLE)
-        self.menu = Menu(self.screen_width, self.screen_height)
 
-        if not self.menu_active:
+        # Reinitialize menu for the new dimensions
+        menu_service = ServiceLocator.get("menu_factory")
+        self.menu = menu_service.create_menu(w, h)
+        ServiceLocator.register("menu", self.menu)
+
+        # If in game, restart the current state
+        if self.mode and self.mode != "menu":
             current_mode = self.mode
             self.reset_game_state()
-            self.start_game(current_mode)
-
-    def update(self, current_time: int) -> None:
-        if self.paused:
-            # Skip updates while paused
-            return
-            
-        if self.mode == "train" and self.training_mode_manager:
-            self.training_mode_manager.update()
-        elif self.mode == "play":
-            # If we haven't created a play_mode_manager yet, do so now
-            if not hasattr(self, 'play_mode_manager') or self.play_mode_manager is None:
-                from ai_platform_trainer.engine.gameplay.modes.play_mode import PlayMode
-                self.play_mode_manager = PlayMode(self)
-
-            self.play_mode_manager.update(current_time)
-
-    def play_update(self, current_time: int) -> None:
-        """
-        Main update logic for 'play' mode.
-        """
-        if self.player and not self.player.handle_input():
-            logging.info("Player requested to quit.")
-            self.running = False
-            return
-
-        if self.enemy:
-            try:
-                self.enemy.update_movement(
-                    self.player.position["x"],
-                    self.player.position["y"],
-                    self.player.step,
-                    current_time,
-                )
-            except Exception as e:
-                logging.error(f"Error updating enemy movement: {e}")
-                self.running = False
-                return
-
-        # Check if player & enemy overlap
-        if self.check_collision():
-            logging.info("Collision detected between player and enemy.")
-            if self.enemy:
-                self.enemy.hide()
-            self.is_respawning = True
-            self.respawn_timer = current_time + self.respawn_delay
-            logging.info("Player-Enemy collision in play mode.")
-
-        # Update missile AI
-        if self.missile_model and self.player and self.player.missiles:
-            update_missile_ai(
-                self.player.missiles,
-                self.player.position,
-                self.enemy.pos if self.enemy else None,
-                self._missile_input,
-                self.missile_model
-            )
+            self.transition_to(current_mode)
 
     def check_collision(self) -> bool:
+        """Check for collision between player and enemy."""
         if not (self.player and self.enemy):
             return False
+
         player_rect = pygame.Rect(
             self.player.position["x"],
             self.player.position["y"],
             self.player.size,
             self.player.size,
         )
+
         enemy_rect = pygame.Rect(
             self.enemy.pos["x"],
             self.enemy.pos["y"],
             self.enemy.size,
             self.enemy.size
         )
+
         return player_rect.colliderect(enemy_rect)
 
     def check_missile_collisions(self) -> None:
+        """Check for collisions between missiles and enemy."""
         if not self.enemy or not self.player:
             return
 
-        def respawn_callback() -> None:
-            self.is_respawning = True
-            self.respawn_timer = pygame.time.get_ticks() + self.respawn_delay
-            logging.info("Missile-Enemy collision in play mode, enemy will respawn.")
+        collision_service = ServiceLocator.get("collision_service")
+        collision_service.check_missile_collisions(
+            self.player,
+            self.enemy,
+            self._respawn_callback
+        )
 
-        handle_missile_collisions(self.player, self.enemy, respawn_callback)
+    def _respawn_callback(self) -> None:
+        """Callback for when the enemy needs to respawn."""
+        self.is_respawning = True
+        self.respawn_timer = pygame.time.get_ticks() + self.respawn_delay
+        logging.info("Missile-Enemy collision in play mode, enemy will respawn.")
 
     def handle_respawn(self, current_time: int) -> None:
+        """Handle respawning the enemy after a delay."""
         if (
             self.is_respawning
             and current_time >= self.respawn_timer
@@ -382,64 +265,107 @@ class Game:
         ):
             respawn_enemy_with_fade_in(self, current_time)
 
+    def _init_play_mode(self):
+        """
+        Initialize entities for play mode using the entity factory.
+        Called by the PlayState when entering play mode.
+
+        Returns:
+            tuple: (player, enemy) - The initialized player and enemy entities
+        """
+        player = self.play_entity_factory.create_player(
+            self.screen_width,
+            self.screen_height
+        )
+
+        enemy = self.play_entity_factory.create_enemy(
+            self.screen_width,
+            self.screen_height
+        )
+
+        return player, enemy
+
+    def spawn_entities(self):
+        """
+        Set up initial positions for game entities.
+        Called by state transitions and during initialization.
+        """
+        from ai_platform_trainer.engine.gameplay.spawn_utils import find_enemy_spawn_position
+
+        if self.player and self.enemy:
+            # Get player position
+            player_pos = (self.player.position["x"], self.player.position["y"])
+
+            # Find a valid enemy spawn position
+            enemy_pos = find_enemy_spawn_position(
+                self.screen_width,
+                self.screen_height,
+                self.enemy.size,
+                player_pos
+            )
+
+            # Set the enemy position
+    def create_data_logger(self, data_path):
+        """
+        Create a data logger for training mode.
+
+        Args:
+            data_path: Path to the data file
+
+        Returns:
+            A DataLogger instance
+        """
+        from ai_platform_trainer.core.data_logger import DataLogger
+        return DataLogger(data_path)
+
+    def create_player_training(self, screen_width, screen_height):
+        """
+        Create a player entity for training mode.
+
+        Args:
+            screen_width: Width of the screen
+            screen_height: Height of the screen
+
+        Returns:
+            A PlayerTraining instance
+        """
+        from ai_platform_trainer.entities.player_training import PlayerTraining
+        return PlayerTraining(screen_width, screen_height)
+
+    def create_enemy_train(self, screen_width, screen_height):
+        """
+        Create an enemy entity for training mode.
+
+        Args:
+            screen_width: Width of the screen
+            screen_height: Height of the screen
+
+        Returns:
+            An EnemyTrain instance
+        """
+        from ai_platform_trainer.entities.enemy_training import EnemyTrain
+        return EnemyTrain(screen_width, screen_height)
+
+    def create_training_mode(self, game):
+        """
+        Create a training mode manager.
+
+        Args:
+            game: The Game instance
+
+        Returns:
+            A TrainingMode instance
+        """
+        from ai_platform_trainer.gameplay.modes.training_mode import TrainingMode
+        return TrainingMode(game)
+        from ai_platform_trainer.gameplay.modes.training_mode import TrainingMode
+        return TrainingMode(game)
+
     def reset_game_state(self) -> None:
+        """Reset game state, typically when returning to menu."""
         self.player = None
         self.enemy = None
         self.data_logger = None
         self.is_respawning = False
         self.respawn_timer = 0
-        logging.info("Game state reset, returning to menu.")
-
-    def reset_enemy(self) -> None:
-        """Reset the enemy's position but keep it in the game.
-
-        This is primarily used during RL training to reset the
-        environment without disturbing other game elements.
-        """
-        if self.enemy:
-            # Place the enemy at a random location away from the player
-            import random
-            if self.player:
-                # Keep enemy away from player during resets
-                while True:
-                    x = random.randint(0, self.screen_width - self.enemy.size)
-                    y = random.randint(0, self.screen_height - self.enemy.size)
-
-                    # Calculate distance to player
-                    distance = math.sqrt(
-                        (x - self.player.position["x"])**2 +
-                        (y - self.player.position["y"])**2
-                    )
-
-                    # Ensure minimum distance
-                    min_distance = max(self.screen_width, self.screen_height) * 0.3
-                    if distance >= min_distance:
-                        break
-            else:
-                # No player present, just pick a random position
-                x = random.randint(0, self.screen_width - self.enemy.size)
-                y = random.randint(0, self.screen_height - self.enemy.size)
-
-            self.enemy.set_position(x, y)
-            self.enemy.visible = True
-            logging.debug(f"Enemy reset to position ({x}, {y})")
-
-    def update_once(self) -> None:
-        """Process a single update frame for the game.
-
-        This is used during RL training to advance the game state
-        without relying on the main game loop.
-        """
-        current_time = pygame.time.get_ticks()
-
-        # Process pending events to avoid queue overflow
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.running = False
-
-        # Update based on current mode
-        if self.mode == "play" and not self.menu_active:
-            if hasattr(self, 'play_mode_manager') and self.play_mode_manager:
-                self.play_mode_manager.update(current_time)
-            else:
-                self.play_update(current_time)
+        logging.info("Game state reset.")

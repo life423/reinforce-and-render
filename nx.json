@@ -1,6 +1,0 @@
-{
-  "installation": {
-    "version": "20.8.1"
-  },
-  "$schema": "./node_modules/nx/schemas/nx-schema.json"
-}

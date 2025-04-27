@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\aiand\Documents\software-engineering\ai-platform-trainer\ai_platform_trainer\cpp\build\CMakeFiles\CheckCUDA\CMakeFiles\0d50e987d5d0ff88a591e77c9c67ae06\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{EC7B6359-08E8-3680-AF3F-6BF4C1EA9461}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

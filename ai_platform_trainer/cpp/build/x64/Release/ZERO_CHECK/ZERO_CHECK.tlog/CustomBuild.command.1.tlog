@@ -1,0 +1,10 @@
+^C:\USERS\AIAND\DOCUMENTS\SOFTWARE-ENGINEERING\AI-PLATFORM-TRAINER\AI_PLATFORM_TRAINER\CPP\BUILD\CMAKEFILES\AAA939A9EF5625C6749FD770E8B5DECE\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/aiand/Documents/software-engineering/ai-platform-trainer/ai_platform_trainer/cpp -BC:/Users/aiand/Documents/software-engineering/ai-platform-trainer/ai_platform_trainer/cpp/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/aiand/Documents/software-engineering/ai-platform-trainer/ai_platform_trainer/cpp/build/gpu_game_environment.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
