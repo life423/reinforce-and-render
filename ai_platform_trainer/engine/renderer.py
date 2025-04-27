@@ -1,4 +1,5 @@
 import pygame
+from ai_platform_trainer.core.color_manager import get_color
 
 class Renderer:
     def __init__(self, screen: pygame.Surface):
@@ -11,7 +12,9 @@ class Renderer:
         """
         Optionally clear the screen to a solid color.
         """
-        self.screen.fill(color)
+        # Accept a role name or raw RGB tuple
+        fill_color = get_color(color) if isinstance(color, str) else color
+        self.screen.fill(fill_color)
 
     def draw(self, drawable) -> None:
         """

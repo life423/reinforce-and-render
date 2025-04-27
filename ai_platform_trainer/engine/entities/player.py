@@ -6,10 +6,10 @@ import pygame
 
 
 class Player:
-    def __init__(self, position: Tuple[int, int], speed: int = 5):
+    def __init__(self, position: Tuple[int, int], color: Tuple[int, int, int] = None, speed: int = 5):
         self.position = position
         self.speed = speed
-        self.color = (0, 255, 0)  # Green color
+        self.color = color if color is not None else (0, 255, 0)  # Use provided color or default to green
         self.radius = 15
         
     def update(self, actions: Dict[str, bool]):

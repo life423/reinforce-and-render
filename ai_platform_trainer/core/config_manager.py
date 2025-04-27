@@ -1,19 +1,34 @@
-import json
-from pathlib import Path
+import pygame
 
-_config = None
+class InputHandler:
+    def __init__(self):
+        pygame.init()
 
-def load_settings(path: str = "config.json") -> dict:
-    p = Path(path)
-    if p.is_file():
-        return json.loads(p.read_text())
-    return {}
+    def get_actions(self) -> dict[str, bool]:
+        """
+        Polls Pygame events and returns a dict of current actions:
+          'up', 'down', 'left', 'right', 'quit'
+        """
+        actions = {'up': False, 'down': False, 'left': False, 'right': False, 'quit': False}
 
-def save_settings(settings: dict, path: str = "config.json") -> None:
-    Path(path).write_text(json.dumps(settings, indent=4))
+        # 1) Catch window‐close and ESC keydown
+        for evt in pygame.event.get():
+            if evt.type == pygame.QUIT:
+                actions['quit'] = True
+            elif evt.type == pygame.KEYDOWN and evt.key == pygame.K_ESCAPE:
+                actions['quit'] = True
 
-def get_config() -> dict:
-    global _config
-    if _config is None:
-        _config = load_settings()
-    return _config
+        # 2) Poll keys for continuous movement and ESC hold
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_w]    or keys[pygame.K_UP]:
+            actions['up'] = True
+        if keys[pygame.K_s]    or keys[pygame.K_DOWN]:
+            actions['down'] = True
+        if keys[pygame.K_a]    or keys[pygame.K_LEFT]:
+            actions['left'] = True
+        if keys[pygame.K_d]    or keys[pygame.K_RIGHT]:
+            actions['right'] = True
+        if keys[pygame.K_ESCAPE]:
+            actions['quit'] = True
+
+        return actions
