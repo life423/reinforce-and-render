@@ -1,11 +1,13 @@
 import random
-from ai_platform_trainer.engine.entities.player import Player
+
 from ai_platform_trainer.engine.entities.enemy import Enemy
+from ai_platform_trainer.engine.entities.player import Player
+
 
 class EntityFactory:
     @staticmethod
     def create_player() -> Player:
-        return Player(position=(400, 300), color=(0, 255, 0), radius=15)
+        return Player(position=(400, 300), speed=5)
 
     @staticmethod
     def create_enemies(count: int = 5) -> list[Enemy]:

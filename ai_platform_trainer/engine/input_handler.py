@@ -1,23 +1,28 @@
-# ai_platform_trainer/engine/input_handler.py
 import pygame
 
 class InputHandler:
     def __init__(self):
         pygame.init()
 
-    def get_actions(self):
+    def get_actions(self) -> dict[str, bool]:
         """
-        Returns a dict:
-          'move_x': -1, 0, or +1
-          'move_y': -1, 0, or +1
-          'quit': True if player requested exit
+        Polls Pygame events and returns a dict of current actions:
+          'up', 'down', 'left', 'right', 'quit'
         """
+        actions = {'up': False, 'down': False, 'left': False, 'right': False, 'quit': False}
         for evt in pygame.event.get():
             if evt.type == pygame.QUIT:
-                return {'move_x': 0, 'move_y': 0, 'quit': True}
-
-        keys = pygame.key.get_pressed()
-        dx = (keys[pygame.K_RIGHT] - keys[pygame.K_LEFT])
-        dy = (keys[pygame.K_DOWN]  - keys[pygame.K_UP])
-        quit_ = keys[pygame.K_ESCAPE]
-        return {'move_x': dx, 'move_y': dy, 'quit': quit_}
+                actions['quit'] = True
+            elif evt.type == pygame.KEYDOWN:
+                match evt.key:
+                    case pygame.K_ESCAPE:
+                        actions['quit'] = True
+                    case pygame.K_w | pygame.K_UP:
+                        actions['up'] = True
+                    case pygame.K_s | pygame.K_DOWN:
+                        actions['down'] = True
+                    case pygame.K_a | pygame.K_LEFT:
+                        actions['left'] = True
+                    case pygame.K_d | pygame.K_RIGHT:
+                        actions['right'] = True
+        return actions

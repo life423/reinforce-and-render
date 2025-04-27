@@ -15,20 +15,22 @@ class Game:
     def run(self) -> None:
         while self.is_running:
             actions = self.input.get_actions()
-            if actions.get("quit"):
-                break
+            if actions.get('quit'):
+                self.is_running = False
+                continue
 
             # 1) Update
             self.player.update(actions)
             for enemy in self.enemies:
-                enemy.update(actions)
+                enemy.update()
 
             # 2) Render
             self.renderer.clear((0, 0, 0))
             self.renderer.draw(self.player)
-            for e in self.enemies:
-                self.renderer.draw(e)
+            for enemy in self.enemies:
+                self.renderer.draw(enemy)
             self.renderer.present()
 
             self.display.tick(60)
+
         self.display.quit()
