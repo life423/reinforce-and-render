@@ -1,0 +1,17 @@
+{
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": true,
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}"
+  ],
+  "editor.formatOnSave": true,
+  "python.formatting.provider": "autopep8",
+  "python.defaultInterpreterPath": "${workspaceFolder}/venv/Scripts/python",
+  "[python]": {
+    "editor.rulers": [
+      88
+    ],
+    "editor.tabSize": 4
+  }
+}

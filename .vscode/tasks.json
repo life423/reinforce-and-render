@@ -1,0 +1,33 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Prep & Run Main",
+      "type": "shell",
+      "command": "python -m ai_platform_trainer",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Run PGZ Demo",
+      "type": "shell",
+      "command": "cd ${workspaceFolder}/demos/pgz_demo && python game_zero.py",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run ai-trainer CLI",
+      "type": "shell",
+      "command": "${env:APPDATA}/Python/Python313/Scripts/ai-trainer.exe",
+      "problemMatcher": []
+    },
+    {
+      "label": "Add Scripts to PATH",
+      "type": "shell",
+      "command": "$env:PATH += \";${env:APPDATA}/Python/Python313/Scripts\"; Write-Host \"Added Python Scripts to PATH for this session. You can now run 'ai-trainer' directly.\"",
+      "problemMatcher": []
+    }
+  ]
+}

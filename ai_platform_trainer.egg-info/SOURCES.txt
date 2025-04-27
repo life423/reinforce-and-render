@@ -14,6 +14,7 @@ ai_platform_trainer/agents/__init__.py
 ai_platform_trainer/agents/agent.py
 ai_platform_trainer/agents/training_loop.py
 ai_platform_trainer/core/__init__.py
+ai_platform_trainer/core/color_manager.py
 ai_platform_trainer/core/config_manager.py
 ai_platform_trainer/core/logging_config.py
 ai_platform_trainer/core/service_locator.py
@@ -26,6 +27,7 @@ ai_platform_trainer/engine/menu.py
 ai_platform_trainer/engine/renderer.py
 ai_platform_trainer/engine/entities/__init__.py
 ai_platform_trainer/engine/entities/enemy.py
+ai_platform_trainer/engine/entities/entity.py
 ai_platform_trainer/engine/entities/entity_factory.py
 ai_platform_trainer/engine/entities/missile.py
 ai_platform_trainer/engine/entities/player.py

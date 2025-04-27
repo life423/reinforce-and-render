@@ -1,0 +1,32 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Main Game",
+      "type": "python",
+      "request": "launch",
+      "module": "ai_platform_trainer",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "preLaunchTask": "Prep & Run Main"
+    },
+    {
+      "name": "Python: PGZ Demo",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/demos/pgz_demo/game_zero.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "cwd": "${workspaceFolder}/demos/pgz_demo",
+      "preLaunchTask": "Run PGZ Demo"
+    },
+    {
+      "name": "Run ai-trainer CLI",
+      "type": "python",
+      "request": "launch",
+      "program": "${env:APPDATA}/Python/Python313/Scripts/ai-trainer.exe",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    }
+  ]
+}
