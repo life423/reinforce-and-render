@@ -1,15 +1,17 @@
-from typing import Tuple
-import pygame
+import random
+from ai_platform_trainer.engine.entities.player import Player
+from ai_platform_trainer.engine.entities.enemy import Enemy
 
-class Entity:
-    def __init__(self, position: Tuple[int, int], color: Tuple[int, int, int], radius: int = 10):
-        self.x, self.y = position
-        self.color = color
-        self.radius = radius
+class EntityFactory:
+    @staticmethod
+    def create_player() -> Player:
+        return Player(position=(400, 300), color=(0, 255, 0), radius=15)
 
-    def update(self) -> None:
-        # placeholder for movement or AI logic
-        pass
-
-    def draw(self, surface: pygame.Surface) -> None:
-        pygame.draw.circle(surface, self.color, (self.x, self.y), self.radius)
+    @staticmethod
+    def create_enemies(count: int = 5) -> list[Enemy]:
+        return [
+            Enemy(position=(random.randint(50, 750), random.randint(50, 550)),
+                  color=(255, 0, 0),
+                  radius=10)
+            for _ in range(count)
+        ]

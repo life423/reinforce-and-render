@@ -1,39 +1,34 @@
-# ai_platform_trainer/engine/game.py
-
 from ai_platform_trainer.engine.display_manager import DisplayManager
 from ai_platform_trainer.engine.input_handler import InputHandler
 from ai_platform_trainer.engine.renderer import Renderer
-from ai_platform_trainer.engine.entities.entity import Entity
+from ai_platform_trainer.engine.entities.entity_factory import EntityFactory
 
 class Game:
-    def __init__(self, width: int = 800, height: int = 600) -> None:
-        self.display = DisplayManager(width, height)
+    def __init__(self):
+        self.display = DisplayManager(800, 600)
         self.input = InputHandler()
-        self.renderer = Renderer()
+        self.renderer = Renderer(self.display.get_screen())
         self.is_running = True
-
-        # ─── TEST ENTITIES ─────────────────────────────────────
-        # Spawn a red circle and a green circle to prove rendering works:
-        self.entities = [
-            Entity(position=(100, 100), color=(255,  50,  50), radius=20),
-            Entity(position=(300, 300), color=( 50, 255,  50), radius=30),
-        ]
-        # ─────────────────────────────────────────────────────────
+        self.player = EntityFactory.create_player()
+        self.enemies = EntityFactory.create_enemies(3)
 
     def run(self) -> None:
         while self.is_running:
             actions = self.input.get_actions()
             if actions.get("quit"):
-                self.is_running = False
+                break
 
-            # Clear screen to black
-            self.display.get_screen().fill((0, 0, 0))
+            # 1) Update
+            self.player.update(actions)
+            for enemy in self.enemies:
+                enemy.update(actions)
 
-            # ─── RENDER ENTITIES ────────────────────────────────────
-            self.renderer.render(self.display.get_screen(), self.entities)
-            # ─────────────────────────────────────────────────────────
+            # 2) Render
+            self.renderer.clear((0, 0, 0))
+            self.renderer.draw(self.player)
+            for e in self.enemies:
+                self.renderer.draw(e)
+            self.renderer.present()
 
-            self.display.update()
             self.display.tick(60)
-
         self.display.quit()

@@ -8,8 +8,9 @@ class Entity:
         self.color = color
         self.radius = radius
 
-    def update(self) -> None:
-        pass  # override me
+    def update(self, actions: dict) -> None:
+        """Override in subclasses to change position each frame."""
+        pass
 
     def draw(self, surface: pygame.Surface) -> None:
         pygame.draw.circle(surface, self.color, (self.x, self.y), self.radius)
