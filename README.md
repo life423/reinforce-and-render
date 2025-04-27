@@ -1,101 +1,152 @@
-Create & activate venv
+# PhysX: AI Training Platform
 
-powershell
-Copy
-Edit
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-Install dependencies
+A modern Python platform for training AI agents in physics-based game environments. PhysX combines a Pygame-powered game engine with PyTorch machine learning capabilities to create an ideal environment for AI research and education.
 
-bash
-Copy
-Edit
-pip install -r requirements.txt
-Fetch art assets
+## 🚀 Features
 
-bash
-Copy
-Edit
-python scripts/fetch_assets.py
-Run the core game
+- **Game Engine:** Built on Pygame with physics simulation capabilities
+- **AI Training:** Reinforcement learning and supervised learning frameworks
+- **GPU Acceleration:** CUDA support for faster model training
+- **Multiple Demos:** Ready-to-run examples to get started quickly
+- **Extensible Design:** Modular architecture that's easy to customize
 
-bash
-Copy
-Edit
-pip install -e .
+## 🔧 Setup
+
+### Prerequisites
+
+- Python 3.8 or higher
+- Virtual environment tool (venv, conda, etc.)
+- GPU with CUDA support (optional, but recommended for AI training)
+
+### Installation
+
+1. **Create and activate a virtual environment:**
+
+   ```bash
+   # Windows
+   python -m venv venv
+   .\venv\Scripts\Activate.ps1
+   
+   # macOS/Linux
+   python -m venv venv
+   source venv/bin/activate
+   ```
+
+2. **Install dependencies:**
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Install the package in development mode:**
+
+   ```bash
+   pip install -e .
+   ```
+
+4. **Fetch game assets:**
+
+   ```bash
+   python scripts/fetch_assets.py
+   ```
+
+## 🎮 Running the Platform
+
+### Core Game
+
+Run the main game engine with the following command:
+
+```bash
 ai-trainer
-Run the Pygame Zero demo
+```
 
-bash
-Copy
-Edit
+### Pygame Zero Demo
+
+Try the simplified Pygame Zero demo:
+
+```bash
 pgzrun demos/pgz_demo/game_zero.py
-🗂️ Project Layout
-bash
-Copy
-Edit
+```
+
+## 🧠 AI Training
+
+PhysX supports multiple AI training paradigms:
+
+### Reinforcement Learning
+
+- Vectorized environments in Pymunk
+- Policy networks (MLP) trained via PPO
+- GPU acceleration with PyTorch
+- Real-time inference driving entity behavior
+
+### Supervised Learning
+
+- Custom data loaders for training datasets
+- Model architecture examples for game environments
+- Demonstration capabilities to visualize learning
+
+## 📂 Project Structure
+
+```
 .
-├── README.md
-├── ai_platform_trainer/      # Core package
-│   ├── __main__.py           # `ai-trainer` entry point
-│   ├── core/                 # Config, logging, colors
-│   ├── engine/               # Display, input, renderer, physics
-│   ├── entities/             # Sprite classes & factory
-│   ├── agents/               # RL policy & training loop
-│   └── supervised/           # Supervised-learning demo
-├── assets/sprites/           # Kenney CC0 art
-├── demos/pgz_demo/           # Pygame Zero quick-start
-│   ├── game_zero.py
-│   └── images -> ../../assets/sprites
-├── scripts/fetch_assets.py   # Auto-download assets
-├── requirements.txt          # Runtime deps
-├── dev-requirements.txt      # Linting, testing, etc.
-├── setup.py / setup.cfg      # Packaging metadata
-└── venv/                     # Your virtual environment
-🏗️ How It Works
-Game Loop
+├── ai_platform_trainer/       # Core package
+│   ├── __main__.py            # 'ai-trainer' entry point
+│   ├── agents/                # RL policies & training loops
+│   ├── core/                  # Config, logging, core utilities
+│   ├── cpp/                   # CUDA/C++ acceleration code
+│   ├── engine/                # Game engine components
+│   │   ├── entities/          # Game entities (player, enemies, etc.)
+│   │   ├── collision.py       # Physics collision handling
+│   │   ├── display_manager.py # Display and window management
+│   │   ├── game.py            # Main game loop
+│   │   ├── input_handler.py   # User input processing
+│   │   ├── menu.py            # UI menu system
+│   │   └── renderer.py        # Graphics rendering
+│   └── supervised/            # Supervised learning components
+├── assets/sprites/            # Game assets (CC0 licensed)
+├── demos/                     # Example implementations
+├── scripts/                   # Utility scripts
+└── [configuration files]      # Project configuration
+```
 
-Polls input & AI actions
+## 🔄 How It Works
 
-Updates sprites & physics
+### Game Loop
 
-Renders at 60 FPS with brand-aligned colors
+1. **Input & AI Actions:** Process user input and AI agent decisions
+2. **Physics & Updates:** Update entity positions and physics simulations
+3. **Rendering:** Draw the current game state at 60 FPS
 
-RL Agent
+### AI Agent Integration
 
-Vectorized environments in Pymunk
+1. **Environment Observation:** Capture game state for AI input
+2. **Model Inference:** Process state through neural networks
+3. **Action Selection:** Determine optimal actions based on policy
+4. **Environment Interaction:** Execute actions and update game state
 
-PolicyNet (MLP) trained on GPU via PPO
+## 🛠️ Extending the Platform
 
-Real-time inference each frame drives entity behavior
+### Custom Entities
 
-Extensible
+Create new entity types in `ai_platform_trainer/engine/entities/` by inheriting from the base `Entity` class.
 
-Swap in new sprites easily
+### New Physics Demos
 
-Add new physics demos (pendulum, car, cloth)
+Add custom physics simulations by creating new components that use the collision system.
 
-Expand supervised demos or integrate vision modules
+### AI Model Experiments
 
-🎓 What You’ll Learn
-Packaging Python apps with console scripts
+Implement custom neural network architectures in the supervised or reinforcement learning modules.
 
-Managing virtual environments & CI prerequisites
+## 🤝 Contributing
 
-Integrating Pygame with Pymunk physics
+Contributions are welcome! Feel free to submit issues or pull requests.
 
-Building and training PyTorch models on CUDA
+## 📄 License
 
-Reinforcement-learning design patterns (GAE, PPO)
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-Crafting clean, maintainable, testable code
+## 📬 Contact
 
-🤝 Contributing
-Contributions welcome! Please see CONTRIBUTING.md for guidelines.
-
-📄 License
-This project is licensed under the MIT License—see LICENSE for details.
-
-📬 Contact
-Your Name – drew@drewclark.io
+Email: drew@drewclark.io  
 GitHub: @life423

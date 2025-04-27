@@ -3,21 +3,39 @@ from ai_platform_trainer.core.color_manager import get_color, darken, lighten
 
 from ai_platform_trainer.engine.entities.enemy import Enemy
 from ai_platform_trainer.engine.entities.player import Player
+from ai_platform_trainer.engine.physics import PhysicsSystem
 
 
 class EntityFactory:
     @staticmethod
-    def create_player() -> Player:
-        """Create a player entity with primary color."""
-        return Player(position=(400, 300), color=get_color("primary"), speed=5)
+    def create_player(physics: PhysicsSystem = None) -> Player:
+        """
+        Create a player entity with primary color.
+        
+        Args:
+            physics: Optional PhysicsSystem to create a physics body
+            
+        Returns:
+            A Player instance
+        """
+        position = (400, 300)
+        player = Player(position=position, color=get_color("primary"), speed=5)
+        
+        # Create physics body if system is provided
+        if physics:
+            body = physics.create_player_body(position, player.radius)
+            player.set_physics_body(body)
+            
+        return player
     
     @staticmethod
-    def create_enemies(count: int = 5) -> list[Enemy]:
+    def create_enemies(count: int = 5, physics: PhysicsSystem = None) -> list[Enemy]:
         """
         Create a group of enemy entities with secondary color variations.
         
         Args:
             count: Number of enemies to create
+            physics: Optional PhysicsSystem to create physics bodies
             
         Returns:
             A list of Enemy instances
@@ -33,14 +51,17 @@ class EntityFactory:
                 color = darken("secondary", abs(variation))
             else:
                 color = lighten("secondary", variation)
+            
+            # Create enemy with random position
+            position = (random.randint(50, 750), random.randint(50, 550))
+            enemy = Enemy(position=position, color=color, radius=10)
+            
+            # Create physics body if system is provided
+            if physics:
+                body = physics.create_enemy_body(position, enemy.radius)
+                enemy.set_physics_body(body)
                 
-            enemies.append(
-                Enemy(
-                    position=(random.randint(50, 750), random.randint(50, 550)),
-                    color=color,
-                    radius=10
-                )
-            )
+            enemies.append(enemy)
             
         return enemies
     
