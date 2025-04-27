@@ -19,6 +19,11 @@ _ROLE_COLORS: Dict[str, ColorType] = {
     "warning":    (210, 153, 34),  # Warning yellow
     "error":      (248, 81, 73),   # Error red
     "success":    (63, 185, 80),   # Success green
+    
+    # Gray scale for menu
+    "bg":         (24, 24, 27),    # Dark gray background
+    "gray300":    (212, 212, 216), # Light gray for text
+    "gray500":    (113, 113, 122), # Medium gray for secondary text
 }
 
 # Predefined color palettes

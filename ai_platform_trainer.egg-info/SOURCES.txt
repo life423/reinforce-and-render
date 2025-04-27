@@ -12,7 +12,10 @@ ai_platform_trainer.egg-info/requires.txt
 ai_platform_trainer.egg-info/top_level.txt
 ai_platform_trainer/agents/__init__.py
 ai_platform_trainer/agents/agent.py
+ai_platform_trainer/agents/env.py
+ai_platform_trainer/agents/nn_agent.py
 ai_platform_trainer/agents/training_loop.py
+ai_platform_trainer/agents/vec_env.py
 ai_platform_trainer/core/__init__.py
 ai_platform_trainer/core/color_manager.py
 ai_platform_trainer/core/config_manager.py
@@ -24,6 +27,7 @@ ai_platform_trainer/engine/display_manager.py
 ai_platform_trainer/engine/game.py
 ai_platform_trainer/engine/input_handler.py
 ai_platform_trainer/engine/menu.py
+ai_platform_trainer/engine/physics.py
 ai_platform_trainer/engine/renderer.py
 ai_platform_trainer/engine/entities/__init__.py
 ai_platform_trainer/engine/entities/enemy.py
