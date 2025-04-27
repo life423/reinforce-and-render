@@ -1,3 +1,4 @@
+# ai_platform_trainer/engine/entities/entity.py
 from typing import Tuple
 import pygame
 
@@ -8,8 +9,7 @@ class Entity:
         self.radius = radius
 
     def update(self) -> None:
-        # placeholder for movement or AI logic
-        pass
+        pass  # override me
 
     def draw(self, surface: pygame.Surface) -> None:
         pygame.draw.circle(surface, self.color, (self.x, self.y), self.radius)
