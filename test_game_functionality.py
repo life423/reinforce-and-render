@@ -200,7 +200,7 @@ def test_game_initialization():
                         # Try rendering again
                         try:
                             game.renderer.render(game.menu, game.player, 
-                                                game.enemy, game.menu_active)
+                                                 game.enemy, game.menu_active)
                             pygame.display.flip()
                             logging.info("Render successful after adding game attribute to menu!")
                         except Exception as retry_err:
