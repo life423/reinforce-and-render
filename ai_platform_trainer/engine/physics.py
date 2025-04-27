@@ -1,6 +1,55 @@
 import pymunk
 from typing import Tuple
 
+def create_physics_space(gravity: Tuple[float, float] = (0, 0), arena_width: int = 800, arena_height: int = 600) -> pymunk.Space:
+    """
+    Create a physics space with walls.
+    
+    Args:
+        gravity: Gravity vector (x, y)
+        arena_width: Width of the arena in pixels
+        arena_height: Height of the arena in pixels
+        
+    Returns:
+        A configured pymunk.Space
+    """
+    space = pymunk.Space()
+    space.gravity = gravity
+    
+    # Create static body for walls
+    static_body = space.static_body
+    
+    # Create wall segments (top, right, bottom, left)
+    walls = [
+        # Top wall: (left, top) to (right, top)
+        [(0, 0), (arena_width, 0)],
+        # Right wall: (right, top) to (right, bottom)
+        [(arena_width, 0), (arena_width, arena_height)],
+        # Bottom wall: (right, bottom) to (left, bottom)
+        [(arena_width, arena_height), (0, arena_height)],
+        # Left wall: (left, bottom) to (left, top)
+        [(0, arena_height), (0, 0)]
+    ]
+    
+    # Add each wall segment to space
+    for wall in walls:
+        segment = pymunk.Segment(static_body, wall[0], wall[1], 0)
+        segment.elasticity = 1.0  # Perfect bounce
+        segment.friction = 0.0
+        space.add(segment)
+    
+    return space
+
+def step_space(space: pymunk.Space, dt: float) -> None:
+    """
+    Step the physics simulation forward.
+    
+    Args:
+        space: The pymunk space to step
+        dt: Time step in seconds
+    """
+    space.step(dt)
+
 class PhysicsSystem:
     def __init__(self, arena_width: int = 800, arena_height: int = 600):
         """
